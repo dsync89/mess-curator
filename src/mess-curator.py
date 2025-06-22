@@ -8,27 +8,36 @@ import argparse
 import shutil # For file copying
 import zipfile # For creating dummy zips
 
+# === Global Debug Flag ===
+DEBUG_MODE_ENABLED = False # Set to True by --debug argument
+
+def debug_print(message):
+    """Prints debug messages only if DEBUG_MODE_ENABLED is True."""
+    if DEBUG_MODE_ENABLED:
+        print(f"[DEBUG] {message}")
+
 # === Configuration Paths ===
 MAME_EXECUTABLE = r"c:\Programs\LaunchBox\Emulators\MAME 0.277\mame.exe"
 # Directory where MAME's softlist ROMs are located (e.g., mame/roms/nes/, mame/roms/ekara_cart/)
 # IMPORTANT: Adjust this path to your MAME installation's 'roms' directory.
 SOFTLIST_ROM_SOURCES_DIR = r"c:\Programs\LaunchBox\Emulators\MAME 0.277\roms\softlist"
-OUT_ROMSET_DIR = r"..\out\mame_curated_romset" # Where the curated ROMs will be copied to
+OUT_ROMSET_DIR = r"c:\temp\mame_curated_romsetv2" # Where the curated ROMs will be copied to
 
 # Path to your MESS.ini file (adjust as needed)
-MESS_INI_PATH = r"..\data\mess.ini"
+MESS_INI_PATH = r"c:\Programs\LaunchBox\Emulators\MAME 0.277\folders\mess.ini"
 
 # === Configuration Files ===
 SYSTEM_SOFTLIST_YAML_FILE = "system_softlist.yml" # Output YAML file for platform definitions
 
 # === Temporary XML Files ===
-TMP_SOFTWARE_XML_FILE = "tmp_software.xml"
-TMP_MACHINE_XML_FILE = "tmp_machine.xml"
-TMP_ALL_MACHINES_XML_FILE = "tmp_all_machines.xml" # This is the main one for caching -listxml output
-# New temporary XML files for splitting
-TMP_MESS_XML_FILE = "tmp_mess.xml"
-TMP_MESS_SOFTLIST_XML_FILE = "mess-softlist.xml"
-TMP_MESS_NOSOFTLIST_XML_FILE = "mess-nosoftlist.xml"
+TMP_SOFTWARE_XML_FILE = "tmp_software.xml" # For -listsoftware output for single system
+# Main XML cache file (for mame -listxml)
+MAME_ALL_MACHINES_XML_CACHE = "mame.xml" 
+
+# New permanent XML files from 'split' command
+MESS_XML_FILE = "mess.xml" # All machines from MESS.ini
+MESS_SOFTLIST_XML_FILE = "mess-softlist.xml" # Softlist-capable machines from MESS.ini
+MESS_NOSOFTLIST_XML_FILE = "mess-nosoftlist.xml" # Non-softlist machines from MESS.ini
 
 
 # === Helper Functions (YAML, XML Parsing, MAME Interaction) ===
@@ -59,7 +68,7 @@ def run_mame_command(args, output_file, use_cache=False): # Added use_cache para
 
     try:
         cmd = [MAME_EXECUTABLE] + args
-        print(f"[DEBUG] Running: {' '.join(cmd)}")
+        debug_print(f"Running: {' '.join(cmd)}")
 
         result = subprocess.run(
             cmd,
@@ -101,101 +110,94 @@ def run_mame_command(args, output_file, use_cache=False): # Added use_cache para
         print(f"[!] Exception running MAME command '{' '.join(args)}': {e}")
         return False
 
+def get_parsed_mame_xml_root(xml_filepath):
+    """
+    Ensures a MAME XML file exists and is parsed. Runs MAME if necessary.
+    Returns the parsed ElementTree root, or None on failure.
+    """
+    if not os.path.exists(xml_filepath):
+        print(f"[INFO] Generating '{xml_filepath}' using MAME. This may take a moment...")
+        # Force generation if not found
+        if not run_mame_command(["-listxml"], xml_filepath, use_cache=False): 
+            print(f"[ERROR] Failed to generate '{xml_filepath}'.")
+            return None
+    else: # If file exists, treat it as cached for this function
+        print(f"[INFO] Using existing XML file: '{xml_filepath}'.")
+
+    try:
+        tree = ET.parse(xml_filepath)
+        return tree.getroot()
+    except ET.ParseError as pe:
+        print(f"[ERROR] XML parse error for '{xml_filepath}': {pe}. File might be corrupted. Consider deleting it and rerunning.")
+        return None
+    except Exception as e:
+        print(f"[ERROR] Unexpected error parsing XML file '{xml_filepath}': {e}")
+        return None
+
+
 def get_all_mame_systems_from_xml_file(xml_filepath):
     """
     Parses an XML file (like mess-softlist.xml) and extracts all machine names.
     Returns a set of machine names.
     """
     machines = set()
-    if not os.path.exists(xml_filepath):
-        print(f"[ERROR] XML file not found at '{xml_filepath}'. Cannot extract systems.")
+    root = get_parsed_mame_xml_root(xml_filepath) # Use the new loader
+    if root is None:
         return machines
 
     try:
-        tree = ET.parse(xml_filepath)
-        root = tree.getroot() # Expects <mame> root
-
         for machine_element in root.findall("machine"):
             machine_name = machine_element.get("name")
             if machine_name:
                 machines.add(machine_name)
         print(f"[INFO] Loaded {len(machines)} machines from '{xml_filepath}'.")
-    except ET.ParseError as pe:
-        print(f"[ERROR] XML parse error for '{xml_filepath}': {pe}.")
     except Exception as e:
-        print(f"[ERROR] Unexpected error parsing XML file '{xml_filepath}': {e}")
+        print(f"[ERROR] Error extracting machines from '{xml_filepath}': {e}")
     return machines
 
 
-def get_all_mame_systems_by_prefix(prefix):
+def get_all_mame_systems_by_prefix_from_root(prefix, xml_root):
     """
-    Runs mame -listxml to get all machine definitions
-    and returns a list of machine names that start with the given prefix.
+    Extracts machine names from a given XML root that start with the prefix.
     """
     matching_systems = []
-    print(f"[DEBUG] Fetching all MAME machines for fuzzy search with prefix '{prefix}'. This may take a moment...")
-    # Use cache for TMP_ALL_MACHINES_XML_FILE
-    if not run_mame_command(["-listxml"], TMP_ALL_MACHINES_XML_FILE, use_cache=True): 
-        print(f"[DEBUG] Failed to get full MAME machine list. Cannot perform fuzzy search.")
-        return matching_systems
-
+    debug_print(f"Filtering machines from provided XML by prefix '{prefix}'.")
     try:
-        tree = ET.parse(TMP_ALL_MACHINES_XML_FILE)
-        root = tree.getroot()
-
-        for machine_element in root.findall("machine"):
+        for machine_element in xml_root.findall("machine"):
             machine_name = machine_element.get("name")
             if machine_name and machine_name.startswith(prefix):
                 matching_systems.append(machine_name)
-        print(f"[DEBUG] Found {len(matching_systems)} systems matching prefix '{prefix}'.")
-
-    except ET.ParseError as pe:
-        print(f"[!] XML parse error for '{TMP_ALL_MACHINES_XML_FILE}': {pe}. Content might be malformed XML.")
-        with open(TMP_ALL_MACHINES_XML_FILE, 'r', encoding='utf-8') as f:
-            print(f"[!] File content (first 500 chars):\n{f.read(500)}...")
+        debug_print(f"Found {len(matching_systems)} systems matching prefix '{prefix}'.")
     except Exception as e:
-        print(f"[!] Unexpected error parsing all machines XML '{TMP_ALL_MACHINES_XML_FILE}': {e}")
-    finally:
-        # Don't remove TMP_ALL_MACHINES_XML_FILE here if it's cached, as it's meant to persist.
-        # It should only be removed if main() explicitly decides to clear all temp files.
-        pass 
+        print(f"[ERROR] Error during fuzzy search from XML root: {e}")
     return matching_systems
 
-def get_machine_details_and_filters(system_name):
+
+def get_machine_details_and_filters_from_root(system_name, source_xml_root):
     """
-    Runs mame -listxml <system_name> to get machine definition,
-    extracts softwarelist filters and driver status info, and machine description.
+    Extracts machine details (softlist filters, driver status, description, manufacturer)
+    from a given XML root for a specific system.
     Returns a tuple: (filters_dict, machine_metadata_dict)
-    machine_metadata_dict will contain description, manufacturer, driver status, and emulation status.
     """
     filters = {}
     machine_metadata = {"description": "N/A", "manufacturer": "N/A", "status": "N/A", "emulation": "N/A"} # Default values
-    print(f"[DEBUG] Attempting to get machine details for '{system_name}'.")
-    # Don't use cache for TMP_MACHINE_XML_FILE as it's specific to one system and overwritten.
-    if not run_mame_command(["-listxml", system_name], TMP_MACHINE_XML_FILE):
-        print(f"[DEBUG] Failed to get machine XML for '{system_name}'.")
-        return filters, machine_metadata
-
+    
+    debug_print(f"Extracting details for '{system_name}' from provided XML root.")
+    
     try:
-        tree = ET.parse(TMP_MACHINE_XML_FILE)
-        root = tree.getroot()
-
-        machine_element = root.find(f"machine[@name='{system_name}']")
+        machine_element = source_xml_root.find(f"machine[@name='{system_name}']")
         if machine_element is None:
-            print(f"[DEBUG] Machine '{system_name}' tag not found within '{TMP_MACHINE_XML_FILE}'. This is unexpected if -listxml succeeded.")
+            debug_print(f"Machine '{system_name}' not found in the provided XML root.")
             return filters, machine_metadata
 
-        # Extract machine description and manufacturer
         machine_metadata["description"] = machine_element.findtext("description", "N/A").strip()
         machine_metadata["manufacturer"] = machine_element.findtext("manufacturer", "N/A").strip()
 
-        # Extract driver info
         driver_element = machine_element.find("driver")
         if driver_element is not None:
             machine_metadata["status"] = driver_element.get("status", "N/A")
             machine_metadata["emulation"] = driver_element.get("emulation", "N/A")
 
-        # Extract softlist filters
         found_swlist_tags = False
         for swlist_tag in machine_element.findall("softwarelist"):
             found_swlist_tags = True
@@ -203,22 +205,15 @@ def get_machine_details_and_filters(system_name):
             softlist_filter = swlist_tag.get("filter")
             if softlist_name:
                 filters[softlist_name] = softlist_filter.upper() if softlist_filter else None
-                print(f"[DEBUG] -> Found softlist tag for '{softlist_name}' with filter: '{filters[softlist_name]}'")
+                debug_print(f"-> Found softlist tag for '{softlist_name}' with filter: '{filters[softlist_name]}'")
             else:
-                print(f"[DEBUG] -> Found a softwarelist tag without a 'name' attribute in machine '{system_name}'. Skipping.")
+                debug_print(f"-> Found a softwarelist tag without a 'name' attribute in machine '{system_name}'. Skipping.")
         
         if not found_swlist_tags:
-            print(f"[DEBUG] No <softwarelist> tags found within machine '{system_name}' definition.")
+            debug_print(f"No <softwarelist> tags found within machine '{system_name}' definition.")
 
-    except ET.ParseError as pe:
-        print(f"[!] XML parse error for '{TMP_MACHINE_XML_FILE}': {pe}. Content might be malformed XML.")
-        with open(TMP_MACHINE_XML_FILE, 'r', encoding='utf-8') as f:
-            print(f"[!] File content (first 500 chars):\n{f.read(500)}...")
     except Exception as e:
-        print(f"[!] Unexpected error parsing machine XML '{TMP_MACHINE_XML_FILE}': {e}")
-    finally:
-        if os.path.exists(TMP_MACHINE_XML_FILE):
-            os.remove(TMP_MACHINE_XML_FILE)
+        print(f"[ERROR] Unexpected error extracting details for '{system_name}' from XML root: {e}")
     return filters, machine_metadata
 
 
@@ -250,25 +245,25 @@ def parse_software_list_from_file(search="", expected_softlist_name=None, system
         print(f"[!] Unexpected XML root tag: {root.tag}. Expected 'mame', 'softwarelist', or 'softwarelists'.")
         return []
 
-    print(f"\n[DEBUG] Parsing software list XML for '{system_name}'.")
-    print(f"[DEBUG] Machine-defined filters: {machine_softlist_filters}")
+    debug_print(f"Parsing software list XML for '{system_name}'.")
+    debug_print(f"Machine-defined filters: {machine_softlist_filters}")
 
     processed_softlists_count = 0
     for swlist_elem in software_lists_elements:
         current_softlist_name_from_xml = swlist_elem.get("name")
         if not current_softlist_name_from_xml:
-            print(f"[DEBUG] Skipping softwarelist element without 'name' attribute.")
+            debug_print(f"Skipping softwarelist element without 'name' attribute.")
             continue
 
         processed_softlists_count += 1
-        print(f"[DEBUG] - Processing softlist '{current_softlist_name_from_xml}' from -listsoftware XML.")
+        debug_print(f"- Processing softlist '{current_softlist_name_from_xml}' from -listsoftware XML.")
 
         required_compatibility_filter = machine_softlist_filters.get(current_softlist_name_from_xml)
         
         if required_compatibility_filter:
-            print(f"[DEBUG]   Applying sharedfeat compatibility filter for '{current_softlist_name_from_xml}': '{required_compatibility_filter}'.")
+            debug_print(f"  Applying sharedfeat compatibility filter for '{current_softlist_name_from_xml}': '{required_compatibility_filter}'.")
         else:
-            print(f"[DEBUG]   No specific sharedfeat compatibility filter found for '{current_softlist_name_from_xml}' from machine definition. Software from this list will NOT be sharedfeat-filtered.")
+            debug_print(f"  No specific sharedfeat compatibility filter found for '{current_softlist_name_from_xml}' from machine definition. Software from this list will NOT be sharedfeat-filtered.")
 
         for sw in swlist_elem.findall("software"):
             swid = sw.get("name", "")
@@ -290,11 +285,10 @@ def parse_software_list_from_file(search="", expected_softlist_name=None, system
                 continue
 
             if search.lower() in swid.lower() or search.lower() in desc.lower():
-                # Store the actual softlist name this software came from for YAML output, AND publisher
                 results.append((current_softlist_name_from_xml, system_name, swid, desc, publisher))
     
     if processed_softlists_count == 0:
-        print(f"[DEBUG] No softwarelist elements found in {TMP_SOFTWARE_XML_FILE}.")
+        debug_print(f"No softwarelist elements found in {TMP_SOFTWARE_XML_FILE}.")
 
     return results
 
@@ -513,7 +507,7 @@ def perform_rom_copy_operation(args):
 def perform_mame_search_and_output(systems_to_process, search_term, output_format, platform_key, platform_name_full, media_type, 
                                    enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
                                    output_file_path, driver_status_filter=None, emulation_status_filter=None, 
-                                   show_systems_only=False, show_extra_info=False):
+                                   show_systems_only=False, show_extra_info=False, source_xml_root=None):
     """
     Performs the MAME listsoftware search and outputs results as table or YAML.
     """
@@ -531,7 +525,8 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
         print(f"\n--- Processing system: {current_system} ---")
 
         # Get machine details including softlist filters, driver status, and description
-        machine_softlist_filters, machine_metadata = get_machine_details_and_filters(current_system)
+        # Pass the source_xml_root here so it doesn't re-run mame -listxml for each system
+        machine_softlist_filters, machine_metadata = get_machine_details_and_filters_from_root(current_system, source_xml_root)
         
         # Apply driver status filters
         if driver_status_filter and machine_metadata["status"] != driver_status_filter:
@@ -566,8 +561,6 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
 
         if os.path.exists(TMP_SOFTWARE_XML_FILE):
             os.remove(TMP_SOFTWARE_XML_FILE)
-        if os.path.exists(TMP_MACHINE_XML_FILE):
-            os.remove(TMP_MACHINE_XML_FILE)
 
     print("\n--- Finished processing all systems ---")
 
@@ -656,24 +649,23 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
               f"with search term '{search_term}'." if search_term else "[i] No systems or matching software items found.")
 
 
-def parse_good_emulation_drivers(exclude_arcade=False, machines_to_filter=None):
+def parse_good_emulation_drivers(exclude_arcade=False, machines_to_filter=None, source_xml_root=None):
     """
-    Runs mame -listxml, filters for emulation='good' drivers,
+    Filters for emulation='good' drivers from a given XML root,
     and prints a table of machine name, description, year, and manufacturer, sorted by Manufacturer.
     If machines_to_filter is provided, only processes machines in that list.
     """
-    print("[INFO] Fetching MAME machine drivers...")
-    # Use cache for TMP_ALL_MACHINES_XML_FILE
-    if not run_mame_command(["-listxml"], TMP_ALL_MACHINES_XML_FILE, use_cache=True): 
-        print("[ERROR] Failed to get full MAME machine list. Cannot list good emulation drivers.")
-        return
+    if source_xml_root is None:
+        # If no root is provided, load the default cache
+        print(f"[INFO] Fetching full MAME machine drivers for 'good' emulation list...")
+        source_xml_root = get_parsed_mame_xml_root(MAME_ALL_MACHINES_XML_CACHE)
+        if source_xml_root is None:
+            print("[ERROR] Failed to get full MAME machine list. Cannot list good emulation drivers.")
+            return
 
     good_drivers_data = []
     try:
-        tree = ET.parse(TMP_ALL_MACHINES_XML_FILE)
-        root = tree.getroot()
-
-        for machine_element in root.findall("machine"):
+        for machine_element in source_xml_root.findall("machine"):
             machine_name = machine_element.get("name")
 
             # Apply machines_to_filter if provided
@@ -694,13 +686,8 @@ def parse_good_emulation_drivers(exclude_arcade=False, machines_to_filter=None):
                 
                 good_drivers_data.append([name, description, year, manufacturer])
 
-    except ET.ParseError as pe:
-        print(f"[!] XML parse error for '{TMP_ALL_MACHINES_XML_FILE}': {pe}. Content might be malformed XML.")
     except Exception as e:
         print(f"[!] Unexpected error parsing XML for good emulation drivers: {e}")
-    finally:
-        # Don't remove TMP_ALL_MACHINES_XML_FILE here if it's cached, as it's meant to persist.
-        pass
     
     if good_drivers_data:
         good_drivers_data.sort(key=lambda x: x[3]) # Sort by Manufacturer
@@ -747,65 +734,59 @@ def parse_mess_ini_machines(ini_path):
         print(f"[ERROR] Error parsing MESS.ini file '{ini_path}': {e}")
     return machines
 
-def split_mame_xml_by_ini(mess_ini_path, output_xml_file):
+def split_mame_xml_by_ini(mess_ini_path, output_mess_xml_file):
     """
-    Phase 1/3: Filters the full mame -listxml output by machines listed in MESS.ini.
-    Outputs the filtered machines to a new XML file (e.g., tmp_mess.xml).
+    Phase 1/2: Filters the full mame -listxml output by machines listed in MESS.ini.
+    Outputs the filtered machines to a new XML file (e.g., mess.xml).
     """
-    print("=== Processing Phase 1/3: Filtering mame.xml by MESS.ini entries ===")
+    print("=== Processing Phase 1/2: Filtering mame.xml by MESS.ini entries ===")
     
     mess_machines_from_ini = parse_mess_ini_machines(mess_ini_path)
     if not mess_machines_from_ini:
         print("[ERROR] No machines loaded from MESS.ini or file not found. Cannot proceed with splitting.")
         return False
 
-    # Use cache for TMP_ALL_MACHINES_XML_FILE
+    # Use cache for MAME_ALL_MACHINES_XML_CACHE
     print("[INFO] Fetching full MAME machine list (mame.xml)... This may take a moment.")
-    if not run_mame_command(["-listxml"], TMP_ALL_MACHINES_XML_FILE, use_cache=True):
+    full_mame_root = get_parsed_mame_xml_root(MAME_ALL_MACHINES_XML_CACHE)
+    if full_mame_root is None:
         print("[ERROR] Failed to get full MAME machine list. Cannot proceed with splitting.")
         return False
 
     filtered_machines_count = 0
     try:
-        tree = ET.parse(TMP_ALL_MACHINES_XML_FILE)
-        root = tree.getroot() # <mame> root
-
         filtered_root = ET.Element("mame")
         for attr in ['build', 'debug', 'emulator', 'mameconfig']:
-            if root.get(attr) is not None:
-                filtered_root.set(attr, root.get(attr))
+            if full_mame_root.get(attr) is not None:
+                filtered_root.set(attr, full_mame_root.get(attr))
 
-        for machine_element in root.findall("machine"):
+        for machine_element in full_mame_root.findall("machine"):
             machine_name = machine_element.get("name")
             if machine_name in mess_machines_from_ini:
                 filtered_root.append(machine_element)
                 filtered_machines_count += 1
         
         filtered_tree = ET.ElementTree(filtered_root)
-        filtered_tree.write(output_xml_file, encoding="utf-8", xml_declaration=True)
+        filtered_tree.write(output_mess_xml_file, encoding="utf-8", xml_declaration=True)
         
-        print(f"[INFO] Phase 1 complete: Filtered {filtered_machines_count} machines into '{output_xml_file}'.")
+        print(f"[INFO] Phase 1 complete: Filtered {filtered_machines_count} machines into '{output_mess_xml_file}'.")
         return True
 
-    except ET.ParseError as pe:
-        print(f"[ERROR] XML parse error during Phase 1: {pe}. Problem with '{TMP_ALL_MACHINES_XML_FILE}'.")
     except Exception as e:
         print(f"[ERROR] Unexpected error during Phase 1: {e}")
-    finally:
-        # Don't remove TMP_ALL_MACHINES_XML_FILE here if it's cached, as it's meant to persist.
-        pass
     return False
 
-def split_mess_xml_by_softwarelist(input_xml_file, softlist_output_file, nosoftlist_output_file):
+def split_mess_xml_by_softwarelist(input_mess_xml_file, softlist_output_file, nosoftlist_output_file):
     """
-    Phase 2/3: Splits an XML file (e.g., tmp_mess.xml) into two new XML files:
+    Phase 2/2: Splits an XML file (e.g., mess.xml) into two new XML files:
     - one for machines that contain a <softwarelist> tag (mess-softlist.xml)
     - one for machines that do not contain a <softwarelist> tag (mess-nosoftlist.xml)
     """
-    print("=== Processing Phase 2/3: Splitting mess.xml by softwarelist capability ===")
+    print("=== Processing Phase 2/2: Splitting mess.xml by softwarelist capability ===")
     
-    if not os.path.exists(input_xml_file):
-        print(f"[ERROR] Input XML file '{input_xml_file}' not found. Cannot proceed with splitting by softwarelist.")
+    mess_root = get_parsed_mame_xml_root(input_mess_xml_file)
+    if mess_root is None:
+        print(f"[ERROR] Input XML file '{input_mess_xml_file}' not found or invalid. Cannot proceed with splitting by softwarelist.")
         return False
 
     softlist_count = 0
@@ -815,15 +796,12 @@ def split_mess_xml_by_softwarelist(input_xml_file, softlist_output_file, nosoftl
     nosoftlist_root = ET.Element("mame")
 
     try:
-        tree = ET.parse(input_xml_file)
-        root = tree.getroot()
-
         for attr in ['build', 'debug', 'emulator', 'mameconfig']:
-            if root.get(attr) is not None:
-                softlist_root.set(attr, root.get(attr))
-                nosoftlist_root.set(attr, root.get(attr))
+            if mess_root.get(attr) is not None:
+                softlist_root.set(attr, mess_root.get(attr))
+                nosoftlist_root.set(attr, mess_root.get(attr))
 
-        for machine_element in root.findall("machine"):
+        for machine_element in mess_root.findall("machine"):
             if machine_element.find("softwarelist") is not None:
                 softlist_root.append(machine_element)
                 softlist_count += 1
@@ -841,37 +819,42 @@ def split_mess_xml_by_softwarelist(input_xml_file, softlist_output_file, nosoftl
         
         return True
 
-    except ET.ParseError as pe:
-        print(f"[ERROR] XML parse error during Phase 2: {pe}. Problem with '{input_xml_file}'.")
     except Exception as e:
         print(f"[ERROR] Unexpected error during Phase 2: {e}")
-    finally:
-        if os.path.exists(input_xml_file):
-            os.remove(input_xml_file) # Clean up the intermediate tmp_mess.xml
     return False
 
 # Function to run the entire splitting process
 def run_split_command(args):
     """Orchestrates the splitting of mame.xml based on mess.ini and softwarelist capability."""
     # Phase 1
-    if not split_mame_xml_by_ini(args.mess_ini, TMP_MESS_XML_FILE):
+    if not split_mame_xml_by_ini(args.mess_ini, MESS_XML_FILE):
         print("[ERROR] Phase 1 failed. Aborting splitting process.")
         return
 
     # Phase 2
-    if not split_mess_xml_by_softwarelist(TMP_MESS_XML_FILE, TMP_MESS_SOFTLIST_XML_FILE, TMP_MESS_NOSOFTLIST_XML_FILE):
+    if not split_mess_xml_by_softwarelist(MESS_XML_FILE, MESS_SOFTLIST_XML_FILE, MESS_NOSOFTLIST_XML_FILE):
         print("[ERROR] Phase 2 failed. Aborting splitting process.")
         return
     
     print("\n=== Splitting process complete! ===")
-    print(f"Generated: '{TMP_MESS_SOFTLIST_XML_FILE}' (Softlist-capable machines from MESS.ini)")
-    print(f"Generated: '{TMP_MESS_NOSOFTLIST_XML_FILE}' (Non-softlist machines from MESS.ini)")
+    print(f"Generated: '{MESS_XML_FILE}' (All machines from MESS.ini)")
+    print(f"Generated: '{MESS_SOFTLIST_XML_FILE}' (Softlist-capable machines from MESS.ini)")
+    print(f"Generated: '{MESS_NOSOFTLIST_XML_FILE}' (Non-softlist machines from MESS.ini)")
 
 
 def main():
+    global DEBUG_MODE_ENABLED # Declare global to modify it
+
     parser = argparse.ArgumentParser(
         description="MAME Software & ROM Management Tool.",
         formatter_class=argparse.RawTextHelpFormatter
+    )
+
+    # Global debug flag
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug messages for detailed output."
     )
 
     # Create subparsers
@@ -909,6 +892,13 @@ def main():
         "--limit",
         type=int,
         help="Optional: Limit the number of systems processed to this integer value (for testing)."
+    )
+    by_name_parser.add_argument(
+        "--input-xml",
+        required=True, # Make it required
+        default=MAME_ALL_MACHINES_XML_CACHE, # Provide default for common use
+        help=f"[Required] Path to the XML file containing machine definitions for lookup. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'. "
+             "Use 'mame.xml', 'mess.xml', 'mess-softlist.xml', etc."
     )
     # Common YAML Output Specific Arguments for 'search by-name'
     by_name_parser.add_argument(
@@ -979,7 +969,7 @@ def main():
     # 1b. 'search by-xml' mode
     by_xml_parser = search_subparsers.add_parser("by-xml", help="Search systems from a generated XML file (e.g., mess-softlist.xml).")
     by_xml_parser.add_argument(
-        "xml_filepath",
+        "xml_filepath", # This is the input xml for by-xml mode.
         help="Path to the XML file containing machine definitions (e.g., mess-softlist.xml, mess-nosoftlist.xml)."
     )
     by_xml_parser.add_argument(
@@ -1036,6 +1026,93 @@ def main():
     )
 
 
+    # 1c. 'search by-filter' mode
+    by_filter_parser = search_subparsers.add_parser("by-filter", help="Search MAME machines by their XML attributes (e.g., description).")
+    by_filter_parser.add_argument(
+        "description_term",
+        help="Term to search within machine descriptions (e.g., '16-in-1', 'handheld')."
+    )
+    by_filter_parser.add_argument(
+        "--softlist-capable",
+        action="store_true",
+        help="Only include machines that have a <softwarelist> tag defined."
+    )
+    by_filter_parser.add_argument(
+        "--input-xml",
+        default=MAME_ALL_MACHINES_XML_CACHE, # Provide default for common use
+        help=f"Path to the XML file containing machine definitions for lookup. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'. "
+             "Use 'mame.xml', 'mess.xml', 'mess-softlist.xml', etc."
+    )
+    by_filter_parser.add_argument(
+        "--limit",
+        type=int,
+        help="Optional: Limit the number of matching machines processed to this integer value (for testing)."
+    )
+    by_filter_parser.add_argument(
+        "--output-format",
+        choices=["table", "yaml"],
+        default="table",
+        help="Output format: 'table' (default) or 'yaml'."
+    )
+    by_filter_parser.add_argument(
+        "--output-file",
+        default=SYSTEM_SOFTLIST_YAML_FILE,
+        help=f"Path to the output YAML file. Defaults to '{SYSTEM_SOFTLIST_YAML_FILE}'."
+    )
+    by_filter_parser.add_argument(
+        "--platform-key",
+        help="[Required for YAML Output] The top-level key for the platform in the YAML (e.g., 'my-filtered-games')."
+    )
+    by_filter_parser.add_argument(
+        "--platform-name-full",
+        help="[Required for YAML Output] The full, descriptive name of the platform (e.g., 'My Filtered Games')."
+    )
+    by_filter_parser.add_argument(
+        "--media-type",
+        default="cart", # Reasonable default for this search
+        help="[Required for YAML Output] The type of media used by the platform (e.g., 'cart', 'disk', 'cdrom')."
+    )
+    by_filter_parser.add_argument(
+        "-ect", "--enable-custom-cmd-per-title",
+        action="store_true",
+        help="Set 'enable_custom_command_line_param_per_software_id: true' for the platform entry. Defaults to false if not set."
+    )
+    by_filter_parser.add_argument(
+        "-en", "--emu-name",
+        help="Sets the 'emulator.name' (e.g., 'MAME (Cartridge)'). If specified, the 'emulator' block is added."
+    )
+    by_filter_parser.add_argument(
+        "-de", "--default-emu",
+        action="store_true",
+        help="Set 'emulator.default_emulator: true'. Requires --emu-name. Defaults to false if not set."
+    )
+    by_filter_parser.add_argument(
+        "-dec", "--default-emu-cmd-params",
+        help="Sets 'emulator.default_command_line_parameters' (e.g., '-keyboardprovider dinput'). Requires --emu-name."
+    )
+    by_filter_parser.add_argument(
+        "--driver-status",
+        choices=["good", "imperfect", "preliminary", "unsupported"],
+        help="Filter machines by driver 'status' (e.g., 'good', 'preliminary')."
+    )
+    by_filter_parser.add_argument(
+        "--emulation-status",
+        choices=["good", "imperfect", "preliminary", "unsupported"],
+        help="Filter machines by driver 'emulation' status (e.g., 'good', 'preliminary')."
+    )
+    by_filter_parser.add_argument(
+        "--show-systems-only",
+        action="store_true",
+        help="[For Table Output] Only show one row per system, even if it has software. "
+             "Software ID and Softlist columns will be 'N/A', Title column will be machine description."
+    )
+    by_filter_parser.add_argument(
+        "--show-extra-info",
+        action="store_true",
+        help="[For Table Output] Show additional columns: System Manufacturer (2nd col) and Software Publisher (before Driver Status)."
+    )
+
+
     # 2. 'copy-roms' subcommand
     copy_parser = subparsers.add_parser("copy-roms", help="Copy/create ROM zips based on system_softlist.yml.")
     copy_parser.add_argument(
@@ -1050,6 +1127,12 @@ def main():
         "--exclude-arcade",
         action="store_true",
         help="Excludes machines that do not have a software list defined (typically arcade machines)."
+    )
+    list_good_parser.add_argument(
+        "--input-xml",
+        default=MAME_ALL_MACHINES_XML_CACHE,
+        help=f"Path to the XML file containing machine definitions for lookup. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'."
+             "Use 'mame.xml', 'mess.xml', 'mess-softlist.xml', etc."
     )
 
     # 4. 'mess' subcommand
@@ -1080,11 +1163,42 @@ def main():
 
     args = parser.parse_args()
 
+    # --- Apply global debug flag FIRST ---
+    if args.debug:
+        global DEBUG_MODE_ENABLED
+        DEBUG_MODE_ENABLED = True
+        debug_print("Debug mode enabled.") # This will now print
+
+
     # --- Dispatch commands ---
+    # Centralized loading of source XML for relevant commands
+    source_xml_root = None
+    if args.command == "search":
+        if args.search_mode == "by-name" or args.search_mode == "by-filter":
+            source_xml_root = get_parsed_mame_xml_root(args.input_xml)
+        elif args.search_mode == "by-xml":
+            source_xml_root = get_parsed_mame_xml_root(args.xml_filepath) # For by-xml, its specific input is the source
+        if source_xml_root is None:
+            sys.exit(1) # Exit if source XML cannot be loaded for search command
+
+    elif args.command == "list-good-emulation":
+        source_xml_root = get_parsed_mame_xml_root(args.input_xml) # Load for list-good-emulation
+        if source_xml_root is None:
+            sys.exit(1)
+
+    elif args.command == "mess" and args.mess_command == "list-good-emulation":
+        # For mess list-good-emulation, the base XML is MESS_XML_FILE (generated by split)
+        source_xml_root = get_parsed_mame_xml_root(MESS_XML_FILE)
+        if source_xml_root is None:
+            print(f"[ERROR] '{MESS_XML_FILE}' not found. Please run 'split' command first to generate it.")
+            sys.exit(1)
+
+    # Now, execute the command logic, passing source_xml_root where needed
     if args.command == "search":
         # Determine systems to process based on search_mode
         systems_to_process = []
-        
+        search_term_for_core = "" # Initialize for all modes
+
         # Default values for platform info (can be overridden by explicit CLI args)
         platform_key = args.platform_key
         platform_name_full = args.platform_name_full
@@ -1094,18 +1208,19 @@ def main():
         default_emu = args.default_emu
         default_emu_cmd_params = args.default_emu_cmd_params
         
-        # Store filters for driver/emulation status (common to both search modes)
+        # Store filters for driver/emulation status (common to all search modes)
         driver_status_filter = args.driver_status
         emulation_status_filter = args.emulation_status
         
-        # Store --show-systems-only and --show-extra-info flags (common to both search modes for table output)
+        # Store --show-systems-only and --show-extra-info flags (common to all search modes for table output)
         show_systems_only_flag = args.show_systems_only 
         show_extra_info_flag = args.show_extra_info 
 
         if args.search_mode == "by-name":
             processed_systems_set = set(args.systems)
             if args.fuzzy:
-                fuzzy_matches = get_all_mame_systems_by_prefix(args.fuzzy)
+                # Use the new function that operates on the XML root
+                fuzzy_matches = get_all_mame_systems_by_prefix_from_root(args.fuzzy, source_xml_root)
                 if fuzzy_matches:
                     processed_systems_set.update(fuzzy_matches)
                     print(f"[INFO] Found {len(fuzzy_matches)} systems matching '{args.fuzzy}'.")
@@ -1141,7 +1256,8 @@ def main():
                     parser.error("You must specify at least one system (explicitly or via --fuzzy) for 'search by-name'.")
 
         elif args.search_mode == "by-xml":
-            systems_to_process = sorted(list(get_all_mame_systems_from_xml_file(args.xml_filepath)))
+            # For by-xml, systems are loaded from the *specified* XML, which is source_xml_root here.
+            systems_to_process = sorted(list(get_all_mame_systems_from_xml_file(args.xml_filepath))) # Use args.xml_filepath
             search_term_for_core = args.search_term
 
             # Apply --limit here for by-xml mode
@@ -1162,10 +1278,10 @@ def main():
             auto_default_emu = True
             auto_default_emu_cmd_params = "-keyboardprovider dinput"
             
-            if xml_filename_base == TMP_MESS_SOFTLIST_XML_FILE:
+            if xml_filename_base == MESS_SOFTLIST_XML_FILE:
                 auto_platform_name = "MESS (Softlist Capable)"
                 auto_enable_custom_cmd_per_title = True
-            elif xml_filename_base == TMP_MESS_NOSOFTLIST_XML_FILE:
+            elif xml_filename_base == MESS_NOSOFTLIST_XML_FILE:
                 auto_platform_name = "MESS (No Softlist)"
                 auto_enable_custom_cmd_per_title = False
             else:
@@ -1187,6 +1303,63 @@ def main():
                 print(f"[ERROR] No systems found in '{args.xml_filepath}'. Cannot perform search.")
                 sys.exit(1)
             
+        elif args.search_mode == "by-filter":
+            print(f"[INFO] Running 'search by-filter' for description term: '{args.description_term}'.")
+            
+            # Filter machines directly from the loaded source_xml_root
+            for machine_element in source_xml_root.findall("machine"):
+                machine_name = machine_element.get("name")
+                description = machine_element.findtext("description", "").strip()
+                
+                # Apply description filter
+                if args.description_term.lower() not in description.lower():
+                    continue
+                
+                # Apply softlist-capable filter if requested
+                if args.softlist_capable and machine_element.find("softwarelist") is None:
+                    continue
+                
+                # Apply driver status filters (if specified)
+                driver_element = machine_element.find("driver")
+                current_driver_status = driver_element.get("status") if driver_element is not None else "N/A"
+                current_emulation_status = driver_element.get("emulation") if driver_element is not None else "N/A"
+
+                if driver_status_filter and current_driver_status != driver_status_filter:
+                    continue
+                if emulation_status_filter and current_emulation_status != emulation_status_filter:
+                    continue
+                
+                systems_to_process.append(machine_name)
+            
+            systems_to_process.sort()
+            
+            # Apply --limit for by-filter mode
+            if args.limit is not None and args.limit >= 0:
+                print(f"[INFO] Limiting processing to {args.limit} systems.")
+                systems_to_process = systems_to_process[:args.limit]
+            elif args.limit is not None and args.limit < 0:
+                parser.error("Value for --limit cannot be negative.")
+
+            if not systems_to_process:
+                print(f"[INFO] No machines found matching the description '{args.description_term}' and other filters.")
+                sys.exit(0)
+            
+            search_term_for_core = "" # Software search is typically not done here, only machine filtering
+            
+            # Auto-set/override platform details for by-filter mode
+            platform_key = args.platform_key if args.platform_key else f"filtered-{args.description_term.replace(' ', '-').lower()}"
+            platform_name_full = args.platform_name_full if args.platform_name_full else f"Machines containing '{args.description_term}'"
+            if args.softlist_capable:
+                platform_name_full += " (Softlist Capable)"
+                enable_custom_cmd_per_title = args.enable_custom_cmd_per_title if args.enable_custom_cmd_per_title is True else True
+            else:
+                enable_custom_cmd_per_title = args.enable_custom_cmd_per_title if args.enable_custom_cmd_per_title is True else False
+            
+            media_type = args.media_type
+            emu_name = args.emu_name
+            default_emu = args.default_emu
+            default_emu_cmd_params = args.default_emu_cmd_params
+
         # Common validation for YAML output (now placed after all info is gathered)
         if args.output_format == "yaml":
             if not all([platform_key, platform_name_full, media_type]):
@@ -1209,10 +1382,11 @@ def main():
             default_emu=default_emu,
             default_emu_cmd_params=default_emu_cmd_params,
             output_file_path=args.output_file,
-            driver_status_filter=driver_status_filter, # Pass filters
-            emulation_status_filter=emulation_status_filter, # Pass filters
-            show_systems_only=show_systems_only_flag, # Pass the flag
-            show_extra_info=show_extra_info_flag # Pass the flag
+            driver_status_filter=driver_status_filter,
+            emulation_status_filter=emulation_status_filter,
+            show_systems_only=show_systems_only_flag,
+            show_extra_info=show_extra_info_flag,
+            source_xml_root=source_xml_root
         )
 
     elif args.command == "copy-roms":
@@ -1220,15 +1394,18 @@ def main():
         perform_rom_copy_operation(args)
 
     elif args.command == "list-good-emulation":
-        parse_good_emulation_drivers(exclude_arcade=args.exclude_arcade)
+        # Pass the source_xml_root loaded centrally for this command
+        parse_good_emulation_drivers(exclude_arcade=args.exclude_arcade, source_xml_root=source_xml_root)
         
     elif args.command == "mess":
         if args.mess_command == "list-good-emulation":
             mess_machines = parse_mess_ini_machines(args.mess_ini)
             if mess_machines:
+                # Pass the source_xml_root loaded centrally (which is MESS_XML_FILE's root)
                 parse_good_emulation_drivers(
                     exclude_arcade=args.exclude_arcade,
-                    machines_to_filter=mess_machines
+                    machines_to_filter=mess_machines,
+                    source_xml_root=source_xml_root
                 )
             else:
                 print(f"[INFO] No machines found in MESS.ini or MESS.ini not found. No machines to list.")
@@ -1236,8 +1413,8 @@ def main():
     elif args.command == "split":
         run_split_command(args)
 
-    # Final cleanup of any remaining temp files (excluding the generated mess-*.xml files which are outputs)
-    for tmp_file in [TMP_SOFTWARE_XML_FILE, TMP_MACHINE_XML_FILE, TMP_ALL_MACHINES_XML_FILE, TMP_MESS_XML_FILE]:
+    # Final cleanup of any remaining temp files (excluding the generated xmls which are outputs)
+    for tmp_file in [TMP_SOFTWARE_XML_FILE]: # TMP_MACHINE_XML_FILE is removed within get_machine_details_and_filters
         if os.path.exists(tmp_file):
             os.remove(tmp_file)
 
