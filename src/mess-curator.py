@@ -1149,6 +1149,16 @@ def display_platform_info(args):
             num_systems, num_softlists, num_software_ids
         ])
     
+    if args.sort_by_col_num is not None and platform_info_rows:
+        col_num = args.sort_by_col_num
+        num_cols = len(headers)
+        if 1 <= col_num <= num_cols:
+            sort_index = col_num - 1
+            platform_info_rows.sort(key=lambda row: row[sort_index])
+            print(f"\n[INFO] Table sorted by column {col_num}: '{headers[sort_index]}'.")
+        else:
+            print(f"[WARNING] Invalid column number {col_num}. Must be between 1 and {num_cols}. Sorting skipped.")
+
     if platform_info_rows:
         print(tabulate(platform_info_rows, headers=headers, tablefmt="github"))
         print(f"\nTotal platforms displayed: {len(platform_info_rows)}")
@@ -1313,6 +1323,7 @@ def main():
     platform_info_parser = subparsers.add_parser("platform-info", help="Display high-level information about platforms in system_softlist.yml.")
     platform_info_parser.add_argument("--platform-key", help="Optional: Display info for a specific platform by key.")
     platform_info_parser.add_argument("--input-file", help="Path to the input YAML file. Defaults to config.")
+    platform_info_parser.add_argument("--sort-by-col-num", type=int, help="[For Table] Sort the output table by a 1-based column number.")
 
     args = parser.parse_args()
 
