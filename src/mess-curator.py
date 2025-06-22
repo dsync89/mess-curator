@@ -26,8 +26,8 @@ APP_CONFIG = {
     "softlist_rom_sources_dir": "",
     "out_romset_dir": "",
     "mess_ini_path": "",
-    "system_softlist_yaml_file": "system_softlist.yml", # This is a filename, not a path
-    "mess_xml_file": "mess.xml" # Default name for the MESS-only XML
+    "system_softlist_yaml_file": "system_softlist.yml",
+    "mess_xml_file": "mess.xml"
 }
 
 def _load_yaml_file(file_path):
@@ -177,14 +177,13 @@ def initialize_application():
             print("[WARNING] Skipping generation. Some commands may be slower or require specifying a source XML manually.")
 
 # === Configuration Paths (NOW LOADED FROM CONFIG) ===
-# These are now set within functions or loaded from APP_CONFIG dictionary
-MAME_ALL_MACHINES_XML_CACHE = "mame.xml" # Default cache file for full mame -listxml
-MESS_XML_FILE = "mess.xml" # All machines from MESS.ini
-MESS_SOFTLIST_XML_FILE = "mess-softlist.xml" # Softlist-capable machines from MESS.ini
-MESS_NOSOFTLIST_XML_FILE = "mess-nosoftlist.xml" # Non-softlist machines from MESS.ini
+MAME_ALL_MACHINES_XML_CACHE = "mame.xml"
+MESS_XML_FILE = "mess.xml"
+MESS_SOFTLIST_XML_FILE = "mess-softlist.xml"
+MESS_NOSOFTLIST_XML_FILE = "mess-nosoftlist.xml"
 
 # === Temporary XML Files (short-lived, auto-cleaned) ===
-TMP_SOFTWARE_XML_FILE = "tmp_software.xml" # For -listsoftware output for single system
+TMP_SOFTWARE_XML_FILE = "tmp_software.xml"
 
 # === Helper Functions (YAML, XML Parsing, MAME Interaction) ===
 
@@ -198,7 +197,6 @@ def run_mame_command(args, output_file, use_cache=False):
         return True
 
     try:
-        # Use config value for MAME executable
         cmd = [APP_CONFIG['mame_executable']] + args
         debug_print(f"Running: {' '.join(cmd)}")
 
@@ -211,7 +209,7 @@ def run_mame_command(args, output_file, use_cache=False):
             errors="replace",
             cwd=os.path.dirname(APP_CONFIG['mame_executable'])
         )
-        # (The rest of this function is unchanged)
+
         if not result.stdout.strip():
             print(f"[!] MAME output for command '{' '.join(args)}' is empty or invalid.")
             if result.returncode != 0:
@@ -250,7 +248,6 @@ def get_parsed_mame_xml_root(xml_filepath):
     """
     if not os.path.exists(xml_filepath):
         print(f"[INFO] Generating '{xml_filepath}' using MAME. This may take a moment...")
-        # Force generation if not found (use_cache=False here ensures it runs MAME)
         if not run_mame_command(["-listxml"], xml_filepath, use_cache=False): 
             print(f"[ERROR] Failed to generate '{xml_filepath}'.")
             return None
@@ -274,7 +271,7 @@ def get_all_mame_systems_from_xml_file(xml_filepath):
     Returns a set of machine names.
     """
     machines = set()
-    root = get_parsed_mame_xml_root(xml_filepath) # Use the new loader
+    root = get_parsed_mame_xml_root(xml_filepath)
     if root is None:
         return machines
 
@@ -313,7 +310,7 @@ def get_machine_details_and_filters_from_root(system_name, source_xml_root):
     Returns a tuple: (filters_dict, machine_metadata_dict)
     """
     filters = {}
-    machine_metadata = {"description": "N/A", "manufacturer": "N/A", "status": "N/A", "emulation": "N/A"} # Default values
+    machine_metadata = {"description": "N/A", "manufacturer": "N/A", "status": "N/A", "emulation": "N/A"}
     
     debug_print(f"Extracting details for '{system_name}' from provided XML root.")
     
@@ -401,7 +398,7 @@ def parse_software_list_from_file(search="", expected_softlist_name=None, system
         for sw in swlist_elem.findall("software"):
             swid = sw.get("name", "")
             desc = sw.findtext("description", default="").strip()
-            publisher = sw.findtext("publisher", default="N/A").strip() # Extract publisher
+            publisher = sw.findtext("publisher", default="N/A").strip()
 
             is_compatible = True
             if required_compatibility_filter:
@@ -418,7 +415,6 @@ def parse_software_list_from_file(search="", expected_softlist_name=None, system
                 continue
 
             if search.lower() in swid.lower() or search.lower() in desc.lower():
-                # Store the actual softlist name this software came from for YAML output, AND publisher
                 results.append((current_softlist_name_from_xml, system_name, swid, desc, publisher))
     
     if processed_softlists_count == 0:
@@ -431,15 +427,9 @@ def output_to_yaml_file(input_systems, all_software_entries, platform_key, platf
                          output_file_path=None):
     """
     Generates or updates the system_softlist.yml file with the platform and software IDs.
-    'input_systems' is the list of system names passed via the command line (original or fuzzy-expanded).
-    'all_software_entries' is a combined list of (softlist_name_from_xml, system_name, swid, desc, publisher) tuples.
-    Args for platform details are passed directly.
     """
-    # New structure to hold software info:
-    # { 'system_name': { 'softlists_data': { 'softlist_name_A': set(id1, id2), 'softlist_name_B': set(id3, id4) } } }
     software_info_by_system = {} 
 
-    # Note: all_software_entries now contains a publisher field (5th element)
     for softlist_name_xml, sys_name, swid, desc, publisher in all_software_entries:
         if sys_name not in software_info_by_system:
             software_info_by_system[sys_name] = {'softlists_data': {}}
@@ -450,31 +440,26 @@ def output_to_yaml_file(input_systems, all_software_entries, platform_key, platf
         software_info_by_system[sys_name]['softlists_data'][softlist_name_xml].add(swid)
 
     system_list_for_yaml = []
-    for sys_name in input_systems: # Iterate based on original user input order
+    for sys_name in input_systems:
         system_details = {} 
 
-        # Now, directly use the softlist_name captured from the MAME output
         if sys_name in software_info_by_system:
-            # Prepare the list of software_lists for this system
             software_lists_array = []
-            # Sort the softlists by name for consistent YAML output
             for softlist_name, soft_ids_set in sorted(software_info_by_system[sys_name]['softlists_data'].items()):
                 softlist_entry = {"softlist_name": softlist_name}
-                if soft_ids_set: # Only add software_id if there are IDs for this softlist
+                if soft_ids_set:
                     softlist_entry["software_id"] = sorted(list(soft_ids_set))
                 software_lists_array.append(softlist_entry)
             
-            # Add the 'software_lists' key (plural) to system_details
-            if software_lists_array: # Only add if there are any softlists data
+            if software_lists_array:
                 system_details["software_lists"] = software_lists_array
         
-        if system_details: # If we have any details (software_lists data)
+        if system_details:
             system_list_for_yaml.append({sys_name: system_details})
-        else: # Fallback if no details (e.g., no software found/filtered for this system)
+        else:
             system_list_for_yaml.append(sys_name)
             print(f"[INFO] No detailed info (software_lists or software_id) for system '{sys_name}'. Will be listed as a simple string in YAML.")
 
-    # Build the main platform entry
     new_platform_entry = {
         "platform": {
             "name": platform_name_full
@@ -493,7 +478,6 @@ def output_to_yaml_file(input_systems, all_software_entries, platform_key, platf
 
     new_platform_entry["system"] = system_list_for_yaml
 
-    # Use config value for default output file, unless overridden
     target_file = output_file_path or APP_CONFIG['system_softlist_yaml_file']
     existing_data = _load_yaml_file(target_file)
     existing_data[platform_key] = new_platform_entry
@@ -517,7 +501,6 @@ def _copy_single_rom(softid, softlist_name_for_copy, system_name, platform_key):
     copied = 0
     missing = 0
     
-    # Use config values for source and destination roots
     softlist_rom_dir = APP_CONFIG['softlist_rom_sources_dir']
     out_romset_dir = APP_CONFIG['out_romset_dir']
     
@@ -547,7 +530,7 @@ def _create_dummy_zip_for_rom(zip_path, softid):
     """Creates an empty zip file for a specific software ID."""
     try:
         with zipfile.ZipFile(zip_path, 'w') as zipf:
-            pass # Create empty zip
+            pass
         print(f"[○] Created dummy zip: {os.path.basename(zip_path)}")
     except Exception as e:
         print(f"[ERROR] Failed to create dummy zip {softid}.zip at {zip_path}: {e}")
@@ -575,7 +558,6 @@ def perform_rom_copy_operation(args):
     print(f"Source MAME Softlist ROMs: {APP_CONFIG['softlist_rom_sources_dir']}")
     print(f"Destination Curated ROMset: {APP_CONFIG['out_romset_dir']}")
 
-    # Use config value for default input file, unless overridden
     input_file = args.input_file or APP_CONFIG['system_softlist_yaml_file']
     system_softlist_data = _load_yaml_file(input_file)
     
@@ -583,7 +565,6 @@ def perform_rom_copy_operation(args):
         print(f"[ERROR] No data found in '{input_file}'. Nothing to copy.")
         return
 
-    # ... (rest of this function is unchanged)
     total_systems_processed = 0
     total_software_copied = 0
     total_software_missing = 0
@@ -598,29 +579,28 @@ def perform_rom_copy_operation(args):
 
         for system_entry in systems_in_platform:
             total_systems_processed += 1
-            if isinstance(system_entry, str): # Simple system entry like 'popira'
+            if isinstance(system_entry, str):
                 system_name = system_entry
                 print(f"  [>] Processing standalone system: '{system_name}'")
                 total_empty_system_zips += _create_dummy_zip_for_system(system_name, platform_key)
-            elif isinstance(system_entry, dict): # System with nested details like '{sys_name: {software_lists: [...]}}'
+            elif isinstance(system_entry, dict):
                 for system_name, details in system_entry.items():
                     print(f"  [>] Processing system with details: '{system_name}'")
                     
-                    software_lists_for_system = details.get("software_lists", []) # Get the list of softlist dictionaries
+                    software_lists_for_system = details.get("software_lists", [])
                     
                     if not software_lists_for_system:
                         print(f"  [INFO]   No 'software_lists' found in YAML for system '{system_name}'. Creating dummy zip for system.")
                         total_empty_system_zips += _create_dummy_zip_for_system(system_name, platform_key)
                         continue
 
-                    # Iterate through each softlist entry within the system
                     for softlist_detail in software_lists_for_system:
                         softlist_name_for_copy = softlist_detail.get("softlist_name")
                         software_ids_for_softlist = softlist_detail.get("software_id", [])
 
                         if not softlist_name_for_copy:
                             print(f"[ERROR]   Softlist entry for '{system_name}' missing 'softlist_name'. Cannot copy ROMs for this entry.")
-                            continue # Skip malformed softlist entry
+                            continue
 
                         if not software_ids_for_softlist:
                             print(f"  [INFO]   No 'software_id's listed for softlist '{softlist_name_for_copy}' under system '{system_name}'. No ROMs to copy for this specific softlist.")
@@ -645,7 +625,7 @@ def perform_rom_copy_operation(args):
 def perform_mame_search_and_output(systems_to_process, search_term, output_format, platform_key, platform_name_full, media_type, 
                                    enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
                                    output_file_path, driver_status_filter=None, emulation_status_filter=None, 
-                                   show_systems_only=False, show_extra_info=False, source_xml_root=None):
+                                   show_systems_only=False, show_extra_info=False, source_xml_root=None, sort_by=None):
     """
     Performs the MAME listsoftware search and outputs results as table or YAML.
     """
@@ -754,6 +734,28 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                         row.extend([driver_status, emulation_status])
                         table_display_data.append(row)
             
+            if sort_by and table_display_data:
+                column_map = {'system_name': 0}
+                if show_extra_info:
+                    column_map.update({
+                        'system_desc': 1, 'manufacturer': 2, 'softlist': 3,
+                        'software_id': 4, 'title': 5, 'publisher': 6,
+                        'driver_status': 7, 'emulation_status': 8
+                    })
+                else:
+                    column_map.update({
+                        'softlist': 1, 'software_id': 2, 'title': 3,
+                        'driver_status': 4, 'emulation_status': 5
+                    })
+
+                sort_key = sort_by.lower()
+                if sort_key in column_map:
+                    sort_index = column_map[sort_key]
+                    table_display_data.sort(key=lambda row: str(row[sort_index]).lower())
+                    print(f"\n[INFO] Table sorted by '{sort_key}'.")
+                else:
+                    print(f"\n[WARNING] Cannot sort by '{sort_key}'. It's not a valid or available column in the current view.")
+
             if table_display_data:
                 print(tabulate(table_display_data, headers=headers, tablefmt="github"))
                 print(f"\nTotal rows across all systems: {len(table_display_data)}")
@@ -779,9 +781,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
 
 def parse_good_emulation_drivers(exclude_arcade=False, machines_to_filter=None, source_xml_root=None):
     """
-    Filters for emulation='good' drivers from a given XML root,
-    and prints a table of machine name, description, year, and manufacturer, sorted by Manufacturer.
-    If machines_to_filter is provided, only processes machines in that list.
+    Filters for emulation='good' drivers from a given XML root.
     """
     if source_xml_root is None:
         print("[ERROR] No XML root provided. Cannot list good emulation drivers.")
@@ -831,7 +831,6 @@ def parse_good_emulation_drivers(exclude_arcade=False, machines_to_filter=None, 
 def parse_mess_ini_machines(ini_path):
     """
     Parses the MESS.ini file and extracts machine names from the [ROOT_FOLDER] section.
-    Returns a set of machine names.
     """
     machines = set()
     if not os.path.exists(ini_path):
@@ -858,20 +857,17 @@ def parse_mess_ini_machines(ini_path):
 
 def split_mame_xml_by_ini(mess_ini_path, output_mess_xml_file):
     """
-    Phase 1/2: Filters the full mame -listxml output by machines listed in MESS.ini.
-    Outputs the filtered machines to a new XML file (e.g., mess.xml).
+    Filters the full mame -listxml output by machines listed in MESS.ini.
     """
     print("=== Processing Phase 1/2: Filtering mame.xml by MESS.ini entries ===")
     
     mess_machines_from_ini = parse_mess_ini_machines(mess_ini_path)
     if not mess_machines_from_ini:
-        print("[ERROR] No machines loaded from MESS.ini or file not found. Cannot proceed with splitting.")
         return False
 
     print(f"[INFO] Fetching full MAME machine list ('{MAME_ALL_MACHINES_XML_CACHE}')... This may take a moment.")
     full_mame_root = get_parsed_mame_xml_root(MAME_ALL_MACHINES_XML_CACHE)
     if full_mame_root is None:
-        print("[ERROR] Failed to get full MAME machine list. Cannot proceed with splitting.")
         return False
 
     filtered_machines_count = 0
@@ -899,15 +895,12 @@ def split_mame_xml_by_ini(mess_ini_path, output_mess_xml_file):
 
 def split_mess_xml_by_softwarelist(input_mess_xml_file, softlist_output_file, nosoftlist_output_file):
     """
-    Phase 2/2: Splits an XML file (e.g., mess.xml) into two new XML files:
-    - one for machines that contain a <softwarelist> tag (mess-softlist.xml)
-    - one for machines that do not contain a <softwarelist> tag (mess-nosoftlist.xml)
+    Splits an XML file into two new XML files based on softwarelist capability.
     """
     print("=== Processing Phase 2/2: Splitting mess.xml by softwarelist capability ===")
     
     mess_root = get_parsed_mame_xml_root(input_mess_xml_file)
     if mess_root is None:
-        print(f"[ERROR] Input XML file '{input_mess_xml_file}' not found or invalid. Cannot proceed with splitting by softwarelist.")
         return False
 
     softlist_count = 0
@@ -930,12 +923,10 @@ def split_mess_xml_by_softwarelist(input_mess_xml_file, softlist_output_file, no
                 nosoftlist_root.append(machine_element)
                 nosoftlist_count += 1
         
-        softlist_tree = ET.ElementTree(softlist_root)
-        softlist_tree.write(softlist_output_file, encoding="utf-8", xml_declaration=True)
+        ET.ElementTree(softlist_root).write(softlist_output_file, encoding="utf-8", xml_declaration=True)
         print(f"[INFO] Phase 2 complete: Written {softlist_count} softlist-capable machines to '{softlist_output_file}'.")
 
-        nosoftlist_tree = ET.ElementTree(nosoftlist_root)
-        nosoftlist_tree.write(nosoftlist_output_file, encoding="utf-8", xml_declaration=True)
+        ET.ElementTree(nosoftlist_root).write(nosoftlist_output_file, encoding="utf-8", xml_declaration=True)
         print(f"[INFO] Phase 2 complete: Written {nosoftlist_count} non-softlist-capable machines to '{nosoftlist_output_file}'.")
         
         return True
@@ -945,7 +936,7 @@ def split_mess_xml_by_softwarelist(input_mess_xml_file, softlist_output_file, no
     return False
 
 def run_split_command(args):
-    """Orchestrates the splitting of mame.xml based on mess.ini and softwarelist capability."""
+    """Orchestrates the splitting of mame.xml based on mess.ini."""
     mess_ini_path = args.mess_ini or APP_CONFIG['mess_ini_path']
     mess_xml_output_file = APP_CONFIG['mess_xml_file']
 
@@ -965,9 +956,6 @@ def run_split_command(args):
 def display_yaml_table(args, source_xml_root):
     """
     Parses the system_softlist.yml file and displays its content in a detailed table format.
-    Filters by platform_key if provided.
-    Includes --show-extra-info and --show-systems-only logic.
-    source_xml_root is the parsed MAME XML root for getting machine details.
     """
     input_file = args.input_file or APP_CONFIG['system_softlist_yaml_file']
     print(f"\n===== Displaying Platforms from '{input_file}' in Table Format =====")
@@ -1066,6 +1054,28 @@ def display_yaml_table(args, source_xml_root):
                 row.extend([driver_status, emulation_status])
                 table_display_data.append(row)
 
+    if args.sort_by and table_display_data:
+        column_map = {'system_name': 0}
+        if args.show_extra_info:
+            column_map.update({
+                'system_desc': 1, 'manufacturer': 2, 'softlist': 3,
+                'software_id': 4, 'title': 5, 'publisher': 6,
+                'driver_status': 7, 'emulation_status': 8
+            })
+        else:
+            column_map.update({
+                'softlist': 1, 'software_id': 2, 'title': 3,
+                'driver_status': 4, 'emulation_status': 5
+            })
+        
+        sort_key = args.sort_by.lower()
+        if sort_key in column_map:
+            sort_index = column_map[sort_key]
+            table_display_data.sort(key=lambda row: str(row[sort_index]).lower())
+            print(f"\n[INFO] Table sorted by '{sort_key}'.")
+        else:
+            print(f"\n[WARNING] Cannot sort by '{sort_key}'. It's not a valid or available column in the current view.")
+
     if table_display_data:
         print(tabulate(table_display_data, headers=headers, tablefmt="github"))
         print(f"\nTotal rows across displayed platforms: {len(table_display_data)}")
@@ -1076,7 +1086,6 @@ def display_yaml_table(args, source_xml_root):
 def display_platform_info(args):
     """
     Parses the system_softlist.yml file and displays summary information for platforms.
-    Filters by platform_key if provided.
     """
     input_file = args.input_file or APP_CONFIG['system_softlist_yaml_file']
     print(f"\n===== Displaying Platform Information from '{input_file}' =====")
@@ -1211,8 +1220,15 @@ def main():
     search_subparsers = search_parser.add_subparsers(dest="search_mode", required=True, help="How to specify systems for search.")
 
     show_extra_info_help_text = "[For Table Output] Show additional columns: System Description, Manufacturer, and Software Publisher."
+    sort_by_choices = ['system_name', 'system_desc', 'manufacturer', 'software_id', 'title', 'publisher', 'driver_status', 'emulation_status']
 
-    by_name_parser = search_subparsers.add_parser("by-name", help="Search systems by explicit names or fuzzy prefix.")
+    # Common arguments for table-producing commands
+    table_args_parser = argparse.ArgumentParser(add_help=False)
+    table_args_parser.add_argument("--show-systems-only", action="store_true", help="[For Table] Only show one row per system.")
+    table_args_parser.add_argument("--show-extra-info", action="store_true", help=show_extra_info_help_text)
+    table_args_parser.add_argument("--sort-by", choices=sort_by_choices, help="[For Table] Sort the output table by a specific column.")
+
+    by_name_parser = search_subparsers.add_parser("by-name", help="Search systems by explicit names or fuzzy prefix.", parents=[table_args_parser])
     by_name_parser.add_argument("systems", nargs='*', default=[], help="One or more MAME system short names (e.g., 'ekara', 'nes').")
     by_name_parser.add_argument("search_term", nargs='?', default="", help="Optional: Search term for software ID or description.")
     by_name_parser.add_argument("--fuzzy", help="Optional: Prefix to fuzzy match MAME system names (e.g., 'jak_').")
@@ -1230,10 +1246,8 @@ def main():
     by_name_parser.add_argument("-dec", "--default-emu-cmd-params", help="Sets 'emulator.default_command_line_parameters'.")
     by_name_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_name_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
-    by_name_parser.add_argument("--show-systems-only", action="store_true", help="[For Table] Only show one row per system.")
-    by_name_parser.add_argument("--show-extra-info", action="store_true", help=show_extra_info_help_text)
 
-    by_xml_parser = search_subparsers.add_parser("by-xml", help="Search systems from a generated XML file (e.g., mess-softlist.xml).")
+    by_xml_parser = search_subparsers.add_parser("by-xml", help="Search systems from a generated XML file (e.g., mess-softlist.xml).", parents=[table_args_parser])
     by_xml_parser.add_argument("xml_filepath", help="Path to the XML file with machine definitions.")
     by_xml_parser.add_argument("search_term", nargs='?', default="", help="Optional: Search term for software ID or description.")
     by_xml_parser.add_argument("--limit", type=int, help="Optional: Limit the number of systems processed.")
@@ -1248,10 +1262,8 @@ def main():
     by_xml_parser.add_argument("-dec", "--default-emu-cmd-params", default="-keyboardprovider dinput", help="Overrides auto-set command parameters.")
     by_xml_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_xml_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
-    by_xml_parser.add_argument("--show-systems-only", action="store_true", help="[For Table] Only show one row per system.")
-    by_xml_parser.add_argument("--show-extra-info", action="store_true", help=show_extra_info_help_text)
 
-    by_filter_parser = search_subparsers.add_parser("by-filter", help="Search MAME machines by their XML attributes (e.g., description).")
+    by_filter_parser = search_subparsers.add_parser("by-filter", help="Search MAME machines by their XML attributes (e.g., description).", parents=[table_args_parser])
     by_filter_parser.add_argument("description_term", help="Term to search within machine descriptions.")
     by_filter_parser.add_argument("--softlist-capable", action="store_true", help="Only include machines with a <softwarelist> tag.")
     by_filter_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
@@ -1267,8 +1279,6 @@ def main():
     by_filter_parser.add_argument("-dec", "--default-emu-cmd-params", help="Sets 'emulator.default_command_line_parameters'.")
     by_filter_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_filter_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
-    by_filter_parser.add_argument("--show-systems-only", action="store_true", help="[For Table] Only show one row per system.")
-    by_filter_parser.add_argument("--show-extra-info", action="store_true", help=show_extra_info_help_text)
 
     copy_parser = subparsers.add_parser("copy-roms", help="Copy/create ROM zips based on system_softlist.yml.")
     copy_parser.add_argument("--input-file", help="Path to the input YAML file. Defaults to config.")
@@ -1286,12 +1296,10 @@ def main():
     split_parser = subparsers.add_parser("split", help="Generate filtered MAME XMLs based on MESS.ini.")
     split_parser.add_argument("--mess-ini", help="Path to MESS.ini. Defaults to config.")
 
-    table_parser = subparsers.add_parser("table", help="Display data from system_softlist.yml in a table format.")
+    table_parser = subparsers.add_parser("table", help="Display data from system_softlist.yml in a table format.", parents=[table_args_parser])
     table_parser.add_argument("--platform-key", help="Optional: Display only a specific platform by its key.")
     table_parser.add_argument("--input-file", help="Path to the input YAML file. Defaults to config.")
     table_parser.add_argument("--mame-xml-source", help=f"Path to MAME XML for fetching machine info. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'.")
-    table_parser.add_argument("--show-systems-only", action="store_true", help="Only show one row per system.")
-    table_parser.add_argument("--show-extra-info", action="store_true", help=show_extra_info_help_text)
 
     platform_info_parser = subparsers.add_parser("platform-info", help="Display high-level information about platforms in system_softlist.yml.")
     platform_info_parser.add_argument("--platform-key", help="Optional: Display info for a specific platform by key.")
@@ -1353,6 +1361,7 @@ def main():
         
         show_systems_only_flag = args.show_systems_only 
         show_extra_info_flag = args.show_extra_info 
+        sort_by_flag = args.sort_by
 
         if args.search_mode == "by-name":
             processed_systems_set = set(args.systems)
@@ -1436,7 +1445,7 @@ def main():
             platform_key, platform_name_full, media_type,
             enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params,
             args.output_file, driver_status_filter, emulation_status_filter,
-            show_systems_only_flag, show_extra_info_flag, source_xml_root
+            show_systems_only_flag, show_extra_info_flag, source_xml_root, sort_by=sort_by_flag
         )
 
     elif args.command == "copy-roms":
