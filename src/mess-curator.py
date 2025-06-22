@@ -1267,7 +1267,8 @@ def main():
     by_name_parser.add_argument("systems", nargs='*', default=[], help="One or more MAME system short names (e.g., 'ekara', 'nes').")
     by_name_parser.add_argument("search_term", nargs='?', default="", help="Optional: Search term for software ID or description.")
     by_name_parser.add_argument("--fuzzy", help="Optional: Prefix to fuzzy match MAME system names (e.g., 'jak_').")
-    by_name_parser.add_argument("--exclude-systems", nargs='+', default=[], help="Space-separated list of MAME system short names to exclude.")
+    by_name_parser.add_argument("--include-systems", nargs='+', default=[], help="Space-separated list of MAME system short names to explicitly include in processing. Useful with --fuzzy.")
+    by_name_parser.add_argument("--exclude-systems", nargs='+', default=[], help="Space-separated list of MAME system short names to explicitly exclude.")
     by_name_parser.add_argument("--limit", type=int, help="Optional: Limit the number of systems processed.")
     by_name_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     by_name_parser.add_argument("--output-format", choices=["table", "yaml"], default="table", help="Output format: 'table' (default) or 'yaml'.")
@@ -1399,12 +1400,20 @@ def main():
                     print(f"[INFO] Found {len(fuzzy_matches)} systems matching '{args.fuzzy}'.")
                 else:
                     print(f"[INFO] No systems found matching '--fuzzy {args.fuzzy}'.")
-                    
+
+            if args.include_systems:
+                initial_count = len(processed_systems_set)
+                processed_systems_set.update(args.include_systems)
+                added_count = len(processed_systems_set) - initial_count
+                if added_count > 0:
+                    print(f"[INFO] Included {added_count} additional system(s) via --include-systems.")
+
             if args.exclude_systems:
                 initial_count = len(processed_systems_set)
                 processed_systems_set -= set(args.exclude_systems)
-                if len(processed_systems_set) < initial_count:
-                    print(f"[INFO] {initial_count - len(processed_systems_set)} systems excluded.")
+                excluded_count = initial_count - len(processed_systems_set)
+                if excluded_count > 0:
+                    print(f"[INFO] Excluded {excluded_count} system(s) via --exclude-systems.")
 
             systems_to_process = sorted(list(processed_systems_set))
             if args.limit is not None: systems_to_process = systems_to_process[:args.limit]
