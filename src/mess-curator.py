@@ -7,6 +7,7 @@ from tabulate import tabulate
 import argparse
 import shutil # For file copying
 import zipfile # For creating dummy zips
+import csv # For CSV output
 
 # === Global Debug Flag ===
 DEBUG_MODE_ENABLED = False 
@@ -423,6 +424,17 @@ def parse_software_list_from_file(search="", expected_softlist_name=None, system
 
     return results
 
+def output_to_csv_file(headers, data, output_file_path):
+    """Writes the given headers and data to a CSV file."""
+    try:
+        with open(output_file_path, 'w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(headers)
+            writer.writerows(data)
+        print(f"\n[SUCCESS] Data successfully written to '{output_file_path}'.")
+    except IOError as e:
+        print(f"[ERROR] Failed to write to CSV file '{output_file_path}': {e}")
+
 def output_to_yaml_file(input_systems, all_software_entries, platform_key, platform_name_full, platform_categories, media_type, 
                          enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
                          output_file_path=None):
@@ -684,7 +696,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
         all_software_entries_for_yaml_processing.extend(sys_data['software_entries'])
 
     if systems_to_process:
-        if output_format == "table":
+        if output_format == "table" or output_format == "csv":
             table_display_data = []
             
             headers = ["System"]
@@ -762,11 +774,16 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                 else:
                     print(f"\n[WARNING] Invalid sort key '{sort_by}'.")
 
-            if table_display_data:
+            if not table_display_data:
+                print("[i] No matching software items found for table display after all filters.")
+                return
+            
+            if output_format == "table":
                 print(tabulate(table_display_data, headers=headers, tablefmt="github"))
                 print(f"\nTotal rows across all systems: {len(table_display_data)}")
-            else:
-                print("[i] No matching software items found for table display after all filters.")
+            elif output_format == "csv":
+                output_to_csv_file(headers, table_display_data, output_file_path)
+
         elif output_format == "yaml":
             output_to_yaml_file(
                 input_systems=systems_to_process,
@@ -1088,12 +1105,15 @@ def display_yaml_table(args, source_xml_root):
         else:
             print(f"\n[WARNING] Invalid sort key '{sort_by}'.")
     
-    if table_display_data:
+    if not table_display_data:
+        print("[i] No data found for table display based on provided criteria.")
+        return
+        
+    if args.output_format == "table":
         print(tabulate(table_display_data, headers=headers, tablefmt="github"))
         print(f"\nTotal rows across displayed platforms: {len(table_display_data)}")
-    else:
-        print("[i] No data found for table display based on provided criteria.")
-
+    elif args.output_format == "csv":
+        output_to_csv_file(headers, table_display_data, args.output_file)
 
 def display_platform_info(args):
     """
@@ -1267,12 +1287,12 @@ def main():
     by_name_parser.add_argument("systems", nargs='*', default=[], help="One or more MAME system short names (e.g., 'ekara', 'nes').")
     by_name_parser.add_argument("search_term", nargs='?', default="", help="Optional: Search term for software ID or description.")
     by_name_parser.add_argument("--fuzzy", help="Optional: Prefix to fuzzy match MAME system names (e.g., 'jak_').")
-    by_name_parser.add_argument("--include-systems", nargs='+', default=[], help="Space-separated list of MAME system short names to explicitly include in processing. Useful with --fuzzy.")
+    by_name_parser.add_argument("--include-systems", nargs='+', default=[], help="Space-separated list of MAME system short names to explicitly include in processing.")
     by_name_parser.add_argument("--exclude-systems", nargs='+', default=[], help="Space-separated list of MAME system short names to explicitly exclude.")
     by_name_parser.add_argument("--limit", type=int, help="Optional: Limit the number of systems processed.")
     by_name_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
-    by_name_parser.add_argument("--output-format", choices=["table", "yaml"], default="table", help="Output format: 'table' (default) or 'yaml'.")
-    by_name_parser.add_argument("--output-file", help="Path to the output YAML file. Defaults to config.")
+    by_name_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="table", help="Output format: 'table' (default), 'yaml', or 'csv'.")
+    by_name_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
     by_name_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_name_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
 
@@ -1280,8 +1300,8 @@ def main():
     by_xml_parser.add_argument("xml_filepath", help="Path to the XML file with machine definitions.")
     by_xml_parser.add_argument("search_term", nargs='?', default="", help="Optional: Search term for software ID or description.")
     by_xml_parser.add_argument("--limit", type=int, help="Optional: Limit the number of systems processed.")
-    by_xml_parser.add_argument("--output-format", choices=["table", "yaml"], default="yaml", help="Output format: 'table' or 'yaml' (default).")
-    by_xml_parser.add_argument("--output-file", help="Path to the output YAML file. Defaults to config.")
+    by_xml_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="yaml", help="Output format: 'table', 'yaml' (default), or 'csv'.")
+    by_xml_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
     by_xml_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_xml_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
     
@@ -1290,8 +1310,8 @@ def main():
     by_filter_parser.add_argument("--softlist-capable", action="store_true", help="Only include machines with a <softwarelist> tag.")
     by_filter_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     by_filter_parser.add_argument("--limit", type=int, help="Optional: Limit the number of matching machines processed.")
-    by_filter_parser.add_argument("--output-format", choices=["table", "yaml"], default="table", help="Output format: 'table' (default) or 'yaml'.")
-    by_filter_parser.add_argument("--output-file", help="Path to the output YAML file. Defaults to config.")
+    by_filter_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="table", help="Output format: 'table' (default), 'yaml', or 'csv'.")
+    by_filter_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
     by_filter_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_filter_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
 
@@ -1299,8 +1319,8 @@ def main():
     by_sourcefile_parser.add_argument("sourcefile_term", help="Term to search within the machine's sourcefile attribute.")
     by_sourcefile_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     by_sourcefile_parser.add_argument("--limit", type=int, help="Optional: Limit the number of matching machines processed.")
-    by_sourcefile_parser.add_argument("--output-format", choices=["table", "yaml"], default="table", help="Output format: 'table' (default) or 'yaml'.")
-    by_sourcefile_parser.add_argument("--output-file", help="Path to the output YAML file. Defaults to config.")
+    by_sourcefile_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="table", help="Output format: 'table' (default), 'yaml', or 'csv'.")
+    by_sourcefile_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
     by_sourcefile_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_sourcefile_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
 
@@ -1324,6 +1344,8 @@ def main():
     table_parser.add_argument("--platform-key", help="Optional: Display only a specific platform by its key.")
     table_parser.add_argument("--input-file", help="Path to the input YAML file. Defaults to config.")
     table_parser.add_argument("--mame-xml-source", help=f"Path to MAME XML for fetching machine info. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'.")
+    table_parser.add_argument("--output-format", choices=["table", "csv"], default="table", help="Output format: 'table' (default) or 'csv'.")
+    table_parser.add_argument("--output-file", help="Path to the output file (required for 'csv' format).")
 
     platform_info_parser = subparsers.add_parser("platform-info", help="Display high-level information about platforms in system_softlist.yml.")
     platform_info_parser.add_argument("--platform-key", help="Optional: Display info for a specific platform by key.")
@@ -1454,6 +1476,9 @@ def main():
                 platform_key = platform_key or f"{attribute_name}-{term.replace(' ', '-').replace('.cpp', '').lower()}"
                 platform_name_full = platform_name_full or f"Systems from {attribute_name} '{term}'"
 
+        if args.output_format in ("yaml", "csv") and not output_file_path:
+            parser.error(f"--output-file is required when using --output-format {args.output_format}")
+        
         if args.output_format == "yaml":
             if not all([platform_key, platform_name_full, media_type]):
                 parser.error("For YAML output, --platform-key, --platform-name-full, and --media-type are required.")
@@ -1483,6 +1508,8 @@ def main():
     elif args.command == "split":
         run_split_command(args)
     elif args.command == "table":
+        if args.output_format == "csv" and not args.output_file:
+            parser.error("--output-file is required when using --output-format csv")
         mame_xml_source = args.mame_xml_source or MAME_ALL_MACHINES_XML_CACHE
         table_source_xml_root = get_parsed_mame_xml_root(mame_xml_source)
         if table_source_xml_root:
