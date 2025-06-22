@@ -16,30 +16,19 @@ def debug_print(message):
     if DEBUG_MODE_ENABLED:
         print(f"[DEBUG] {message}")
 
-# === Configuration Paths ===
-MAME_EXECUTABLE = r"c:\Programs\LaunchBox\Emulators\MAME 0.277\mame.exe"
-# Directory where MAME's softlist ROMs are located (e.g., mame/roms/nes/, mame/roms/ekara_cart/)
-# IMPORTANT: Adjust this path to your MAME installation's 'roms' directory.
-SOFTLIST_ROM_SOURCES_DIR = r"c:\Programs\LaunchBox\Emulators\MAME 0.277\roms\softlist"
-OUT_ROMSET_DIR = r"c:\temp\mame_curated_romsetv2" # Where the curated ROMs will be copied to
+# === Configuration Management ===
+CONFIG_FILE = "config.yaml"
 
-# Path to your MESS.ini file (adjust as needed)
-MESS_INI_PATH = r"c:\Programs\LaunchBox\Emulators\MAME 0.277\folders\mess.ini"
-
-# === Configuration Files ===
-SYSTEM_SOFTLIST_YAML_FILE = "system_softlist.yml" # Output YAML file for platform definitions
-
-# === Persistent XML Cache & Generated Files ===
-MAME_ALL_MACHINES_XML_CACHE = "mame.xml" # Default cache file for full mame -listxml
-MESS_XML_FILE = "mess.xml" # All machines from MESS.ini
-MESS_SOFTLIST_XML_FILE = "mess-softlist.xml" # Softlist-capable machines from MESS.ini
-MESS_NOSOFTLIST_XML_FILE = "mess-nosoftlist.xml" # Non-softlist machines from MESS.ini
-
-# === Temporary XML Files (short-lived, auto-cleaned) ===
-TMP_SOFTWARE_XML_FILE = "tmp_software.xml" # For -listsoftware output for single system
-
-
-# === Helper Functions (YAML, XML Parsing, MAME Interaction) ===
+# This dictionary holds the application's configuration.
+# It's populated by load_configuration() or the initial setup wizard.
+APP_CONFIG = {
+    "mame_executable": "",
+    "softlist_rom_sources_dir": "",
+    "out_romset_dir": "",
+    "mess_ini_path": "",
+    "system_softlist_yaml_file": "system_softlist.yml", # This is a filename, not a path
+    "mess_xml_file": "mess.xml" # Default name for the MESS-only XML
+}
 
 def _load_yaml_file(file_path):
     """Loads YAML data from a given file path, returns empty dict if not found or invalid."""
@@ -56,6 +45,151 @@ def _load_yaml_file(file_path):
         print(f"[ERROR] Unexpected error loading YAML file '{file_path}': {e}")
         return {}
 
+def save_configuration():
+    """Saves the current APP_CONFIG dictionary to the config.yaml file."""
+    try:
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            yaml.dump(APP_CONFIG, f, default_flow_style=False, sort_keys=False)
+        debug_print(f"Configuration saved to '{CONFIG_FILE}'.")
+        return True
+    except Exception as e:
+        print(f"[ERROR] Failed to save configuration to '{CONFIG_FILE}': {e}")
+        return False
+
+def load_configuration():
+    """
+    Loads configuration from config.yaml into the global APP_CONFIG.
+    Returns True on success, False if the file doesn't exist.
+    """
+    if not os.path.exists(CONFIG_FILE):
+        return False
+    
+    config_data = _load_yaml_file(CONFIG_FILE)
+    if not config_data:
+        print(f"[WARNING] '{CONFIG_FILE}' is empty or invalid. Please run the setup wizard or use the 'config' command.")
+        return False
+
+    # Update APP_CONFIG with loaded values, keeping defaults for missing keys
+    for key in APP_CONFIG:
+        if key in config_data:
+            APP_CONFIG[key] = config_data[key]
+    
+    print(f"[INFO] Configuration loaded from '{CONFIG_FILE}'.")
+    return True
+
+def run_initial_setup_wizard():
+    """Guides the user through the initial setup process if config.yaml is not found."""
+    print("=" * 60)
+    print(" MAME MESS Curator Tool - Initial Setup Wizard")
+    print("=" * 60)
+    print(f"\nConfiguration file '{CONFIG_FILE}' not found.")
+    print("Let's set up the necessary paths to get started.")
+
+    temp_config = {}
+
+    # 1. MAME Executable
+    while True:
+        prompt = "\n[1/5] Please enter the full path to your MAME executable (e.g., C:\\MAME\\mame.exe):\n> "
+        path = input(prompt).strip().replace('"', '')
+        if os.path.isfile(path) and path.lower().endswith("mame.exe"):
+            temp_config["mame_executable"] = path
+            break
+        print("[!] Invalid path. Please ensure the path points to 'mame.exe' and the file exists.")
+
+    # 2. Softlist ROMs Directory
+    while True:
+        prompt = "\n[2/5] Please enter the path to your MAME 'softlist' ROMs directory:\n      (This is where subfolders like 'nes', 'ekara_cart', etc., are located)\n> "
+        path = input(prompt).strip().replace('"', '')
+        if os.path.isdir(path):
+            temp_config["softlist_rom_sources_dir"] = path
+            break
+        print("[!] Invalid path. Please ensure the directory exists.")
+
+    # 3. Output Curated ROMs Directory
+    while True:
+        prompt = "\n[3/5] Please enter the path for the curated output ROMsets:\n      (This directory will be created if it doesn't exist)\n> "
+        path = input(prompt).strip().replace('"', '')
+        if path: # Basic check for non-empty string
+            temp_config["out_romset_dir"] = path
+            break
+        print("[!] Path cannot be empty.")
+    
+    # 4. MESS.ini Path
+    # Auto-detect first
+    potential_mess_ini = os.path.join(os.path.dirname(os.path.dirname(temp_config["mame_executable"])), "folders", "mess.ini")
+    if os.path.isfile(potential_mess_ini):
+        print(f"\n[4/5] Auto-detected 'mess.ini' at: {potential_mess_ini}")
+        temp_config["mess_ini_path"] = potential_mess_ini
+    else:
+        print(f"\n[4/5] Could not auto-detect 'mess.ini'.")
+        while True:
+            prompt = "      Please enter the full path to your 'mess.ini' file:\n> "
+            path = input(prompt).strip().replace('"', '')
+            if os.path.isfile(path):
+                temp_config["mess_ini_path"] = path
+                break
+            print("[!] Invalid path. Please ensure the file exists.")
+
+    # 5. system_softlist.yml filename (using default)
+    temp_config["system_softlist_yaml_file"] = "system_softlist.yml"
+    print(f"\n[5/5] The generated platform metadata will be saved as '{temp_config['system_softlist_yaml_file']}' in the current directory.")
+    
+    # Set default for mess.xml
+    temp_config["mess_xml_file"] = "mess.xml"
+
+    # --- Confirmation ---
+    print("\n" + "=" * 20 + " Configuration Summary " + "=" * 20)
+    for key, value in temp_config.items():
+        print(f"{key+':':<30} {value}")
+    print("=" * 60)
+
+    confirm = input("\nSave this configuration? [Y/n]: ").strip().lower()
+    if confirm in ['', 'y', 'yes']:
+        for key, value in temp_config.items():
+            APP_CONFIG[key] = value
+        if save_configuration():
+            print(f"\n[SUCCESS] Configuration saved to '{CONFIG_FILE}'. You can now run the tool.")
+        else:
+            print("\n[FATAL] Could not save configuration. Exiting.")
+            sys.exit(1)
+    else:
+        print("\nSetup cancelled. Exiting.")
+        sys.exit(0)
+
+def initialize_application():
+    """Loads config, runs wizard if needed, and checks for essential files."""
+    if not load_configuration():
+        run_initial_setup_wizard()
+    
+    # Post-setup/load check for mess.xml
+    if not os.path.exists(APP_CONFIG['mess_xml_file']):
+        print(f"\n[INFO] The filtered machine list '{APP_CONFIG['mess_xml_file']}' was not found.")
+        print("       This file is highly recommended as it speeds up searches by focusing only on MESS systems.")
+        prompt = "       Would you like to generate it now? (This may take a moment) [Y/n]: "
+        generate = input(prompt).strip().lower()
+        if generate in ['', 'y', 'yes']:
+            print("\n[INFO] Running the 'split' process to generate required XML files...")
+            # We can call the function directly as we have all the config needed
+            from argparse import Namespace
+            split_args = Namespace(mess_ini=APP_CONFIG['mess_ini_path'])
+            run_split_command(split_args)
+        else:
+            print("[WARNING] Skipping generation. Some commands may be slower or require specifying a source XML manually.")
+
+# === Configuration Paths (NOW LOADED FROM CONFIG) ===
+# These are now set within functions or loaded from APP_CONFIG dictionary
+MAME_ALL_MACHINES_XML_CACHE = "mame.xml" # Default cache file for full mame -listxml
+MESS_XML_FILE = "mess.xml" # All machines from MESS.ini
+MESS_SOFTLIST_XML_FILE = "mess-softlist.xml" # Softlist-capable machines from MESS.ini
+MESS_NOSOFTLIST_XML_FILE = "mess-nosoftlist.xml" # Non-softlist machines from MESS.ini
+
+# === Temporary XML Files (short-lived, auto-cleaned) ===
+TMP_SOFTWARE_XML_FILE = "tmp_software.xml" # For -listsoftware output for single system
+
+# === Helper Functions (YAML, XML Parsing, MAME Interaction) ===
+# ... (rest of the helper functions from the original script) ...
+# Note: Functions that used global path constants now need to use APP_CONFIG
+
 def run_mame_command(args, output_file, use_cache=False): 
     """
     Runs a MAME command and pipes output to a file.
@@ -63,10 +197,11 @@ def run_mame_command(args, output_file, use_cache=False):
     """
     if use_cache and os.path.exists(output_file):
         print(f"[INFO] Using cached XML file: '{output_file}'. Skipping MAME execution.")
-        return True # File exists, proceed as if MAME ran successfully
+        return True
 
     try:
-        cmd = [MAME_EXECUTABLE] + args
+        # Use config value for MAME executable
+        cmd = [APP_CONFIG['mame_executable']] + args
         debug_print(f"Running: {' '.join(cmd)}")
 
         result = subprocess.run(
@@ -76,9 +211,9 @@ def run_mame_command(args, output_file, use_cache=False):
             text=True,
             encoding="utf-8",
             errors="replace",
-            cwd=os.path.dirname(MAME_EXECUTABLE)
+            cwd=os.path.dirname(APP_CONFIG['mame_executable'])
         )
-
+        # (The rest of this function is unchanged)
         if not result.stdout.strip():
             print(f"[!] MAME output for command '{' '.join(args)}' is empty or invalid.")
             if result.returncode != 0:
@@ -103,11 +238,12 @@ def run_mame_command(args, output_file, use_cache=False):
         return True
 
     except FileNotFoundError:
-        print(f"[!] Error: MAME executable not found at '{MAME_EXECUTABLE}'")
+        print(f"[!] Error: MAME executable not found at '{APP_CONFIG['mame_executable']}'")
         return False
     except Exception as e:
         print(f"[!] Exception running MAME command '{' '.join(args)}': {e}")
         return False
+
 
 def get_parsed_mame_xml_root(xml_filepath):
     """
@@ -134,6 +270,7 @@ def get_parsed_mame_xml_root(xml_filepath):
         return None
 
 
+# ... (The rest of the functions like get_all_mame_systems_from_xml_file, get_machine_details_and_filters_from_root, etc., are unchanged) ...
 def get_all_mame_systems_from_xml_file(xml_filepath):
     """
     Parses an XML file (like mess-softlist.xml) and extracts all machine names.
@@ -359,10 +496,11 @@ def output_to_yaml_file(input_systems, all_software_entries, platform_key, platf
 
     new_platform_entry["system"] = system_list_for_yaml
 
-    existing_data = _load_yaml_file(output_file_path or SYSTEM_SOFTLIST_YAML_FILE)
+    # Use config value for default output file, unless overridden
+    target_file = output_file_path or APP_CONFIG['system_softlist_yaml_file']
+    existing_data = _load_yaml_file(target_file)
     existing_data[platform_key] = new_platform_entry
-
-    target_file = output_file_path or SYSTEM_SOFTLIST_YAML_FILE
+    
     try:
         with open(target_file, "w", encoding="utf-8") as f:
             yaml.dump(existing_data, f, default_flow_style=False, sort_keys=False)
@@ -382,14 +520,15 @@ def _copy_single_rom(softid, softlist_name_for_copy, system_name, platform_key):
     copied = 0
     missing = 0
     
-    # Source path: SOFTLIST_ROM_SOURCES_DIR / softlist_name_for_copy / softid.zip
-    rom_src_path = os.path.join(SOFTLIST_ROM_SOURCES_DIR, softlist_name_for_copy, f"{softid}.zip")
+    # Use config values for source and destination roots
+    softlist_rom_dir = APP_CONFIG['softlist_rom_sources_dir']
+    out_romset_dir = APP_CONFIG['out_romset_dir']
     
-    # Destination path: OUT_ROMSET_DIR / platform_key / system_name / softlist_name_for_copy / softid.zip
-    rom_dst_dir = os.path.join(OUT_ROMSET_DIR, platform_key, system_name, softlist_name_for_copy)
+    rom_src_path = os.path.join(softlist_rom_dir, softlist_name_for_copy, f"{softid}.zip")
+    rom_dst_dir = os.path.join(out_romset_dir, platform_key, system_name, softlist_name_for_copy)
     rom_dst_path = os.path.join(rom_dst_dir, f"{softid}.zip")
 
-    os.makedirs(rom_dst_dir, exist_ok=True) # Ensure destination directory exists
+    os.makedirs(rom_dst_dir, exist_ok=True)
 
     if os.path.exists(rom_src_path):
         try:
@@ -398,9 +537,8 @@ def _copy_single_rom(softid, softlist_name_for_copy, system_name, platform_key):
             copied = 1
         except Exception as e:
             print(f"[ERROR] Failed to copy {softid}.zip from {rom_src_path} to {rom_dst_path}: {e}")
-            # If copy fails, treat as missing and create dummy
             _create_dummy_zip_for_rom(rom_dst_path, softid)
-            missing = 1 # Still counted as missing from source
+            missing = 1
     else:
         print(f"[✗] Missing ROM: {softid}.zip from '{softlist_name_for_copy}'. Creating dummy at {rom_dst_path}")
         _create_dummy_zip_for_rom(rom_dst_path, softid)
@@ -419,7 +557,8 @@ def _create_dummy_zip_for_rom(zip_path, softid):
 
 def _create_dummy_zip_for_system(system_name, platform_key):
     """Creates an empty zip file for a standalone system (no software_id specified)."""
-    dst_dir = os.path.join(OUT_ROMSET_DIR, platform_key, system_name)
+    out_romset_dir = APP_CONFIG['out_romset_dir']
+    dst_dir = os.path.join(out_romset_dir, platform_key, system_name)
     os.makedirs(dst_dir, exist_ok=True)
     zip_path = os.path.join(dst_dir, f"{system_name}.zip")
     try:
@@ -436,15 +575,18 @@ def perform_rom_copy_operation(args):
     Parses the system_softlist.yml file and copies/creates ROM zips based on its content.
     """
     print(f"\n===== Starting ROM Copy Operation =====")
-    print(f"Source MAME Softlist ROMs: {SOFTLIST_ROM_SOURCES_DIR}")
-    print(f"Destination Curated ROMset: {OUT_ROMSET_DIR}")
+    print(f"Source MAME Softlist ROMs: {APP_CONFIG['softlist_rom_sources_dir']}")
+    print(f"Destination Curated ROMset: {APP_CONFIG['out_romset_dir']}")
 
-    system_softlist_data = _load_yaml_file(args.input_file or SYSTEM_SOFTLIST_YAML_FILE)
+    # Use config value for default input file, unless overridden
+    input_file = args.input_file or APP_CONFIG['system_softlist_yaml_file']
+    system_softlist_data = _load_yaml_file(input_file)
     
     if not system_softlist_data:
-        print(f"[ERROR] No data found in '{args.input_file or SYSTEM_SOFTLIST_YAML_FILE}'. Nothing to copy.")
+        print(f"[ERROR] No data found in '{input_file}'. Nothing to copy.")
         return
 
+    # ... (rest of this function is unchanged)
     total_systems_processed = 0
     total_software_copied = 0
     total_software_missing = 0
@@ -503,7 +645,7 @@ def perform_rom_copy_operation(args):
     print(f"  Total Empty System Zips Created: {total_empty_system_zips}")
     print(f"======================================")
 
-
+# ... (rest of the script from perform_mame_search_and_output onwards is largely unchanged, just ensure path defaults are handled correctly) ...
 def perform_mame_search_and_output(systems_to_process, search_term, output_format, platform_key, platform_name_full, media_type, 
                                    enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
                                    output_file_path, driver_status_filter=None, emulation_status_filter=None, 
@@ -642,7 +784,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                 emu_name=emu_name,
                 default_emu=default_emu,
                 default_emu_cmd_params=default_emu_cmd_params,
-                output_file_path=output_file_path
+                output_file_path=output_file_path # Can be None, will use config default
             )
     else:
         print(f"[i] No systems found for output after initial filtering or no matching software items found across any specified systems "
@@ -823,18 +965,21 @@ def split_mess_xml_by_softwarelist(input_mess_xml_file, softlist_output_file, no
 # Function to run the entire splitting process
 def run_split_command(args):
     """Orchestrates the splitting of mame.xml based on mess.ini and softwarelist capability."""
+    mess_ini_path = args.mess_ini or APP_CONFIG['mess_ini_path']
+    mess_xml_output_file = APP_CONFIG['mess_xml_file']
+
     # Phase 1
-    if not split_mame_xml_by_ini(args.mess_ini, MESS_XML_FILE):
+    if not split_mame_xml_by_ini(mess_ini_path, mess_xml_output_file):
         print("[ERROR] Phase 1 failed. Aborting splitting process.")
         return
 
     # Phase 2
-    if not split_mess_xml_by_softwarelist(MESS_XML_FILE, MESS_SOFTLIST_XML_FILE, MESS_NOSOFTLIST_XML_FILE):
+    if not split_mess_xml_by_softwarelist(mess_xml_output_file, MESS_SOFTLIST_XML_FILE, MESS_NOSOFTLIST_XML_FILE):
         print("[ERROR] Phase 2 failed. Aborting splitting process.")
         return
     
     print("\n=== Splitting process complete! ===")
-    print(f"Generated: '{MESS_XML_FILE}' (All machines from MESS.ini)")
+    print(f"Generated: '{mess_xml_output_file}' (All machines from MESS.ini)")
     print(f"Generated: '{MESS_SOFTLIST_XML_FILE}' (Softlist-capable machines from MESS.ini)")
     print(f"Generated: '{MESS_NOSOFTLIST_XML_FILE}' (Non-softlist machines from MESS.ini)")
 
@@ -845,20 +990,22 @@ def display_yaml_table(args, source_xml_root): # Corrected signature here
     Includes --show-extra-info and --show-systems-only logic.
     source_xml_root is the parsed MAME XML root for getting machine details.
     """
-    print(f"\n===== Displaying Platforms from '{args.input_file}' in Table Format =====")
+    input_file = args.input_file or APP_CONFIG['system_softlist_yaml_file']
+    print(f"\n===== Displaying Platforms from '{input_file}' in Table Format =====")
     
-    system_softlist_data = _load_yaml_file(args.input_file)
+    system_softlist_data = _load_yaml_file(input_file)
     if not system_softlist_data:
-        print(f"[ERROR] No data found in '{args.input_file}'. Nothing to display.")
+        print(f"[ERROR] No data found in '{input_file}'. Nothing to display.")
         return
 
+    # ... (rest of this function is unchanged)
     # If platform_key is specified, filter the data to only that platform
     platforms_to_display = {}
     if args.platform_key:
         if args.platform_key in system_softlist_data:
             platforms_to_display[args.platform_key] = system_softlist_data[args.platform_key]
         else:
-            print(f"[ERROR] Platform '{args.platform_key}' not found in '{args.input_file}'.")
+            print(f"[ERROR] Platform '{args.platform_key}' not found in '{input_file}'.")
             return
     else:
         platforms_to_display = system_softlist_data # Display all platforms
@@ -961,19 +1108,21 @@ def display_platform_info(args):
     Parses the system_softlist.yml file and displays summary information for platforms.
     Filters by platform_key if provided.
     """
-    print(f"\n===== Displaying Platform Information from '{args.input_file}' =====")
+    input_file = args.input_file or APP_CONFIG['system_softlist_yaml_file']
+    print(f"\n===== Displaying Platform Information from '{input_file}' =====")
     
-    system_softlist_data = _load_yaml_file(args.input_file)
+    system_softlist_data = _load_yaml_file(input_file)
     if not system_softlist_data:
-        print(f"[ERROR] No data found in '{args.input_file}'. Nothing to display.")
+        print(f"[ERROR] No data found in '{input_file}'. Nothing to display.")
         return
 
+    # ... (rest of this function is unchanged)
     platforms_to_display = {}
     if args.platform_key:
         if args.platform_key in system_softlist_data:
             platforms_to_display[args.platform_key] = system_softlist_data[args.platform_key]
         else:
-            print(f"[ERROR] Platform '{args.platform_key}' not found in '{args.input_file}'.")
+            print(f"[ERROR] Platform '{args.platform_key}' not found in '{input_file}'.")
             return
     else:
         platforms_to_display = system_softlist_data # Display all platforms
@@ -1020,6 +1169,50 @@ def display_platform_info(args):
     else:
         print("[i] No platform information found for display based on criteria.")
 
+def run_config_command(args):
+    """Handles the 'config' subcommand to show or update configuration."""
+    config_updated = False
+
+    if args.set_mame_exe_path:
+        if os.path.isfile(args.set_mame_exe_path):
+            APP_CONFIG["mame_executable"] = args.set_mame_exe_path
+            config_updated = True
+        else:
+            print(f"[ERROR] Path not valid for mame_executable: {args.set_mame_exe_path}")
+    
+    if args.set_softlist_rom_dir:
+        if os.path.isdir(args.set_softlist_rom_dir):
+            APP_CONFIG["softlist_rom_sources_dir"] = args.set_softlist_rom_dir
+            config_updated = True
+        else:
+            print(f"[ERROR] Path not valid for softlist_rom_sources_dir: {args.set_softlist_rom_dir}")
+
+    if args.set_output_rom_dir:
+        APP_CONFIG["out_romset_dir"] = args.set_output_rom_dir
+        config_updated = True # No validation, can be created later
+
+    if args.set_mess_ini_path:
+        if os.path.isfile(args.set_mess_ini_path):
+            APP_CONFIG["mess_ini_path"] = args.set_mess_ini_path
+            config_updated = True
+        else:
+            print(f"[ERROR] Path not valid for mess_ini_path: {args.set_mess_ini_path}")
+
+    if args.set_system_softlist_yaml_file:
+        APP_CONFIG["system_softlist_yaml_file"] = args.set_system_softlist_yaml_file
+        config_updated = True
+
+    if config_updated:
+        if save_configuration():
+            print(f"[SUCCESS] Configuration updated in '{CONFIG_FILE}'.")
+        else:
+            print("[ERROR] Failed to save updated configuration.")
+
+    if args.show or not config_updated:
+        print("\n" + "=" * 20 + " Current Configuration " + "=" * 21)
+        config_table = [[key, value] for key, value in APP_CONFIG.items()]
+        print(tabulate(config_table, headers=["Key", "Value"], tablefmt="github"))
+        print("=" * 60)
 
 def main():
     global DEBUG_MODE_ENABLED 
@@ -1037,7 +1230,17 @@ def main():
     )
 
     # Create subparsers
-    subparsers = parser.add_subparsers(dest="command", help="Available commands", required=True)
+    subparsers = parser.add_subparsers(dest="command", help="Available commands", required=False)
+
+    # 0. 'config' subcommand (NEW)
+    config_parser = subparsers.add_parser("config", help="View or update the tool's configuration.")
+    config_parser.add_argument("--show", action="store_true", help="Show the current configuration (default action).")
+    config_parser.add_argument("--set-mame-exe-path", help="Set the path to mame.exe.")
+    config_parser.add_argument("--set-softlist-rom-dir", help="Set the path to the softlist ROMs directory.")
+    config_parser.add_argument("--set-output-rom-dir", help="Set the path for curated output ROMsets.")
+    config_parser.add_argument("--set-mess-ini-path", help="Set the path to mess.ini.")
+    config_parser.add_argument("--set-system-softlist-yaml-file", help="Set the output YAML filename (e.g., my_platforms.yml).")
+
 
     # 1. 'search' subcommand (now has nested subparsers)
     search_parser = subparsers.add_parser("search", help="Search MAME systems and generate YAML/table.")
@@ -1074,9 +1277,7 @@ def main():
     )
     by_name_parser.add_argument(
         "--input-xml",
-        default=MAME_ALL_MACHINES_XML_CACHE, # Provide default for common use
-        help=f"Path to the XML file containing machine definitions for lookup. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'. "
-             "Use 'mame.xml', 'mess.xml', 'mess-softlist.xml', etc."
+        help=f"Path to source XML for machine definitions. Defaults to the 'mess.xml' path in config.yaml, or '{MAME_ALL_MACHINES_XML_CACHE}' if that is not found."
     )
     # Common YAML Output Specific Arguments for 'search by-name'
     by_name_parser.add_argument(
@@ -1087,8 +1288,7 @@ def main():
     )
     by_name_parser.add_argument(
         "--output-file",
-        default=SYSTEM_SOFTLIST_YAML_FILE,
-        help=f"Path to the output YAML file. Defaults to '{SYSTEM_SOFTLIST_YAML_FILE}'."
+        help=f"Path to the output YAML file. Defaults to the filename in config.yaml."
     )
     by_name_parser.add_argument(
         "--platform-key",
@@ -1170,8 +1370,7 @@ def main():
     )
     by_xml_parser.add_argument(
         "--output-file",
-        default=SYSTEM_SOFTLIST_YAML_FILE,
-        help=f"Path to the output YAML file. Defaults to '{SYSTEM_SOFTLIST_YAML_FILE}'."
+        help=f"Path to the output YAML file. Defaults to the filename in config.yaml."
     )
     by_xml_parser.add_argument("--platform-key", help="Overrides auto-set platform key (e.g., 'mess-softlist').")
     by_xml_parser.add_argument("--platform-name-full", help="Overrides auto-set platform name (e.g., 'MESS (Softlist Capable)').")
@@ -1217,9 +1416,7 @@ def main():
     )
     by_filter_parser.add_argument(
         "--input-xml",
-        default=MAME_ALL_MACHINES_XML_CACHE, # Provide default for common use
-        help=f"Path to the XML file containing machine definitions for lookup. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'. "
-             "Use 'mame.xml', 'mess.xml', 'mess-softlist.xml', etc."
+        help=f"Path to source XML for machine definitions. Defaults to the 'mess.xml' path in config.yaml, or '{MAME_ALL_MACHINES_XML_CACHE}' if that is not found."
     )
     by_filter_parser.add_argument(
         "--limit",
@@ -1234,8 +1431,7 @@ def main():
     )
     by_filter_parser.add_argument(
         "--output-file",
-        default=SYSTEM_SOFTLIST_YAML_FILE,
-        help=f"Path to the output YAML file. Defaults to '{SYSTEM_SOFTLIST_YAML_FILE}'."
+        help=f"Path to the output YAML file. Defaults to the filename in config.yaml."
     )
     by_filter_parser.add_argument(
         "--platform-key",
@@ -1295,8 +1491,7 @@ def main():
     copy_parser = subparsers.add_parser("copy-roms", help="Copy/create ROM zips based on system_softlist.yml.")
     copy_parser.add_argument(
         "--input-file",
-        default=SYSTEM_SOFTLIST_YAML_FILE,
-        help=f"Path to the input YAML file to read for copying. Defaults to '{SYSTEM_SOFTLIST_YAML_FILE}'."
+        help=f"Path to the input YAML file to read for copying. Defaults to the filename in config.yaml."
     )
 
     # 3. 'list-good-emulation' subcommand
@@ -1308,9 +1503,7 @@ def main():
     )
     list_good_parser.add_argument(
         "--input-xml",
-        default=MAME_ALL_MACHINES_XML_CACHE,
-        help=f"Path to the XML file containing machine definitions for lookup. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'."
-             "Use 'mame.xml', 'mess.xml', 'mess-softlist.xml', etc."
+        help=f"Path to source XML for machine definitions. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'."
     )
 
     # 4. 'mess' subcommand
@@ -1326,19 +1519,17 @@ def main():
     )
     mess_list_good_parser.add_argument(
         "--mess-ini",
-        default=MESS_INI_PATH,
-        help=f"Path to the MESS.ini file. Defaults to '{MESS_INI_PATH}'."
+        help=f"Path to the MESS.ini file. Defaults to the path in config.yaml."
     )
     
     # 5. 'split' subcommand
     split_parser = subparsers.add_parser("split", help="Generate filtered MAME XMLs based on MESS.ini and softwarelist capability.")
     split_parser.add_argument(
         "--mess-ini",
-        default=MESS_INI_PATH,
-        help=f"Path to the MESS.ini file to filter machines. Defaults to '{MESS_INI_PATH}'."
+        help=f"Path to the MESS.ini file to filter machines. Defaults to the path in config.yaml."
     )
 
-    # NEW SUBCOMMAND: 'table'
+    # 6. 'table' subcommand
     table_parser = subparsers.add_parser("table", help="Display data from system_softlist.yml in a table format.")
     table_parser.add_argument(
         "--platform-key",
@@ -1346,12 +1537,10 @@ def main():
     )
     table_parser.add_argument(
         "--input-file",
-        default=SYSTEM_SOFTLIST_YAML_FILE,
-        help=f"Path to the input YAML file. Defaults to '{SYSTEM_SOFTLIST_YAML_FILE}'."
+        help=f"Path to the input YAML file. Defaults to the filename in config.yaml."
     )
     table_parser.add_argument(
         "--mame-xml-source", # Need this to get machine descriptions/statuses for YAML data
-        default=MAME_ALL_MACHINES_XML_CACHE,
         help=f"Path to the MAME XML (e.g., 'mame.xml') for fetching detailed machine info. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'."
     )
     # Re-use existing display arguments
@@ -1367,7 +1556,7 @@ def main():
         help="Show additional columns: System Manufacturer (2nd col) and Software Publisher (before Driver Status)."
     )
 
-    # NEW SUBCOMMAND: 'platform-info'
+    # 7. 'platform-info' subcommand
     platform_info_parser = subparsers.add_parser("platform-info", help="Display high-level information about platforms in system_softlist.yml.")
     platform_info_parser.add_argument(
         "--platform-key",
@@ -1375,8 +1564,7 @@ def main():
     )
     platform_info_parser.add_argument(
         "--input-file",
-        default=SYSTEM_SOFTLIST_YAML_FILE,
-        help=f"Path to the input YAML file. Defaults to '{SYSTEM_SOFTLIST_YAML_FILE}'."
+        help=f"Path to the input YAML file. Defaults to the filename in config.yaml."
     )
 
 
@@ -1384,40 +1572,54 @@ def main():
 
     # --- Apply global debug flag FIRST ---
     if args.debug:
-        global DEBUG_MODE_ENABLED
         DEBUG_MODE_ENABLED = True
         debug_print("Debug mode enabled.")
 
+    # --- Initialize Application: Load config or run wizard ---
+    # The `config` command is special and can run before full initialization
+    if args.command == "config":
+        load_configuration() # Load existing config to show/update
+        run_config_command(args)
+        sys.exit(0)
+    
+    # For all other commands, run the full initialization
+    initialize_application()
+
+    if not args.command:
+        parser.print_help()
+        print("\n[INFO] No command specified. Use 'config' to set up, or a command like 'search' to begin.")
+        sys.exit(0)
 
     # --- Centralized loading of source XML for relevant commands ---
-    # This ensures the correct XML root is loaded only once and passed down.
     source_xml_root = None
-    # Commands that *might* need the full MAME XML parsed root:
     if args.command == "search":
-        if args.search_mode == "by-name" or args.search_mode == "by-filter":
-            source_xml_root = get_parsed_mame_xml_root(args.input_xml)
-        elif args.search_mode == "by-xml":
-            source_xml_root = get_parsed_mame_xml_root(args.xml_filepath)
-        if source_xml_root is None: # Exit if essential XML for search command could not be loaded
+        # Determine the source XML path: CLI > config > default
+        if args.search_mode == "by-xml":
+            xml_source_path = args.xml_filepath
+        else:
+            xml_source_path = args.input_xml or APP_CONFIG.get('mess_xml_file') or MAME_ALL_MACHINES_XML_CACHE
+        source_xml_root = get_parsed_mame_xml_root(xml_source_path)
+        if source_xml_root is None:
             sys.exit(1)
 
     elif args.command == "list-good-emulation":
-        source_xml_root = get_parsed_mame_xml_root(args.input_xml)
-        if source_xml_root is None: # Exit if essential XML for list-good-emulation command could not be loaded
+        xml_source_path = args.input_xml or MAME_ALL_MACHINES_XML_CACHE
+        source_xml_root = get_parsed_mame_xml_root(xml_source_path)
+        if source_xml_root is None:
             sys.exit(1)
 
     elif args.command == "mess" and args.mess_command == "list-good-emulation":
-        source_xml_root = get_parsed_mame_xml_root(MESS_XML_FILE)
-        if source_xml_root is None: # Exit if essential XML for mess list-good-emulation command could not be loaded
-            print(f"[ERROR] '{MESS_XML_FILE}' not found. Please run 'split' command first to generate it.")
+        xml_source_path = APP_CONFIG['mess_xml_file']
+        source_xml_root = get_parsed_mame_xml_root(xml_source_path)
+        if source_xml_root is None:
+            print(f"[ERROR] '{xml_source_path}' not found. Please run the 'split' command first to generate it.")
             sys.exit(1)
-    
-    # Note: 'table' subcommand loads its own source_xml_root via args.mame_xml_source
-    # 'copy-roms' and 'split' do not need source_xml_root here, they handle their own file operations.
-
 
     # Now, execute the command logic, passing source_xml_root where needed
     if args.command == "search":
+        # ... (The search command logic from before, with a few path adjustments) ...
+        # For example, `output_file_path` will be `args.output_file` which can be None.
+        # The `output_to_yaml_file` function will handle using the config default if it's None.
         systems_to_process = []
         search_term_for_core = "" 
 
@@ -1592,7 +1794,6 @@ def main():
         )
 
     elif args.command == "copy-roms":
-        args.output_file = args.input_file 
         perform_rom_copy_operation(args)
 
     elif args.command == "list-good-emulation":
@@ -1600,7 +1801,8 @@ def main():
         
     elif args.command == "mess":
         if args.mess_command == "list-good-emulation":
-            mess_machines = parse_mess_ini_machines(args.mess_ini)
+            mess_ini_path = args.mess_ini or APP_CONFIG['mess_ini_path']
+            mess_machines = parse_mess_ini_machines(mess_ini_path)
             if mess_machines:
                 parse_good_emulation_drivers(
                     exclude_arcade=args.exclude_arcade,
@@ -1613,14 +1815,14 @@ def main():
     elif args.command == "split":
         run_split_command(args)
 
-    elif args.command == "table": # Dispatch for the new 'table' command
-        # Load XML for table command here
-        table_source_xml_root = get_parsed_mame_xml_root(args.mame_xml_source)
+    elif args.command == "table":
+        mame_xml_source = args.mame_xml_source or MAME_ALL_MACHINES_XML_CACHE
+        table_source_xml_root = get_parsed_mame_xml_root(mame_xml_source)
         if table_source_xml_root is None:
             sys.exit(1)
-        display_yaml_table(args, table_source_xml_root) # Call the function
+        display_yaml_table(args, table_source_xml_root)
 
-    elif args.command == "platform-info": # Dispatch for the new 'platform-info' command
+    elif args.command == "platform-info":
         display_platform_info(args)
 
     # Final cleanup of any remaining temp files
