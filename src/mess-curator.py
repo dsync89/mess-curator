@@ -187,8 +187,6 @@ MESS_NOSOFTLIST_XML_FILE = "mess-nosoftlist.xml" # Non-softlist machines from ME
 TMP_SOFTWARE_XML_FILE = "tmp_software.xml" # For -listsoftware output for single system
 
 # === Helper Functions (YAML, XML Parsing, MAME Interaction) ===
-# ... (rest of the helper functions from the original script) ...
-# Note: Functions that used global path constants now need to use APP_CONFIG
 
 def run_mame_command(args, output_file, use_cache=False): 
     """
@@ -270,7 +268,6 @@ def get_parsed_mame_xml_root(xml_filepath):
         return None
 
 
-# ... (The rest of the functions like get_all_mame_systems_from_xml_file, get_machine_details_and_filters_from_root, etc., are unchanged) ...
 def get_all_mame_systems_from_xml_file(xml_filepath):
     """
     Parses an XML file (like mess-softlist.xml) and extracts all machine names.
@@ -645,7 +642,6 @@ def perform_rom_copy_operation(args):
     print(f"  Total Empty System Zips Created: {total_empty_system_zips}")
     print(f"======================================")
 
-# ... (rest of the script from perform_mame_search_and_output onwards is largely unchanged, just ensure path defaults are handled correctly) ...
 def perform_mame_search_and_output(systems_to_process, search_term, output_format, platform_key, platform_name_full, media_type, 
                                    enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
                                    output_file_path, driver_status_filter=None, emulation_status_filter=None, 
@@ -655,8 +651,6 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
     """
     all_software_entries_for_yaml_processing = []
     
-    # This dictionary will store all the relevant info for each system processed, including driver info
-    # Structure: {system_name: {'machine_metadata': {...}, 'software_entries': [...]}}
     processed_system_info = {} 
 
     if not systems_to_process:
@@ -665,23 +659,19 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
 
     for current_system in systems_to_process:
         print(f"\n--- Processing system: {current_system} ---")
-
-        # Get machine details including softlist filters, driver status, and description
-        # Pass the source_xml_root here so it doesn't re-run mame -listxml for each system
+        
         machine_softlist_filters, machine_metadata = get_machine_details_and_filters_from_root(current_system, source_xml_root)
         
-        # Apply driver status filters
         if driver_status_filter and machine_metadata["status"] != driver_status_filter:
             print(f"[INFO] Skipping system '{current_system}': Driver status '{machine_metadata['status']}' does not match required '{driver_status_filter}'.")
             continue
         if emulation_status_filter and machine_metadata["emulation"] != emulation_status_filter:
             print(f"[INFO] Skipping system '{current_system}': Emulation status '{machine_metadata['emulation']}' does not match required '{emulation_status_filter}'.")
             continue
-
-        # Store machine metadata for this system
+        
         processed_system_info[current_system] = {
             'machine_metadata': machine_metadata,
-            'software_entries': [] # This will store (softlist_name_xml, system_name, swid, desc, publisher) for this system
+            'software_entries': []
         }
 
         listsoftware_succeeded = run_mame_command(["-listsoftware", current_system], TMP_SOFTWARE_XML_FILE)
@@ -700,35 +690,31 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
         else:
             print(f"[INFO] MAME did not provide software list for '{current_system}' or command failed. It will be represented in the table and YAML.")
 
-
         if os.path.exists(TMP_SOFTWARE_XML_FILE):
             os.remove(TMP_SOFTWARE_XML_FILE)
 
     print("\n--- Finished processing all systems ---")
 
-    # Flatten software entries for YAML output (this list only contains entries that *had* software found)
     for sys_name, sys_data in processed_system_info.items():
         all_software_entries_for_yaml_processing.extend(sys_data['software_entries'])
 
-
-    if systems_to_process: # Check if there's anything to output at all (after initial filters)
+    if systems_to_process:
         if output_format == "table":
             table_display_data = []
             
-            # Dynamically build headers based on show_extra_info
             headers = ["System"]
             if show_extra_info:
-                headers.append("Manufacturer") # 2nd column
+                headers.append("Description") # UPDATED
+                headers.append("Manufacturer")
             headers.extend(["Softlist", "Software ID", "Title"])
             if show_extra_info:
-                headers.append("Publisher") # Before Driver Status
+                headers.append("Publisher")
             headers.extend(["Driver Status", "Emulation Status"])
 
-
-            for sys_name in systems_to_process: # Iterate over the original sorted list of systems
+            for sys_name in systems_to_process:
                 system_data_info = processed_system_info.get(sys_name)
                 
-                if system_data_info: # If the system was processed (not filtered out by driver status)
+                if system_data_info:
                     machine_metadata = system_data_info['machine_metadata']
                     driver_status = machine_metadata['status']
                     emulation_status = machine_metadata['emulation']
@@ -738,45 +724,44 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                     if show_systems_only:
                         row = [sys_name]
                         if show_extra_info:
+                            row.append(machine_description) # UPDATED
                             row.append(machine_manufacturer)
-                        row.extend(["N/A", "N/A", machine_description]) # Title is machine description
+                        row.extend(["N/A", "N/A", machine_description])
                         if show_extra_info:
-                            row.append("N/A") # No publisher for system-only row
+                            row.append("N/A")
                         row.extend([driver_status, emulation_status])
                         table_display_data.append(row)
                     elif system_data_info['software_entries']:
-                        # Add each software entry with its system's driver/emulation status
-                        # The tuple from parse_software_list_from_file is (softlist_name, system_name, swid, desc, publisher)
                         for softlist_name, current_sys_name_from_entry, swid, desc, publisher in system_data_info['software_entries']:
                             row = [sys_name] 
                             if show_extra_info:
+                                row.append(machine_description) # UPDATED
                                 row.append(machine_manufacturer)
                             row.extend([softlist_name, swid, desc])
                             if show_extra_info:
-                                row.append(publisher) # Add publisher here
+                                row.append(publisher)
                             row.extend([driver_status, emulation_status])
                             table_display_data.append(row)
                     else:
-                        # Add a standalone row for systems with no software entries found/matched
                         row = [sys_name]
                         if show_extra_info:
+                            row.append(machine_description) # UPDATED
                             row.append(machine_manufacturer)
-                        row.extend(["N/A", "N/A", machine_description]) # Title is machine description
+                        row.extend(["N/A", "N/A", machine_description])
                         if show_extra_info:
-                            row.append("N/A") # No publisher for N/A software
+                            row.append("N/A")
                         row.extend([driver_status, emulation_status])
                         table_display_data.append(row)
-                # Else: system was filtered out by driver/emulation status, so it's not in processed_system_info, and won't be in table.
             
             if table_display_data:
                 print(tabulate(table_display_data, headers=headers, tablefmt="github"))
                 print(f"\nTotal rows across all systems: {len(table_display_data)}")
             else:
-                print("[i] No matching software items found for table display after all filters. Some systems may be included in YAML as standalone.")
+                print("[i] No matching software items found for table display after all filters.")
         elif output_format == "yaml":
             output_to_yaml_file(
-                input_systems=systems_to_process, # Use the original list of systems
-                all_software_entries=all_software_entries_for_yaml_processing, # Contains only systems with found software
+                input_systems=systems_to_process,
+                all_software_entries=all_software_entries_for_yaml_processing,
                 platform_key=platform_key,
                 platform_name_full=platform_name_full,
                 media_type=media_type,
@@ -784,7 +769,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                 emu_name=emu_name,
                 default_emu=default_emu,
                 default_emu_cmd_params=default_emu_cmd_params,
-                output_file_path=output_file_path # Can be None, will use config default
+                output_file_path=output_file_path
             )
     else:
         print(f"[i] No systems found for output after initial filtering or no matching software items found across any specified systems "
@@ -797,8 +782,7 @@ def parse_good_emulation_drivers(exclude_arcade=False, machines_to_filter=None, 
     and prints a table of machine name, description, year, and manufacturer, sorted by Manufacturer.
     If machines_to_filter is provided, only processes machines in that list.
     """
-    # source_xml_root is now always passed from main dispatch
-    if source_xml_root is None: # Should not happen with main's current dispatch
+    if source_xml_root is None:
         print("[ERROR] No XML root provided. Cannot list good emulation drivers.")
         return
 
@@ -807,16 +791,14 @@ def parse_good_emulation_drivers(exclude_arcade=False, machines_to_filter=None, 
         for machine_element in source_xml_root.findall("machine"):
             machine_name = machine_element.get("name")
 
-            # Apply machines_to_filter if provided
             if machines_to_filter is not None and machine_name not in machines_to_filter:
                 continue
 
             driver_element = machine_element.find("driver")
             if driver_element is not None and driver_element.get("emulation") == "good":
-                # Apply exclude_arcade filter if enabled
                 if exclude_arcade:
                     if machine_element.find("softwarelist") is None:
-                        continue # Skip this machine as it's a pure arcade game (no softlist support)
+                        continue
 
                 name = machine_element.get("name", "N/A")
                 description = machine_element.findtext("description", "N/A").strip()
@@ -829,7 +811,7 @@ def parse_good_emulation_drivers(exclude_arcade=False, machines_to_filter=None, 
         print(f"[!] Unexpected error parsing XML for good emulation drivers: {e}")
     
     if good_drivers_data:
-        good_drivers_data.sort(key=lambda x: x[3]) # Sort by Manufacturer
+        good_drivers_data.sort(key=lambda x: x[3])
         
         info_string = ""
         if machines_to_filter is not None:
@@ -860,14 +842,14 @@ def parse_mess_ini_machines(ini_path):
         with open(ini_path, 'r', encoding='utf-8', errors='ignore') as f:
             for line in f:
                 line = line.strip()
-                if line.upper().startswith('[ROOT_FOLDER]'): # Case-insensitive check
+                if line.upper().startswith('[ROOT_FOLDER]'):
                     in_root_folder_section = True
                     continue
-                elif line.startswith('[') and line.endswith(']'): # New section starts
+                elif line.startswith('[') and line.endswith(']'):
                     in_root_folder_section = False
                 
-                if in_root_folder_section and line and not line.startswith(';'): # Not empty and not a comment
-                    machines.add(line.split(';')[0].strip()) # Take part before comment
+                if in_root_folder_section and line and not line.startswith(';'):
+                    machines.add(line.split(';')[0].strip())
         print(f"[INFO] Loaded {len(machines)} machines from '{ini_path}'.")
     except Exception as e:
         print(f"[ERROR] Error parsing MESS.ini file '{ini_path}': {e}")
@@ -885,7 +867,6 @@ def split_mame_xml_by_ini(mess_ini_path, output_mess_xml_file):
         print("[ERROR] No machines loaded from MESS.ini or file not found. Cannot proceed with splitting.")
         return False
 
-    # Use cache for MAME_ALL_MACHINES_XML_CACHE
     print(f"[INFO] Fetching full MAME machine list ('{MAME_ALL_MACHINES_XML_CACHE}')... This may take a moment.")
     full_mame_root = get_parsed_mame_xml_root(MAME_ALL_MACHINES_XML_CACHE)
     if full_mame_root is None:
@@ -962,18 +943,15 @@ def split_mess_xml_by_softwarelist(input_mess_xml_file, softlist_output_file, no
         print(f"[ERROR] Unexpected error during Phase 2: {e}")
     return False
 
-# Function to run the entire splitting process
 def run_split_command(args):
     """Orchestrates the splitting of mame.xml based on mess.ini and softwarelist capability."""
     mess_ini_path = args.mess_ini or APP_CONFIG['mess_ini_path']
     mess_xml_output_file = APP_CONFIG['mess_xml_file']
 
-    # Phase 1
     if not split_mame_xml_by_ini(mess_ini_path, mess_xml_output_file):
         print("[ERROR] Phase 1 failed. Aborting splitting process.")
         return
 
-    # Phase 2
     if not split_mess_xml_by_softwarelist(mess_xml_output_file, MESS_SOFTLIST_XML_FILE, MESS_NOSOFTLIST_XML_FILE):
         print("[ERROR] Phase 2 failed. Aborting splitting process.")
         return
@@ -983,7 +961,7 @@ def run_split_command(args):
     print(f"Generated: '{MESS_SOFTLIST_XML_FILE}' (Softlist-capable machines from MESS.ini)")
     print(f"Generated: '{MESS_NOSOFTLIST_XML_FILE}' (Non-softlist machines from MESS.ini)")
 
-def display_yaml_table(args, source_xml_root): # Corrected signature here
+def display_yaml_table(args, source_xml_root):
     """
     Parses the system_softlist.yml file and displays its content in a detailed table format.
     Filters by platform_key if provided.
@@ -998,8 +976,6 @@ def display_yaml_table(args, source_xml_root): # Corrected signature here
         print(f"[ERROR] No data found in '{input_file}'. Nothing to display.")
         return
 
-    # ... (rest of this function is unchanged)
-    # If platform_key is specified, filter the data to only that platform
     platforms_to_display = {}
     if args.platform_key:
         if args.platform_key in system_softlist_data:
@@ -1008,13 +984,13 @@ def display_yaml_table(args, source_xml_root): # Corrected signature here
             print(f"[ERROR] Platform '{args.platform_key}' not found in '{input_file}'.")
             return
     else:
-        platforms_to_display = system_softlist_data # Display all platforms
+        platforms_to_display = system_softlist_data
 
     table_display_data = []
     
-    # Dynamically build headers based on show_extra_info
     headers = ["System"]
     if args.show_extra_info:
+        headers.append("Description") # UPDATED
         headers.append("Manufacturer")
     headers.extend(["Softlist", "Software ID", "Title"])
     if args.show_extra_info:
@@ -1032,12 +1008,10 @@ def display_yaml_table(args, source_xml_root): # Corrected signature here
         for system_entry in systems_in_platform:
             system_name = system_entry
             if isinstance(system_entry, dict):
-                system_name = next(iter(system_entry)) # Get the key from the dict
+                system_name = next(iter(system_entry))
 
-            # Get machine metadata (description, manufacturer, driver status, emulation status)
             machine_metadata = {"description": "N/A", "manufacturer": "N/A", "status": "N/A", "emulation": "N/A"}
-            if source_xml_root: # Only try to get if root was loaded successfully
-                # Use get_machine_details_and_filters_from_root to get info from the loaded XML
+            if source_xml_root:
                 _, machine_metadata = get_machine_details_and_filters_from_root(system_name, source_xml_root)
             
             driver_status = machine_metadata['status']
@@ -1048,6 +1022,7 @@ def display_yaml_table(args, source_xml_root): # Corrected signature here
             if args.show_systems_only:
                 row = [system_name]
                 if args.show_extra_info:
+                    row.append(machine_description) # UPDATED
                     row.append(machine_manufacturer)
                 row.extend(["N/A", "N/A", machine_description])
                 if args.show_extra_info:
@@ -1055,40 +1030,34 @@ def display_yaml_table(args, source_xml_root): # Corrected signature here
                 row.extend([driver_status, emulation_status])
                 table_display_data.append(row)
             elif isinstance(system_entry, dict) and system_entry.get(system_name, {}).get("software_lists"):
-                # Iterate through software_lists for this system
                 for softlist_detail in system_entry[system_name]["software_lists"]:
                     softlist_name = softlist_detail.get("softlist_name", "N/A")
                     software_ids = softlist_detail.get("software_id", [])
                     
                     if software_ids:
                         for swid in software_ids:
-                            # Publisher info is not stored in system_softlist.yml per software_id.
-                            # It was extracted during the 'search' process. 
-                            # To display it here, you'd either need to store it in YAML (more complex)
-                            # or re-parse -listsoftware for each entry (inefficient).
-                            # For simplicity, marking as 'N/A (YAML source)'
                             publisher = "N/A (YAML Source)" 
-
                             row = [system_name]
                             if args.show_extra_info:
+                                row.append(machine_description) # UPDATED
                                 row.append(machine_manufacturer)
-                            row.extend([softlist_name, swid, "N/A (YAML Source)"]) # Title from YAML not available here
+                            row.extend([softlist_name, swid, "N/A (YAML Source)"])
                             if args.show_extra_info:
                                 row.append(publisher)
                             row.extend([driver_status, emulation_status])
                             table_display_data.append(row)
                     else:
-                        # Softlist listed but no software_ids
                         row = [system_name]
                         if args.show_extra_info:
+                            row.append(machine_description) # UPDATED
                             row.append(machine_manufacturer)
                         row.extend([softlist_name, "N/A", "N/A (No IDs)", "N/A"])
                         row.extend([driver_status, emulation_status])
                         table_display_data.append(row)
             else:
-                # System is a string, or has no software_lists key, or software_lists is empty
                 row = [system_name]
                 if args.show_extra_info:
+                    row.append(machine_description) # UPDATED
                     row.append(machine_manufacturer)
                 row.extend(["N/A", "N/A", machine_description])
                 if args.show_extra_info:
@@ -1116,7 +1085,6 @@ def display_platform_info(args):
         print(f"[ERROR] No data found in '{input_file}'. Nothing to display.")
         return
 
-    # ... (rest of this function is unchanged)
     platforms_to_display = {}
     if args.platform_key:
         if args.platform_key in system_softlist_data:
@@ -1125,13 +1093,13 @@ def display_platform_info(args):
             print(f"[ERROR] Platform '{args.platform_key}' not found in '{input_file}'.")
             return
     else:
-        platforms_to_display = system_softlist_data # Display all platforms
+        platforms_to_display = system_softlist_data
 
     platform_info_rows = []
     headers = [
         "Platform Key", "Platform Name", "Media Type", "Custom CMD per Title",
         "Emulator Name", "Default Emu", "Default Emu Cmd Params",
-        "# Systems", "# Softlists", "# Software IDs" # Added counts
+        "# Systems", "# Softlists", "# Software IDs"
     ]
 
     for p_key, p_data in platforms_to_display.items():
@@ -1189,7 +1157,7 @@ def run_config_command(args):
 
     if args.set_output_rom_dir:
         APP_CONFIG["out_romset_dir"] = args.set_output_rom_dir
-        config_updated = True # No validation, can be created later
+        config_updated = True
 
     if args.set_mess_ini_path:
         if os.path.isfile(args.set_mess_ini_path):
@@ -1222,17 +1190,14 @@ def main():
         formatter_class=argparse.RawTextHelpFormatter
     )
 
-    # Global debug flag
     parser.add_argument(
         "--debug",
         action="store_true",
         help="Enable debug messages for detailed output."
     )
 
-    # Create subparsers
     subparsers = parser.add_subparsers(dest="command", help="Available commands", required=False)
 
-    # 0. 'config' subcommand (NEW)
     config_parser = subparsers.add_parser("config", help="View or update the tool's configuration.")
     config_parser.add_argument("--show", action="store_true", help="Show the current configuration (default action).")
     config_parser.add_argument("--set-mame-exe-path", help="Set the path to mame.exe.")
@@ -1241,348 +1206,108 @@ def main():
     config_parser.add_argument("--set-mess-ini-path", help="Set the path to mess.ini.")
     config_parser.add_argument("--set-system-softlist-yaml-file", help="Set the output YAML filename (e.g., my_platforms.yml).")
 
-
-    # 1. 'search' subcommand (now has nested subparsers)
     search_parser = subparsers.add_parser("search", help="Search MAME systems and generate YAML/table.")
     search_subparsers = search_parser.add_subparsers(dest="search_mode", required=True, help="How to specify systems for search.")
 
-    # 1a. 'search by-name' mode
+    # Shared argument for --show-extra-info
+    show_extra_info_help_text = "[For Table Output] Show additional columns: System Description, Manufacturer, and Software Publisher."
+
     by_name_parser = search_subparsers.add_parser("by-name", help="Search systems by explicit names or fuzzy prefix.")
-    by_name_parser.add_argument(
-        "systems",
-        nargs='*',
-        default=[],
-        help="One or more MAME system short names (e.g., 'ekara', 'nes')."
-    )
-    by_name_parser.add_argument(
-        "search_term",
-        nargs='?',
-        default="",
-        help="Optional: Search term for software ID or description. Applied to ALL specified systems."
-    )
-    by_name_parser.add_argument(
-        "--fuzzy",
-        help="Optional: Prefix to fuzzy match MAME system names (e.g., 'jak_'). All MAME machines starting with this prefix will be added to the list of systems to process. Can be used in conjunction with explicit 'systems' arguments."
-    )
-    by_name_parser.add_argument(
-        "--exclude-systems",
-        nargs='+',
-        default=[],
-        help="Space-separated list of MAME system short names to explicitly exclude from processing. These systems will be removed even if matched by --fuzzy or provided explicitly."
-    )
-    by_name_parser.add_argument(
-        "--limit",
-        type=int,
-        help="Optional: Limit the number of systems processed to this integer value (for testing)."
-    )
-    by_name_parser.add_argument(
-        "--input-xml",
-        help=f"Path to source XML for machine definitions. Defaults to the 'mess.xml' path in config.yaml, or '{MAME_ALL_MACHINES_XML_CACHE}' if that is not found."
-    )
-    # Common YAML Output Specific Arguments for 'search by-name'
-    by_name_parser.add_argument(
-        "--output-format",
-        choices=["table", "yaml"],
-        default="table",
-        help="Output format: 'table' (default) or 'yaml'."
-    )
-    by_name_parser.add_argument(
-        "--output-file",
-        help=f"Path to the output YAML file. Defaults to the filename in config.yaml."
-    )
-    by_name_parser.add_argument(
-        "--platform-key",
-        help="[Required for YAML Output] The top-level key for the platform in the YAML (e.g., 'jakks-tv-game')."
-    )
-    by_name_parser.add_argument(
-        "--platform-name-full",
-        help="[Required for YAML Output] The full, descriptive name of the platform (e.g., 'JAKKS Pacific TV Game')."
-    )
-    by_name_parser.add_argument(
-        "--media-type",
-        help="[Required for YAML Output] The type of media used by the platform (e.g., 'cart', 'disk', 'cdrom')."
-    )
-    by_name_parser.add_argument(
-        "-ect", "--enable-custom-cmd-per-title",
-        action="store_true",
-        help="Set 'enable_custom_command_line_param_per_software_id: true' for the platform entry. Defaults to false if not set."
-    )
-    by_name_parser.add_argument(
-        "-en", "--emu-name",
-        help="Sets the 'emulator.name' (e.g., 'MAME (Cartridge)'). If specified, the 'emulator' block is added."
-    )
-    by_name_parser.add_argument(
-        "-de", "--default-emu",
-        action="store_true",
-        help="Set 'emulator.default_emulator: true'. Requires --emu-name. Defaults to false if not set."
-    )
-    by_name_parser.add_argument(
-        "-dec", "--default-emu-cmd-params",
-        help="Sets 'emulator.default_command_line_parameters' (e.g., '-keyboardprovider dinput'). Requires --emu-name."
-    )
-    # Arguments for driver status filtering (specific to search command overall)
-    by_name_parser.add_argument(
-        "--driver-status",
-        choices=["good", "imperfect", "preliminary", "unsupported"],
-        help="Filter machines by driver 'status' (e.g., 'good', 'preliminary')."
-    )
-    by_name_parser.add_argument(
-        "--emulation-status",
-        choices=["good", "imperfect", "preliminary", "unsupported"],
-        help="Filter machines by driver 'emulation' status (e.g., 'good', 'preliminary')."
-    )
-    by_name_parser.add_argument(
-        "--show-systems-only",
-        action="store_true",
-        help="[For Table Output] Only show one row per system, even if it has software. "
-             "Software ID and Softlist columns will be 'N/A', Title column will be machine description."
-    )
-    by_name_parser.add_argument(
-        "--show-extra-info",
-        action="store_true",
-        help="[For Table Output] Show additional columns: System Manufacturer (2nd col) and Software Publisher (before Driver Status)."
-    )
+    by_name_parser.add_argument("systems", nargs='*', default=[], help="One or more MAME system short names (e.g., 'ekara', 'nes').")
+    by_name_parser.add_argument("search_term", nargs='?', default="", help="Optional: Search term for software ID or description.")
+    by_name_parser.add_argument("--fuzzy", help="Optional: Prefix to fuzzy match MAME system names (e.g., 'jak_').")
+    by_name_parser.add_argument("--exclude-systems", nargs='+', default=[], help="Space-separated list of MAME system short names to exclude.")
+    by_name_parser.add_argument("--limit", type=int, help="Optional: Limit the number of systems processed.")
+    by_name_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
+    by_name_parser.add_argument("--output-format", choices=["table", "yaml"], default="table", help="Output format: 'table' (default) or 'yaml'.")
+    by_name_parser.add_argument("--output-file", help="Path to the output YAML file. Defaults to config.")
+    by_name_parser.add_argument("--platform-key", help="[Required for YAML] Top-level key for the platform in YAML.")
+    by_name_parser.add_argument("--platform-name-full", help="[Required for YAML] Full, descriptive name of the platform.")
+    by_name_parser.add_argument("--media-type", help="[Required for YAML] Media type for the platform (e.g., 'cart').")
+    by_name_parser.add_argument("-ect", "--enable-custom-cmd-per-title", action="store_true", help="Set 'enable_custom_command_line_param_per_software_id: true'.")
+    by_name_parser.add_argument("-en", "--emu-name", help="Sets the 'emulator.name'.")
+    by_name_parser.add_argument("-de", "--default-emu", action="store_true", help="Set 'emulator.default_emulator: true'.")
+    by_name_parser.add_argument("-dec", "--default-emu-cmd-params", help="Sets 'emulator.default_command_line_parameters'.")
+    by_name_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
+    by_name_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
+    by_name_parser.add_argument("--show-systems-only", action="store_true", help="[For Table] Only show one row per system.")
+    by_name_parser.add_argument("--show-extra-info", action="store_true", help=show_extra_info_help_text)
 
-
-    # 1b. 'search by-xml' mode
     by_xml_parser = search_subparsers.add_parser("by-xml", help="Search systems from a generated XML file (e.g., mess-softlist.xml).")
-    by_xml_parser.add_argument(
-        "xml_filepath", # This is the input xml for by-xml mode.
-        help="Path to the XML file containing machine definitions (e.g., mess-softlist.xml, mess-nosoftlist.xml)."
-    )
-    by_xml_parser.add_argument(
-        "search_term",
-        nargs='?',
-        default="",
-        help="Optional: Search term for software ID or description. Applied to ALL systems from the XML file."
-    )
-    by_xml_parser.add_argument(
-        "--limit",
-        type=int,
-        help="Optional: Limit the number of systems processed to this integer value (for testing)."
-    )
-    # Common YAML Output Specific Arguments for 'search by-xml' (with default overrides)
-    by_xml_parser.add_argument(
-        "--output-format",
-        choices=["table", "yaml"],
-        default="yaml", # Default to YAML for XML output
-        help="Output format: 'table' or 'yaml' (default)."
-    )
-    by_xml_parser.add_argument(
-        "--output-file",
-        help=f"Path to the output YAML file. Defaults to the filename in config.yaml."
-    )
-    by_xml_parser.add_argument("--platform-key", help="Overrides auto-set platform key (e.g., 'mess-softlist').")
-    by_xml_parser.add_argument("--platform-name-full", help="Overrides auto-set platform name (e.g., 'MESS (Softlist Capable)').")
+    by_xml_parser.add_argument("xml_filepath", help="Path to the XML file with machine definitions.")
+    by_xml_parser.add_argument("search_term", nargs='?', default="", help="Optional: Search term for software ID or description.")
+    by_xml_parser.add_argument("--limit", type=int, help="Optional: Limit the number of systems processed.")
+    by_xml_parser.add_argument("--output-format", choices=["table", "yaml"], default="yaml", help="Output format: 'table' or 'yaml' (default).")
+    by_xml_parser.add_argument("--output-file", help="Path to the output YAML file. Defaults to config.")
+    by_xml_parser.add_argument("--platform-key", help="Overrides auto-set platform key.")
+    by_xml_parser.add_argument("--platform-name-full", help="Overrides auto-set platform name.")
     by_xml_parser.add_argument("--media-type", default="cart", help="Overrides auto-set media type (default: 'cart').")
-    by_xml_parser.add_argument("-ect", "--enable-custom-cmd-per-title", action="store_true", help="Overrides auto-set enable_custom_cmd_per_title.")
-    by_xml_parser.add_argument("-en", "--emu-name", default="MAME (Cartridge)", help="Overrides auto-set emulator name (default: 'MAME (Cartridge)').")
-    by_xml_parser.add_argument("-de", "--default-emu", action="store_true", default=True, help="Overrides auto-set default emulator (default: true).")
-    by_xml_parser.add_argument("-dec", "--default-emu-cmd-params", default="-keyboardprovider dinput", help="Overrides auto-set default command parameters (default: '-keyboardprovider dinput').")
-    # Arguments for driver status filtering (specific to search command overall)
-    by_xml_parser.add_argument(
-        "--driver-status",
-        choices=["good", "imperfect", "preliminary", "unsupported"],
-        help="Filter machines by driver 'status' (e.g., 'good', 'preliminary')."
-    )
-    by_xml_parser.add_argument(
-        "--emulation-status",
-        choices=["good", "imperfect", "preliminary", "unsupported"],
-        help="Filter machines by driver 'emulation' status (e.g., 'good', 'preliminary')."
-    )
-    by_xml_parser.add_argument(
-        "--show-systems-only",
-        action="store_true",
-        help="[For Table Output] Only show one row per system, even if it has software. "
-             "Software ID and Softlist columns will be 'N/A', Title column will be machine description."
-    )
-    by_xml_parser.add_argument(
-        "--show-extra-info",
-        action="store_true",
-        help="[For Table Output] Show additional columns: System Manufacturer (2nd col) and Software Publisher (before Driver Status)."
-    )
+    by_xml_parser.add_argument("-ect", "--enable-custom-cmd-per-title", action="store_true", help="Overrides auto-set option.")
+    by_xml_parser.add_argument("-en", "--emu-name", default="MAME (Cartridge)", help="Overrides auto-set emulator name.")
+    by_xml_parser.add_argument("-de", "--default-emu", action="store_true", default=True, help="Overrides auto-set default emulator.")
+    by_xml_parser.add_argument("-dec", "--default-emu-cmd-params", default="-keyboardprovider dinput", help="Overrides auto-set command parameters.")
+    by_xml_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
+    by_xml_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
+    by_xml_parser.add_argument("--show-systems-only", action="store_true", help="[For Table] Only show one row per system.")
+    by_xml_parser.add_argument("--show-extra-info", action="store_true", help=show_extra_info_help_text)
 
-
-    # 1c. 'search by-filter' mode
     by_filter_parser = search_subparsers.add_parser("by-filter", help="Search MAME machines by their XML attributes (e.g., description).")
-    by_filter_parser.add_argument(
-        "description_term",
-        help="Term to search within machine descriptions (e.g., '16-in-1', 'handheld')."
-    )
-    by_filter_parser.add_argument(
-        "--softlist-capable",
-        action="store_true",
-        help="Only include machines that have a <softwarelist> tag defined."
-    )
-    by_filter_parser.add_argument(
-        "--input-xml",
-        help=f"Path to source XML for machine definitions. Defaults to the 'mess.xml' path in config.yaml, or '{MAME_ALL_MACHINES_XML_CACHE}' if that is not found."
-    )
-    by_filter_parser.add_argument(
-        "--limit",
-        type=int,
-        help="Optional: Limit the number of matching machines processed to this integer value (for testing)."
-    )
-    by_filter_parser.add_argument(
-        "--output-format",
-        choices=["table", "yaml"],
-        default="table",
-        help="Output format: 'table' (default) or 'yaml'."
-    )
-    by_filter_parser.add_argument(
-        "--output-file",
-        help=f"Path to the output YAML file. Defaults to the filename in config.yaml."
-    )
-    by_filter_parser.add_argument(
-        "--platform-key",
-        help="[Required for YAML Output] The top-level key for the platform in the YAML (e.g., 'my-filtered-games')."
-    )
-    by_filter_parser.add_argument(
-        "--platform-name-full",
-        help="[Required for YAML Output] The full, descriptive name of the platform (e.g., 'My Filtered Games')."
-    )
-    by_filter_parser.add_argument(
-        "--media-type",
-        default="cart", # Reasonable default for this search
-        help="[Required for YAML Output] The type of media used by the platform (e.g., 'cart', 'disk', 'cdrom')."
-    )
-    by_filter_parser.add_argument(
-        "-ect", "--enable-custom-cmd-per-title",
-        action="store_true",
-        help="Set 'enable_custom_command_line_param_per_software_id: true' for the platform entry. Defaults to false if not set."
-    )
-    by_filter_parser.add_argument(
-        "-en", "--emu-name",
-        help="Sets the 'emulator.name' (e.g., 'MAME (Cartridge)'). If specified, the 'emulator' block is added."
-    )
-    by_filter_parser.add_argument(
-        "-de", "--default-emu",
-        action="store_true",
-        help="Set 'emulator.default_emulator: true'. Requires --emu-name. Defaults to false if not set."
-    )
-    by_filter_parser.add_argument(
-        "-dec", "--default-emu-cmd-params",
-        help="Sets 'emulator.default_command_line_parameters' (e.g., '-keyboardprovider dinput'). Requires --emu-name."
-    )
-    by_filter_parser.add_argument(
-        "--driver-status",
-        choices=["good", "imperfect", "preliminary", "unsupported"],
-        help="Filter machines by driver 'status' (e.g., 'good', 'preliminary')."
-    )
-    by_filter_parser.add_argument(
-        "--emulation-status",
-        choices=["good", "imperfect", "preliminary", "unsupported"],
-        help="Filter machines by driver 'emulation' status (e.g., 'good', 'preliminary')."
-    )
-    by_filter_parser.add_argument(
-        "--show-systems-only",
-        action="store_true",
-        help="[For Table Output] Only show one row per system, even if it has software. "
-             "Software ID and Softlist columns will be 'N/A', Title column will be machine description."
-    )
-    by_filter_parser.add_argument(
-        "--show-extra-info",
-        action="store_true",
-        help="[For Table Output] Show additional columns: System Manufacturer (2nd col) and Software Publisher (before Driver Status)."
-    )
+    by_filter_parser.add_argument("description_term", help="Term to search within machine descriptions.")
+    by_filter_parser.add_argument("--softlist-capable", action="store_true", help="Only include machines with a <softwarelist> tag.")
+    by_filter_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
+    by_filter_parser.add_argument("--limit", type=int, help="Optional: Limit the number of matching machines processed.")
+    by_filter_parser.add_argument("--output-format", choices=["table", "yaml"], default="table", help="Output format: 'table' (default) or 'yaml'.")
+    by_filter_parser.add_argument("--output-file", help="Path to the output YAML file. Defaults to config.")
+    by_filter_parser.add_argument("--platform-key", help="[Required for YAML] Top-level key for the platform in YAML.")
+    by_filter_parser.add_argument("--platform-name-full", help="[Required for YAML] Full, descriptive name of the platform.")
+    by_filter_parser.add_argument("--media-type", default="cart", help="[Required for YAML] Media type for the platform (default: 'cart').")
+    by_filter_parser.add_argument("-ect", "--enable-custom-cmd-per-title", action="store_true", help="Set 'enable_custom_command_line_param_per_software_id: true'.")
+    by_filter_parser.add_argument("-en", "--emu-name", help="Sets the 'emulator.name'.")
+    by_filter_parser.add_argument("-de", "--default-emu", action="store_true", help="Set 'emulator.default_emulator: true'.")
+    by_filter_parser.add_argument("-dec", "--default-emu-cmd-params", help="Sets 'emulator.default_command_line_parameters'.")
+    by_filter_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
+    by_filter_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
+    by_filter_parser.add_argument("--show-systems-only", action="store_true", help="[For Table] Only show one row per system.")
+    by_filter_parser.add_argument("--show-extra-info", action="store_true", help=show_extra_info_help_text)
 
-
-    # 2. 'copy-roms' subcommand
     copy_parser = subparsers.add_parser("copy-roms", help="Copy/create ROM zips based on system_softlist.yml.")
-    copy_parser.add_argument(
-        "--input-file",
-        help=f"Path to the input YAML file to read for copying. Defaults to the filename in config.yaml."
-    )
+    copy_parser.add_argument("--input-file", help="Path to the input YAML file. Defaults to config.")
 
-    # 3. 'list-good-emulation' subcommand
     list_good_parser = subparsers.add_parser("list-good-emulation", help="List MAME machines with 'good' emulation status.")
-    list_good_parser.add_argument(
-        "--exclude-arcade",
-        action="store_true",
-        help="Excludes machines that do not have a software list defined (typically arcade machines)."
-    )
-    list_good_parser.add_argument(
-        "--input-xml",
-        help=f"Path to source XML for machine definitions. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'."
-    )
+    list_good_parser.add_argument("--exclude-arcade", action="store_true", help="Excludes machines without a software list (typically arcade).")
+    list_good_parser.add_argument("--input-xml", help=f"Path to source XML. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'.")
 
-    # 4. 'mess' subcommand
     mess_parser = subparsers.add_parser("mess", help="Commands specific to MESS (softlist-capable systems).")
     mess_subparsers = mess_parser.add_subparsers(dest="mess_command", required=True, help="MESS specific actions.")
-
-    # 4a. 'mess list-good-emulation' action
     mess_list_good_parser = mess_subparsers.add_parser("list-good-emulation", help="List MESS machines from mess.ini with 'good' emulation status.")
-    mess_list_good_parser.add_argument(
-        "--exclude-arcade",
-        action="store_true",
-        help="Excludes machines that do not have a software list defined (typically arcade machines). (Already filtered by mess.ini)"
-    )
-    mess_list_good_parser.add_argument(
-        "--mess-ini",
-        help=f"Path to the MESS.ini file. Defaults to the path in config.yaml."
-    )
+    mess_list_good_parser.add_argument("--exclude-arcade", action="store_true", help="Excludes machines without a software list.")
+    mess_list_good_parser.add_argument("--mess-ini", help="Path to MESS.ini. Defaults to config.")
     
-    # 5. 'split' subcommand
-    split_parser = subparsers.add_parser("split", help="Generate filtered MAME XMLs based on MESS.ini and softwarelist capability.")
-    split_parser.add_argument(
-        "--mess-ini",
-        help=f"Path to the MESS.ini file to filter machines. Defaults to the path in config.yaml."
-    )
+    split_parser = subparsers.add_parser("split", help="Generate filtered MAME XMLs based on MESS.ini.")
+    split_parser.add_argument("--mess-ini", help="Path to MESS.ini. Defaults to config.")
 
-    # 6. 'table' subcommand
     table_parser = subparsers.add_parser("table", help="Display data from system_softlist.yml in a table format.")
-    table_parser.add_argument(
-        "--platform-key",
-        help="Optional: Display only a specific platform by its key. If omitted, all platforms are displayed."
-    )
-    table_parser.add_argument(
-        "--input-file",
-        help=f"Path to the input YAML file. Defaults to the filename in config.yaml."
-    )
-    table_parser.add_argument(
-        "--mame-xml-source", # Need this to get machine descriptions/statuses for YAML data
-        help=f"Path to the MAME XML (e.g., 'mame.xml') for fetching detailed machine info. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'."
-    )
-    # Re-use existing display arguments
-    table_parser.add_argument(
-        "--show-systems-only",
-        action="store_true",
-        help="Only show one row per system, even if it has software. "
-             "Software ID and Softlist columns will be 'N/A', Title column will be machine description."
-    )
-    table_parser.add_argument(
-        "--show-extra-info",
-        action="store_true",
-        help="Show additional columns: System Manufacturer (2nd col) and Software Publisher (before Driver Status)."
-    )
+    table_parser.add_argument("--platform-key", help="Optional: Display only a specific platform by its key.")
+    table_parser.add_argument("--input-file", help="Path to the input YAML file. Defaults to config.")
+    table_parser.add_argument("--mame-xml-source", help=f"Path to MAME XML for fetching machine info. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'.")
+    table_parser.add_argument("--show-systems-only", action="store_true", help="Only show one row per system.")
+    table_parser.add_argument("--show-extra-info", action="store_true", help=show_extra_info_help_text)
 
-    # 7. 'platform-info' subcommand
     platform_info_parser = subparsers.add_parser("platform-info", help="Display high-level information about platforms in system_softlist.yml.")
-    platform_info_parser.add_argument(
-        "--platform-key",
-        help="Optional: Display info for a specific platform by its key. If omitted, all platforms are displayed."
-    )
-    platform_info_parser.add_argument(
-        "--input-file",
-        help=f"Path to the input YAML file. Defaults to the filename in config.yaml."
-    )
-
+    platform_info_parser.add_argument("--platform-key", help="Optional: Display info for a specific platform by key.")
+    platform_info_parser.add_argument("--input-file", help="Path to the input YAML file. Defaults to config.")
 
     args = parser.parse_args()
 
-    # --- Apply global debug flag FIRST ---
     if args.debug:
         DEBUG_MODE_ENABLED = True
         debug_print("Debug mode enabled.")
 
-    # --- Initialize Application: Load config or run wizard ---
-    # The `config` command is special and can run before full initialization
     if args.command == "config":
-        load_configuration() # Load existing config to show/update
+        load_configuration()
         run_config_command(args)
         sys.exit(0)
     
-    # For all other commands, run the full initialization
     initialize_application()
 
     if not args.command:
@@ -1590,36 +1315,28 @@ def main():
         print("\n[INFO] No command specified. Use 'config' to set up, or a command like 'search' to begin.")
         sys.exit(0)
 
-    # --- Centralized loading of source XML for relevant commands ---
     source_xml_root = None
     if args.command == "search":
-        # Determine the source XML path: CLI > config > default
         if args.search_mode == "by-xml":
             xml_source_path = args.xml_filepath
         else:
             xml_source_path = args.input_xml or APP_CONFIG.get('mess_xml_file') or MAME_ALL_MACHINES_XML_CACHE
         source_xml_root = get_parsed_mame_xml_root(xml_source_path)
-        if source_xml_root is None:
-            sys.exit(1)
+        if source_xml_root is None: sys.exit(1)
 
     elif args.command == "list-good-emulation":
         xml_source_path = args.input_xml or MAME_ALL_MACHINES_XML_CACHE
         source_xml_root = get_parsed_mame_xml_root(xml_source_path)
-        if source_xml_root is None:
-            sys.exit(1)
+        if source_xml_root is None: sys.exit(1)
 
     elif args.command == "mess" and args.mess_command == "list-good-emulation":
         xml_source_path = APP_CONFIG['mess_xml_file']
         source_xml_root = get_parsed_mame_xml_root(xml_source_path)
         if source_xml_root is None:
-            print(f"[ERROR] '{xml_source_path}' not found. Please run the 'split' command first to generate it.")
+            print(f"[ERROR] '{xml_source_path}' not found. Please run 'split' first.")
             sys.exit(1)
 
-    # Now, execute the command logic, passing source_xml_root where needed
     if args.command == "search":
-        # ... (The search command logic from before, with a few path adjustments) ...
-        # For example, `output_file_path` will be `args.output_file` which can be None.
-        # The `output_to_yaml_file` function will handle using the config default if it's None.
         systems_to_process = []
         search_term_for_core = "" 
 
@@ -1649,183 +1366,99 @@ def main():
                     
             if args.exclude_systems:
                 initial_count = len(processed_systems_set)
-                for excl_sys in args.exclude_systems:
-                    if excl_sys in processed_systems_set:
-                        processed_systems_set.remove(excl_sys)
-                        print(f"[INFO] Excluded system '{excl_sys}' from processing.")
+                processed_systems_set -= set(args.exclude_systems)
                 if len(processed_systems_set) < initial_count:
                     print(f"[INFO] {initial_count - len(processed_systems_set)} systems excluded.")
 
             systems_to_process = sorted(list(processed_systems_set))
 
-            if args.limit is not None and args.limit >= 0:
-                print(f"[INFO] Limiting processing to {args.limit} systems.")
+            if args.limit is not None:
                 systems_to_process = systems_to_process[:args.limit]
-            elif args.limit is not None and args.limit < 0:
-                 parser.error("Value for --limit cannot be negative.")
-
 
             search_term_for_core = args.search_term
 
             if args.output_format == "yaml":
                 if not all([platform_key, platform_name_full, media_type]):
-                    parser.error("For 'search by-name' with YAML output, --platform-key, --platform-name-full, and --media-type are required.")
+                    parser.error("For 'search by-name' with YAML, --platform-key, --platform-name-full, and --media-type are required.")
                 if not systems_to_process:
-                    parser.error("You must specify at least one system (explicitly or via --fuzzy) for 'search by-name'.")
+                    parser.error("No systems specified for 'search by-name'.")
 
         elif args.search_mode == "by-xml":
             systems_to_process = sorted(list(get_all_mame_systems_from_xml_file(args.xml_filepath)))
+            if args.limit is not None:
+                systems_to_process = systems_to_process[:args.limit]
+            
             search_term_for_core = args.search_term
 
-            if args.limit is not None and args.limit >= 0:
-                print(f"[INFO] Limiting processing to {args.limit} systems.")
-                systems_to_process = systems_to_process[:args.limit]
-            elif args.limit is not None and args.limit < 0:
-                 parser.error("Value for --limit cannot be negative.")
-
-
             xml_filename_base = os.path.basename(args.xml_filepath)
-            
             auto_platform_key = os.path.splitext(xml_filename_base)[0]
-            auto_platform_name = ""
-            auto_enable_custom_cmd_per_title = False
-            auto_emu_name = "MAME (Cartridge)"
-            auto_default_emu = True
-            auto_default_emu_cmd_params = "-keyboardprovider dinput"
+            auto_platform_name = f"Custom XML: {xml_filename_base}"
+            if xml_filename_base == MESS_SOFTLIST_XML_FILE: auto_platform_name = "MESS (Softlist Capable)"
+            elif xml_filename_base == MESS_NOSOFTLIST_XML_FILE: auto_platform_name = "MESS (No Softlist)"
             
-            if xml_filename_base == MESS_SOFTLIST_XML_FILE:
-                auto_platform_name = "MESS (Softlist Capable)"
-                auto_enable_custom_cmd_per_title = True
-            elif xml_filename_base == MESS_NOSOFTLIST_XML_FILE:
-                auto_platform_name = "MESS (No Softlist)"
-                auto_enable_custom_cmd_per_title = False
-            else:
-                auto_platform_name = f"Custom XML: {xml_filename_base}" 
-            
-            platform_key = args.platform_key if args.platform_key else auto_platform_key
-            platform_name_full = args.platform_name_full if args.platform_name_full else auto_platform_name
+            platform_key = args.platform_key or auto_platform_key
+            platform_name_full = args.platform_name_full or auto_platform_name
             media_type = args.media_type
-            enable_custom_cmd_per_title = args.enable_custom_cmd_per_title if args.enable_custom_cmd_per_title is True else auto_enable_custom_cmd_per_title
-            emu_name = args.emu_name if args.emu_name is not None else auto_emu_name
-            default_emu = args.default_emu if args.default_emu is not False else auto_default_emu
-            default_emu_cmd_params = args.default_emu_cmd_params if args.default_emu_cmd_params is not None else auto_default_emu_cmd_params
-
-
-            if not systems_to_process:
-                print(f"[ERROR] No systems found in '{args.xml_filepath}'. Cannot perform search.")
-                sys.exit(1)
+            enable_custom_cmd_per_title = args.enable_custom_cmd_per_title
+            emu_name = args.emu_name
+            default_emu = args.default_emu
+            default_emu_cmd_params = args.default_emu_cmd_params
             
         elif args.search_mode == "by-filter":
-            print(f"[INFO] Running 'search by-filter' for description term: '{args.description_term}'.")
-            
             for machine_element in source_xml_root.findall("machine"):
-                machine_name = machine_element.get("name")
-                description = machine_element.findtext("description", "").strip()
-                
-                if args.description_term.lower() not in description.lower():
-                    continue
-                
-                if args.softlist_capable and machine_element.find("softwarelist") is None:
-                    continue
-                
-                driver_element = machine_element.find("driver")
-                current_driver_status = driver_element.get("status") if driver_element is not None else "N/A"
-                current_emulation_status = driver_element.get("emulation") if driver_element is not None else "N/A"
-
-                if driver_status_filter and current_driver_status != driver_status_filter:
-                    continue
-                if emulation_status_filter and current_emulation_status != emulation_status_filter:
-                    continue
-                
-                systems_to_process.append(machine_name)
-            
+                if args.description_term.lower() in machine_element.findtext("description", "").lower():
+                    if args.softlist_capable and machine_element.find("softwarelist") is None: continue
+                    systems_to_process.append(machine_element.get("name"))
             systems_to_process.sort()
-            
-            if args.limit is not None and args.limit >= 0:
-                print(f"[INFO] Limiting processing to {args.limit} systems.")
+            if args.limit is not None:
                 systems_to_process = systems_to_process[:args.limit]
-            elif args.limit is not None and args.limit < 0:
-                parser.error("Value for --limit cannot be negative.")
-
-            if not systems_to_process:
-                print(f"[INFO] No machines found matching the description '{args.description_term}' and other filters.")
-                sys.exit(0)
             
-            search_term_for_core = "" 
-            
-            platform_key = args.platform_key if args.platform_key else f"filtered-{args.description_term.replace(' ', '-').lower()}"
-            platform_name_full = args.platform_name_full if args.platform_name_full else f"Machines containing '{args.description_term}'"
-            if args.softlist_capable:
-                platform_name_full += " (Softlist Capable)"
-                enable_custom_cmd_per_title = args.enable_custom_cmd_per_title if args.enable_custom_cmd_per_title is True else True
-            else:
-                enable_custom_cmd_per_title = args.enable_custom_cmd_per_title if args.enable_custom_cmd_per_title is True else False
-            
+            search_term_for_core = ""
+            platform_key = args.platform_key or f"filtered-{args.description_term.replace(' ', '-').lower()}"
+            platform_name_full = args.platform_name_full or f"Machines containing '{args.description_term}'"
+            if args.softlist_capable: platform_name_full += " (Softlist Capable)"
             media_type = args.media_type
+            enable_custom_cmd_per_title = args.enable_custom_cmd_per_title or args.softlist_capable
             emu_name = args.emu_name
             default_emu = args.default_emu
             default_emu_cmd_params = args.default_emu_cmd_params
 
         if args.output_format == "yaml":
             if not all([platform_key, platform_name_full, media_type]):
-                parser.error("For YAML output, derived or explicitly provided --platform-key, --platform-name-full, and --media-type are required.")
+                parser.error("For YAML output, --platform-key, --platform-name-full, and --media-type are required.")
             if (default_emu or default_emu_cmd_params) and not emu_name:
-                parser.error("--default-emu and --default-emu-cmd-params require --emu-name to be specified.")
+                parser.error("--default-emu and --default-emu-cmd-params require --emu-name.")
             if not systems_to_process:
-                parser.error("No systems to process after XML parsing and filtering.")
+                parser.error("No systems to process after filtering.")
         
         perform_mame_search_and_output(
-            systems_to_process=systems_to_process,
-            search_term=search_term_for_core,
-            output_format=args.output_format,
-            platform_key=platform_key,
-            platform_name_full=platform_name_full,
-            media_type=media_type,
-            enable_custom_cmd_per_title=enable_custom_cmd_per_title,
-            emu_name=emu_name,
-            default_emu=default_emu,
-            default_emu_cmd_params=default_emu_cmd_params,
-            output_file_path=args.output_file,
-            driver_status_filter=driver_status_filter,
-            emulation_status_filter=emulation_status_filter,
-            show_systems_only=show_systems_only_flag,
-            show_extra_info=show_extra_info_flag,
-            source_xml_root=source_xml_root
+            systems_to_process, search_term_for_core, args.output_format,
+            platform_key, platform_name_full, media_type,
+            enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params,
+            args.output_file, driver_status_filter, emulation_status_filter,
+            show_systems_only_flag, show_extra_info_flag, source_xml_root
         )
 
     elif args.command == "copy-roms":
         perform_rom_copy_operation(args)
-
     elif args.command == "list-good-emulation":
-        parse_good_emulation_drivers(exclude_arcade=args.exclude_arcade, source_xml_root=source_xml_root)
-        
+        parse_good_emulation_drivers(args.exclude_arcade, source_xml_root=source_xml_root)
     elif args.command == "mess":
         if args.mess_command == "list-good-emulation":
             mess_ini_path = args.mess_ini or APP_CONFIG['mess_ini_path']
             mess_machines = parse_mess_ini_machines(mess_ini_path)
             if mess_machines:
-                parse_good_emulation_drivers(
-                    exclude_arcade=args.exclude_arcade,
-                    machines_to_filter=mess_machines,
-                    source_xml_root=source_xml_root
-                )
-            else:
-                print(f"[INFO] No machines found in MESS.ini or MESS.ini not found. No machines to list.")
-
+                parse_good_emulation_drivers(args.exclude_arcade, mess_machines, source_xml_root)
     elif args.command == "split":
         run_split_command(args)
-
     elif args.command == "table":
         mame_xml_source = args.mame_xml_source or MAME_ALL_MACHINES_XML_CACHE
         table_source_xml_root = get_parsed_mame_xml_root(mame_xml_source)
-        if table_source_xml_root is None:
-            sys.exit(1)
-        display_yaml_table(args, table_source_xml_root)
-
+        if table_source_xml_root:
+            display_yaml_table(args, table_source_xml_root)
     elif args.command == "platform-info":
         display_platform_info(args)
 
-    # Final cleanup of any remaining temp files
     for tmp_file in [TMP_SOFTWARE_XML_FILE]: 
         if os.path.exists(tmp_file):
             os.remove(tmp_file)
