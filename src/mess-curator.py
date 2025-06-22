@@ -657,8 +657,9 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
         print("[ERROR] No systems were determined for processing. Please check your arguments.")
         sys.exit(1)
 
-    for current_system in systems_to_process:
-        print(f"\n--- Processing system: {current_system} ---")
+    total_systems = len(systems_to_process)
+    for i, current_system in enumerate(systems_to_process, 1):
+        print(f"\n--- Processing system: ({i}/{total_systems}) {current_system} ---")
         
         machine_softlist_filters, machine_metadata = get_machine_details_and_filters_from_root(current_system, source_xml_root)
         
@@ -704,7 +705,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
             
             headers = ["System"]
             if show_extra_info:
-                headers.append("Description") # UPDATED
+                headers.append("Description")
                 headers.append("Manufacturer")
             headers.extend(["Softlist", "Software ID", "Title"])
             if show_extra_info:
@@ -724,7 +725,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                     if show_systems_only:
                         row = [sys_name]
                         if show_extra_info:
-                            row.append(machine_description) # UPDATED
+                            row.append(machine_description)
                             row.append(machine_manufacturer)
                         row.extend(["N/A", "N/A", machine_description])
                         if show_extra_info:
@@ -735,7 +736,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                         for softlist_name, current_sys_name_from_entry, swid, desc, publisher in system_data_info['software_entries']:
                             row = [sys_name] 
                             if show_extra_info:
-                                row.append(machine_description) # UPDATED
+                                row.append(machine_description)
                                 row.append(machine_manufacturer)
                             row.extend([softlist_name, swid, desc])
                             if show_extra_info:
@@ -745,7 +746,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                     else:
                         row = [sys_name]
                         if show_extra_info:
-                            row.append(machine_description) # UPDATED
+                            row.append(machine_description)
                             row.append(machine_manufacturer)
                         row.extend(["N/A", "N/A", machine_description])
                         if show_extra_info:
@@ -990,7 +991,7 @@ def display_yaml_table(args, source_xml_root):
     
     headers = ["System"]
     if args.show_extra_info:
-        headers.append("Description") # UPDATED
+        headers.append("Description")
         headers.append("Manufacturer")
     headers.extend(["Softlist", "Software ID", "Title"])
     if args.show_extra_info:
@@ -1022,7 +1023,7 @@ def display_yaml_table(args, source_xml_root):
             if args.show_systems_only:
                 row = [system_name]
                 if args.show_extra_info:
-                    row.append(machine_description) # UPDATED
+                    row.append(machine_description)
                     row.append(machine_manufacturer)
                 row.extend(["N/A", "N/A", machine_description])
                 if args.show_extra_info:
@@ -1039,7 +1040,7 @@ def display_yaml_table(args, source_xml_root):
                             publisher = "N/A (YAML Source)" 
                             row = [system_name]
                             if args.show_extra_info:
-                                row.append(machine_description) # UPDATED
+                                row.append(machine_description)
                                 row.append(machine_manufacturer)
                             row.extend([softlist_name, swid, "N/A (YAML Source)"])
                             if args.show_extra_info:
@@ -1049,7 +1050,7 @@ def display_yaml_table(args, source_xml_root):
                     else:
                         row = [system_name]
                         if args.show_extra_info:
-                            row.append(machine_description) # UPDATED
+                            row.append(machine_description)
                             row.append(machine_manufacturer)
                         row.extend([softlist_name, "N/A", "N/A (No IDs)", "N/A"])
                         row.extend([driver_status, emulation_status])
@@ -1057,7 +1058,7 @@ def display_yaml_table(args, source_xml_root):
             else:
                 row = [system_name]
                 if args.show_extra_info:
-                    row.append(machine_description) # UPDATED
+                    row.append(machine_description)
                     row.append(machine_manufacturer)
                 row.extend(["N/A", "N/A", machine_description])
                 if args.show_extra_info:
@@ -1209,7 +1210,6 @@ def main():
     search_parser = subparsers.add_parser("search", help="Search MAME systems and generate YAML/table.")
     search_subparsers = search_parser.add_subparsers(dest="search_mode", required=True, help="How to specify systems for search.")
 
-    # Shared argument for --show-extra-info
     show_extra_info_help_text = "[For Table Output] Show additional columns: System Description, Manufacturer, and Software Publisher."
 
     by_name_parser = search_subparsers.add_parser("by-name", help="Search systems by explicit names or fuzzy prefix.")
