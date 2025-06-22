@@ -305,12 +305,12 @@ def get_all_mame_systems_by_prefix_from_root(prefix, xml_root):
 
 def get_machine_details_and_filters_from_root(system_name, source_xml_root): 
     """
-    Extracts machine details (softlist filters, driver status, description, manufacturer)
+    Extracts machine details (softlist filters, driver status, description, manufacturer, sourcefile)
     from a given XML root for a specific system.
     Returns a tuple: (filters_dict, machine_metadata_dict)
     """
     filters = {}
-    machine_metadata = {"description": "N/A", "manufacturer": "N/A", "status": "N/A", "emulation": "N/A"}
+    machine_metadata = {"description": "N/A", "manufacturer": "N/A", "status": "N/A", "emulation": "N/A", "sourcefile": "N/A"}
     
     debug_print(f"Extracting details for '{system_name}' from provided XML root.")
     
@@ -322,6 +322,7 @@ def get_machine_details_and_filters_from_root(system_name, source_xml_root):
 
         machine_metadata["description"] = machine_element.findtext("description", "N/A").strip()
         machine_metadata["manufacturer"] = machine_element.findtext("manufacturer", "N/A").strip()
+        machine_metadata["sourcefile"] = machine_element.get("sourcefile", "N/A")
 
         driver_element = machine_element.find("driver")
         if driver_element is not None:
@@ -628,7 +629,7 @@ def perform_rom_copy_operation(args):
 def perform_mame_search_and_output(systems_to_process, search_term, output_format, platform_key, platform_name_full, platform_categories, media_type, 
                                    enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
                                    output_file_path, driver_status_filter=None, emulation_status_filter=None, 
-                                   show_systems_only=False, show_extra_info=False, source_xml_root=None, sort_by=None):
+                                   show_systems_only=False, show_extra_info=False, source_xml_root=None, sort_by=None, search_mode=None):
     """
     Performs the MAME listsoftware search and outputs results as table or YAML.
     """
@@ -688,12 +689,13 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
             
             headers = ["System"]
             if show_extra_info:
-                headers.append("Description")
-                headers.append("Manufacturer")
+                headers.extend(["Description", "Manufacturer"])
             headers.extend(["Softlist", "Software ID", "Title"])
             if show_extra_info:
                 headers.append("Publisher")
             headers.extend(["Driver Status", "Emulation Status"])
+            if show_extra_info or search_mode == 'by-sourcefile':
+                headers.append("Source File")
 
             for sys_name in systems_to_process:
                 system_data_info = processed_system_info.get(sys_name)
@@ -703,61 +705,62 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                     driver_status = machine_metadata['status']
                     emulation_status = machine_metadata['emulation']
                     machine_description = machine_metadata['description']
-                    machine_manufacturer = machine_metadata['manufacturer'] 
+                    machine_manufacturer = machine_metadata['manufacturer']
+                    source_file = machine_metadata['sourcefile']
 
                     if show_systems_only:
                         row = [sys_name]
                         if show_extra_info:
-                            row.append(machine_description)
-                            row.append(machine_manufacturer)
+                            row.extend([machine_description, machine_manufacturer])
                         row.extend(["N/A", "N/A", machine_description])
                         if show_extra_info:
                             row.append("N/A")
                         row.extend([driver_status, emulation_status])
+                        if show_extra_info or search_mode == 'by-sourcefile':
+                            row.append(source_file)
                         table_display_data.append(row)
                     elif system_data_info['software_entries']:
-                        for softlist_name, current_sys_name_from_entry, swid, desc, publisher in system_data_info['software_entries']:
+                        for softlist_name, _, swid, desc, publisher in system_data_info['software_entries']:
                             row = [sys_name] 
                             if show_extra_info:
-                                row.append(machine_description)
-                                row.append(machine_manufacturer)
+                                row.extend([machine_description, machine_manufacturer])
                             row.extend([softlist_name, swid, desc])
                             if show_extra_info:
                                 row.append(publisher)
                             row.extend([driver_status, emulation_status])
+                            if show_extra_info or search_mode == 'by-sourcefile':
+                                row.append(source_file)
                             table_display_data.append(row)
                     else:
                         row = [sys_name]
                         if show_extra_info:
-                            row.append(machine_description)
-                            row.append(machine_manufacturer)
+                            row.extend([machine_description, machine_manufacturer])
                         row.extend(["N/A", "N/A", machine_description])
                         if show_extra_info:
                             row.append("N/A")
                         row.extend([driver_status, emulation_status])
+                        if show_extra_info or search_mode == 'by-sourcefile':
+                            row.append(source_file)
                         table_display_data.append(row)
             
             if sort_by and table_display_data:
-                column_map = {'system_name': 0}
-                if show_extra_info:
-                    column_map.update({
-                        'system_desc': 1, 'manufacturer': 2, 'softlist': 3,
-                        'software_id': 4, 'title': 5, 'publisher': 6,
-                        'driver_status': 7, 'emulation_status': 8
-                    })
-                else:
-                    column_map.update({
-                        'softlist': 1, 'software_id': 2, 'title': 3,
-                        'driver_status': 4, 'emulation_status': 5
-                    })
-
+                key_to_header = {
+                    'system_name': 'System', 'system_desc': 'Description', 'manufacturer': 'Manufacturer',
+                    'softlist': 'Softlist', 'software_id': 'Software ID', 'title': 'Title',
+                    'publisher': 'Publisher', 'driver_status': 'Driver Status', 'emulation_status': 'Emulation Status',
+                    'sourcefile': 'Source File'
+                }
                 sort_key = sort_by.lower()
-                if sort_key in column_map:
-                    sort_index = column_map[sort_key]
-                    table_display_data.sort(key=lambda row: str(row[sort_index]).lower())
-                    print(f"\n[INFO] Table sorted by '{sort_key}'.")
+                if sort_key in key_to_header:
+                    header_to_find = key_to_header[sort_key]
+                    if header_to_find in headers:
+                        sort_index = headers.index(header_to_find)
+                        table_display_data.sort(key=lambda row: str(row[sort_index]).lower())
+                        print(f"\n[INFO] Table sorted by '{sort_key}'.")
+                    else:
+                        print(f"\n[WARNING] Cannot sort by '{sort_key}'. Column not visible in current view.")
                 else:
-                    print(f"\n[WARNING] Cannot sort by '{sort_key}'. It's not a valid or available column in the current view.")
+                    print(f"\n[WARNING] Invalid sort key '{sort_by}'.")
 
             if table_display_data:
                 print(tabulate(table_display_data, headers=headers, tablefmt="github"))
@@ -983,12 +986,13 @@ def display_yaml_table(args, source_xml_root):
     
     headers = ["System"]
     if args.show_extra_info:
-        headers.append("Description")
-        headers.append("Manufacturer")
+        headers.extend(["Description", "Manufacturer"])
     headers.extend(["Softlist", "Software ID", "Title"])
     if args.show_extra_info:
         headers.append("Publisher")
     headers.extend(["Driver Status", "Emulation Status"])
+    if args.show_extra_info:
+        headers.append("Source File")
 
     for platform_key, platform_data in platforms_to_display.items():
         print(f"\n--- Platform: {platform_data.get('platform',{}).get('name',platform_key)} (Key: {platform_key}) ---")
@@ -1003,7 +1007,7 @@ def display_yaml_table(args, source_xml_root):
             if isinstance(system_entry, dict):
                 system_name = next(iter(system_entry))
 
-            machine_metadata = {"description": "N/A", "manufacturer": "N/A", "status": "N/A", "emulation": "N/A"}
+            machine_metadata = {"description": "N/A", "manufacturer": "N/A", "status": "N/A", "emulation": "N/A", "sourcefile": "N/A"}
             if source_xml_root:
                 _, machine_metadata = get_machine_details_and_filters_from_root(system_name, source_xml_root)
             
@@ -1011,16 +1015,18 @@ def display_yaml_table(args, source_xml_root):
             emulation_status = machine_metadata['emulation']
             machine_description = machine_metadata['description']
             machine_manufacturer = machine_metadata['manufacturer']
+            source_file = machine_metadata['sourcefile']
 
             if args.show_systems_only:
                 row = [system_name]
                 if args.show_extra_info:
-                    row.append(machine_description)
-                    row.append(machine_manufacturer)
+                    row.extend([machine_description, machine_manufacturer])
                 row.extend(["N/A", "N/A", machine_description])
                 if args.show_extra_info:
                     row.append("N/A")
                 row.extend([driver_status, emulation_status])
+                if args.show_extra_info:
+                    row.append(source_file)
                 table_display_data.append(row)
             elif isinstance(system_entry, dict) and system_entry.get(system_name, {}).get("software_lists"):
                 for softlist_detail in system_entry[system_name]["software_lists"]:
@@ -1032,54 +1038,56 @@ def display_yaml_table(args, source_xml_root):
                             publisher = "N/A (YAML Source)" 
                             row = [system_name]
                             if args.show_extra_info:
-                                row.append(machine_description)
-                                row.append(machine_manufacturer)
+                                row.extend([machine_description, machine_manufacturer])
                             row.extend([softlist_name, swid, "N/A (YAML Source)"])
                             if args.show_extra_info:
                                 row.append(publisher)
                             row.extend([driver_status, emulation_status])
+                            if args.show_extra_info:
+                                row.append(source_file)
                             table_display_data.append(row)
                     else:
                         row = [system_name]
                         if args.show_extra_info:
-                            row.append(machine_description)
-                            row.append(machine_manufacturer)
+                            row.extend([machine_description, machine_manufacturer])
                         row.extend([softlist_name, "N/A", "N/A (No IDs)", "N/A"])
+                        if args.show_extra_info:
+                            row.append("N/A")
                         row.extend([driver_status, emulation_status])
+                        if args.show_extra_info:
+                            row.append(source_file)
                         table_display_data.append(row)
             else:
                 row = [system_name]
                 if args.show_extra_info:
-                    row.append(machine_description)
-                    row.append(machine_manufacturer)
+                    row.extend([machine_description, machine_manufacturer])
                 row.extend(["N/A", "N/A", machine_description])
                 if args.show_extra_info:
                     row.append("N/A")
                 row.extend([driver_status, emulation_status])
+                if args.show_extra_info:
+                    row.append(source_file)
                 table_display_data.append(row)
 
     if args.sort_by and table_display_data:
-        column_map = {'system_name': 0}
-        if args.show_extra_info:
-            column_map.update({
-                'system_desc': 1, 'manufacturer': 2, 'softlist': 3,
-                'software_id': 4, 'title': 5, 'publisher': 6,
-                'driver_status': 7, 'emulation_status': 8
-            })
-        else:
-            column_map.update({
-                'softlist': 1, 'software_id': 2, 'title': 3,
-                'driver_status': 4, 'emulation_status': 5
-            })
-        
+        key_to_header = {
+            'system_name': 'System', 'system_desc': 'Description', 'manufacturer': 'Manufacturer',
+            'softlist': 'Softlist', 'software_id': 'Software ID', 'title': 'Title',
+            'publisher': 'Publisher', 'driver_status': 'Driver Status', 'emulation_status': 'Emulation Status',
+            'sourcefile': 'Source File'
+        }
         sort_key = args.sort_by.lower()
-        if sort_key in column_map:
-            sort_index = column_map[sort_key]
-            table_display_data.sort(key=lambda row: str(row[sort_index]).lower())
-            print(f"\n[INFO] Table sorted by '{sort_key}'.")
+        if sort_key in key_to_header:
+            header_to_find = key_to_header[sort_key]
+            if header_to_find in headers:
+                sort_index = headers.index(header_to_find)
+                table_display_data.sort(key=lambda row: str(row[sort_index]).lower())
+                print(f"\n[INFO] Table sorted by '{sort_key}'.")
+            else:
+                print(f"\n[WARNING] Cannot sort by '{sort_key}'. Column not visible in current view.")
         else:
-            print(f"\n[WARNING] Cannot sort by '{sort_key}'. It's not a valid or available column in the current view.")
-
+            print(f"\n[WARNING] Invalid sort key '{sort_by}'.")
+    
     if table_display_data:
         print(tabulate(table_display_data, headers=headers, tablefmt="github"))
         print(f"\nTotal rows across displayed platforms: {len(table_display_data)}")
@@ -1237,14 +1245,25 @@ def main():
     search_parser = subparsers.add_parser("search", help="Search MAME systems and generate YAML/table.")
     search_subparsers = search_parser.add_subparsers(dest="search_mode", required=True, help="How to specify systems for search.")
 
-    sort_by_choices = ['system_name', 'system_desc', 'manufacturer', 'software_id', 'title', 'publisher', 'driver_status', 'emulation_status']
+    sort_by_choices = ['system_name', 'system_desc', 'manufacturer', 'software_id', 'title', 'publisher', 'driver_status', 'emulation_status', 'sourcefile']
 
     table_args_parser = argparse.ArgumentParser(add_help=False)
     table_args_parser.add_argument("--show-systems-only", action="store_true", help="[For Table] Only show one row per system.")
-    table_args_parser.add_argument("--show-extra-info", action="store_true", help="[For Table Output] Show additional columns: System Description, Manufacturer, and Software Publisher.")
+    table_args_parser.add_argument("--show-extra-info", action="store_true", help="[For Table Output] Show additional columns: Description, Manufacturer, Publisher, and Source File.")
     table_args_parser.add_argument("--sort-by", choices=sort_by_choices, help="[For Table] Sort the output table by a specific column.")
 
-    by_name_parser = search_subparsers.add_parser("by-name", help="Search systems by explicit names or fuzzy prefix.", parents=[table_args_parser])
+    # Base parser for YAML output arguments, to avoid repetition
+    yaml_args_parser = argparse.ArgumentParser(add_help=False)
+    yaml_args_parser.add_argument("--platform-key", help="[Required for YAML] Top-level key for the platform in YAML.")
+    yaml_args_parser.add_argument("--platform-name-full", help="[Required for YAML] Full, descriptive name of the platform.")
+    yaml_args_parser.add_argument("--platform-category", nargs='+', help="[For YAML] One or more categories for the platform.")
+    yaml_args_parser.add_argument("--media-type", help="[Required for YAML] Media type for the platform (e.g., 'cart').")
+    yaml_args_parser.add_argument("-ect", "--enable-custom-cmd-per-title", action="store_true", help="Set 'enable_custom_command_line_param_per_software_id: true'.")
+    yaml_args_parser.add_argument("-en", "--emu-name", help="Sets the 'emulator.name'.")
+    yaml_args_parser.add_argument("-de", "--default-emu", action="store_true", help="Set 'emulator.default_emulator: true'.")
+    yaml_args_parser.add_argument("-dec", "--default-emu-cmd-params", help="Sets 'emulator.default_command_line_parameters'.")
+
+    by_name_parser = search_subparsers.add_parser("by-name", help="Search systems by explicit names or fuzzy prefix.", parents=[table_args_parser, yaml_args_parser])
     by_name_parser.add_argument("systems", nargs='*', default=[], help="One or more MAME system short names (e.g., 'ekara', 'nes').")
     by_name_parser.add_argument("search_term", nargs='?', default="", help="Optional: Search term for software ID or description.")
     by_name_parser.add_argument("--fuzzy", help="Optional: Prefix to fuzzy match MAME system names (e.g., 'jak_').")
@@ -1253,51 +1272,36 @@ def main():
     by_name_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     by_name_parser.add_argument("--output-format", choices=["table", "yaml"], default="table", help="Output format: 'table' (default) or 'yaml'.")
     by_name_parser.add_argument("--output-file", help="Path to the output YAML file. Defaults to config.")
-    by_name_parser.add_argument("--platform-key", help="[Required for YAML] Top-level key for the platform in YAML.")
-    by_name_parser.add_argument("--platform-name-full", help="[Required for YAML] Full, descriptive name of the platform.")
-    by_name_parser.add_argument("--platform-category", nargs='+', help="[For YAML] One or more categories for the platform.")
-    by_name_parser.add_argument("--media-type", help="[Required for YAML] Media type for the platform (e.g., 'cart').")
-    by_name_parser.add_argument("-ect", "--enable-custom-cmd-per-title", action="store_true", help="Set 'enable_custom_command_line_param_per_software_id: true'.")
-    by_name_parser.add_argument("-en", "--emu-name", help="Sets the 'emulator.name'.")
-    by_name_parser.add_argument("-de", "--default-emu", action="store_true", help="Set 'emulator.default_emulator: true'.")
-    by_name_parser.add_argument("-dec", "--default-emu-cmd-params", help="Sets 'emulator.default_command_line_parameters'.")
     by_name_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_name_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
 
-    by_xml_parser = search_subparsers.add_parser("by-xml", help="Search systems from a generated XML file (e.g., mess-softlist.xml).", parents=[table_args_parser])
+    by_xml_parser = search_subparsers.add_parser("by-xml", help="Search systems from a generated XML file (e.g., mess-softlist.xml).", parents=[table_args_parser, yaml_args_parser])
     by_xml_parser.add_argument("xml_filepath", help="Path to the XML file with machine definitions.")
     by_xml_parser.add_argument("search_term", nargs='?', default="", help="Optional: Search term for software ID or description.")
     by_xml_parser.add_argument("--limit", type=int, help="Optional: Limit the number of systems processed.")
     by_xml_parser.add_argument("--output-format", choices=["table", "yaml"], default="yaml", help="Output format: 'table' or 'yaml' (default).")
     by_xml_parser.add_argument("--output-file", help="Path to the output YAML file. Defaults to config.")
-    by_xml_parser.add_argument("--platform-key", help="Overrides auto-set platform key.")
-    by_xml_parser.add_argument("--platform-name-full", help="Overrides auto-set platform name.")
-    by_xml_parser.add_argument("--platform-category", nargs='+', help="[For YAML] One or more categories for the platform (overrides defaults).")
-    by_xml_parser.add_argument("--media-type", default="cart", help="Overrides auto-set media type (default: 'cart').")
-    by_xml_parser.add_argument("-ect", "--enable-custom-cmd-per-title", action="store_true", help="Overrides auto-set option.")
-    by_xml_parser.add_argument("-en", "--emu-name", default="MAME (Cartridge)", help="Overrides auto-set emulator name.")
-    by_xml_parser.add_argument("-de", "--default-emu", action="store_true", default=True, help="Overrides auto-set default emulator.")
-    by_xml_parser.add_argument("-dec", "--default-emu-cmd-params", default="-keyboardprovider dinput", help="Overrides auto-set command parameters.")
     by_xml_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_xml_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
-
-    by_filter_parser = search_subparsers.add_parser("by-filter", help="Search MAME machines by their XML attributes (e.g., description).", parents=[table_args_parser])
+    
+    by_filter_parser = search_subparsers.add_parser("by-filter", help="Search MAME machines by their XML attributes (e.g., description).", parents=[table_args_parser, yaml_args_parser])
     by_filter_parser.add_argument("description_term", help="Term to search within machine descriptions.")
     by_filter_parser.add_argument("--softlist-capable", action="store_true", help="Only include machines with a <softwarelist> tag.")
     by_filter_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     by_filter_parser.add_argument("--limit", type=int, help="Optional: Limit the number of matching machines processed.")
     by_filter_parser.add_argument("--output-format", choices=["table", "yaml"], default="table", help="Output format: 'table' (default) or 'yaml'.")
     by_filter_parser.add_argument("--output-file", help="Path to the output YAML file. Defaults to config.")
-    by_filter_parser.add_argument("--platform-key", help="[Required for YAML] Top-level key for the platform in YAML.")
-    by_filter_parser.add_argument("--platform-name-full", help="[Required for YAML] Full, descriptive name of the platform.")
-    by_filter_parser.add_argument("--platform-category", nargs='+', help="[For YAML] One or more categories for the platform.")
-    by_filter_parser.add_argument("--media-type", default="cart", help="[Required for YAML] Media type for the platform (default: 'cart').")
-    by_filter_parser.add_argument("-ect", "--enable-custom-cmd-per-title", action="store_true", help="Set 'enable_custom_command_line_param_per_software_id: true'.")
-    by_filter_parser.add_argument("-en", "--emu-name", help="Sets the 'emulator.name'.")
-    by_filter_parser.add_argument("-de", "--default-emu", action="store_true", help="Set 'emulator.default_emulator: true'.")
-    by_filter_parser.add_argument("-dec", "--default-emu-cmd-params", help="Sets 'emulator.default_command_line_parameters'.")
     by_filter_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_filter_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
+
+    by_sourcefile_parser = search_subparsers.add_parser("by-sourcefile", help="Search MAME machines by their driver source file (e.g., 'xavix.cpp').", parents=[table_args_parser, yaml_args_parser])
+    by_sourcefile_parser.add_argument("sourcefile_term", help="Term to search within the machine's sourcefile attribute.")
+    by_sourcefile_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
+    by_sourcefile_parser.add_argument("--limit", type=int, help="Optional: Limit the number of matching machines processed.")
+    by_sourcefile_parser.add_argument("--output-format", choices=["table", "yaml"], default="table", help="Output format: 'table' (default) or 'yaml'.")
+    by_sourcefile_parser.add_argument("--output-file", help="Path to the output YAML file. Defaults to config.")
+    by_sourcefile_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
+    by_sourcefile_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
 
     copy_parser = subparsers.add_parser("copy-roms", help="Copy/create ROM zips based on system_softlist.yml.")
     copy_parser.add_argument("--input-file", help="Path to the input YAML file. Defaults to config.")
@@ -1367,15 +1371,16 @@ def main():
     if args.command == "search":
         systems_to_process = []
         search_term_for_core = "" 
-
-        platform_key = args.platform_key
-        platform_name_full = args.platform_name_full
+        
+        # Consolidate argument retrieval
+        platform_key = getattr(args, 'platform_key', None)
+        platform_name_full = getattr(args, 'platform_name_full', None)
         platform_categories = getattr(args, 'platform_category', None)
-        media_type = args.media_type
-        enable_custom_cmd_per_title = args.enable_custom_cmd_per_title
-        emu_name = args.emu_name
-        default_emu = args.default_emu
-        default_emu_cmd_params = args.default_emu_cmd_params
+        media_type = getattr(args, 'media_type', None)
+        enable_custom_cmd_per_title = getattr(args, 'enable_custom_cmd_per_title', False)
+        emu_name = getattr(args, 'emu_name', None)
+        default_emu = getattr(args, 'default_emu', False)
+        default_emu_cmd_params = getattr(args, 'default_emu_cmd_params', None)
         
         driver_status_filter = args.driver_status
         emulation_status_filter = args.emulation_status
@@ -1383,6 +1388,7 @@ def main():
         show_systems_only_flag = args.show_systems_only 
         show_extra_info_flag = args.show_extra_info 
         sort_by_flag = args.sort_by
+        output_file_path = args.output_file
 
         if args.search_mode == "by-name":
             processed_systems_set = set(args.systems)
@@ -1401,60 +1407,43 @@ def main():
                     print(f"[INFO] {initial_count - len(processed_systems_set)} systems excluded.")
 
             systems_to_process = sorted(list(processed_systems_set))
-
-            if args.limit is not None:
-                systems_to_process = systems_to_process[:args.limit]
-
+            if args.limit is not None: systems_to_process = systems_to_process[:args.limit]
             search_term_for_core = args.search_term
-
-            if args.output_format == "yaml":
-                if not all([platform_key, platform_name_full, media_type]):
-                    parser.error("For 'search by-name' with YAML, --platform-key, --platform-name-full, and --media-type are required.")
-                if not systems_to_process:
-                    parser.error("No systems specified for 'search by-name'.")
 
         elif args.search_mode == "by-xml":
             systems_to_process = sorted(list(get_all_mame_systems_from_xml_file(args.xml_filepath)))
-            if args.limit is not None:
-                systems_to_process = systems_to_process[:args.limit]
-            
+            if args.limit is not None: systems_to_process = systems_to_process[:args.limit]
             search_term_for_core = args.search_term
-
-            xml_filename_base = os.path.basename(args.xml_filepath)
-            auto_platform_key = os.path.splitext(xml_filename_base)[0]
-            auto_platform_name = f"Custom XML: {xml_filename_base}"
-            if xml_filename_base == MESS_SOFTLIST_XML_FILE: auto_platform_name = "MESS (Softlist Capable)"
-            elif xml_filename_base == MESS_NOSOFTLIST_XML_FILE: auto_platform_name = "MESS (No Softlist)"
+            if args.output_format == "yaml":
+                xml_filename_base = os.path.basename(args.xml_filepath)
+                auto_platform_key = os.path.splitext(xml_filename_base)[0]
+                auto_platform_name = f"Custom XML: {xml_filename_base}"
+                if xml_filename_base == MESS_SOFTLIST_XML_FILE: auto_platform_name = "MESS (Softlist Capable)"
+                elif xml_filename_base == MESS_NOSOFTLIST_XML_FILE: auto_platform_name = "MESS (No Softlist)"
+                
+                auto_platform_categories = [auto_platform_name]
+                platform_categories = platform_categories if platform_categories is not None else auto_platform_categories
+                platform_key = platform_key or auto_platform_key
+                platform_name_full = platform_name_full or auto_platform_name
             
-            auto_platform_categories = [auto_platform_name]
-            platform_categories = args.platform_category if args.platform_category is not None else auto_platform_categories
-
-            platform_key = args.platform_key or auto_platform_key
-            platform_name_full = args.platform_name_full or auto_platform_name
-            media_type = args.media_type
-            enable_custom_cmd_per_title = args.enable_custom_cmd_per_title
-            emu_name = args.emu_name
-            default_emu = args.default_emu
-            default_emu_cmd_params = args.default_emu_cmd_params
+        elif args.search_mode in ("by-filter", "by-sourcefile"):
+            term = args.description_term if args.search_mode == "by-filter" else args.sourcefile_term
+            attribute_name = "description" if args.search_mode == "by-filter" else "sourcefile"
             
-        elif args.search_mode == "by-filter":
             for machine_element in source_xml_root.findall("machine"):
-                if args.description_term.lower() in machine_element.findtext("description", "").lower():
-                    if args.softlist_capable and machine_element.find("softwarelist") is None: continue
+                attr_value = machine_element.findtext(attribute_name, "") if attribute_name == "description" else machine_element.get(attribute_name, "")
+                if term.lower() in attr_value.lower():
+                    if args.search_mode == "by-filter" and hasattr(args, 'softlist_capable') and args.softlist_capable and machine_element.find("softwarelist") is None: 
+                        continue
                     systems_to_process.append(machine_element.get("name"))
-            systems_to_process.sort()
-            if args.limit is not None:
-                systems_to_process = systems_to_process[:args.limit]
             
+            systems_to_process.sort()
+            if args.limit is not None: systems_to_process = systems_to_process[:args.limit]
             search_term_for_core = ""
-            platform_key = args.platform_key or f"filtered-{args.description_term.replace(' ', '-').lower()}"
-            platform_name_full = args.platform_name_full or f"Machines containing '{args.description_term}'"
-            if args.softlist_capable: platform_name_full += " (Softlist Capable)"
-            media_type = args.media_type
-            enable_custom_cmd_per_title = args.enable_custom_cmd_per_title or args.softlist_capable
-            emu_name = args.emu_name
-            default_emu = args.default_emu
-            default_emu_cmd_params = args.default_emu_cmd_params
+            
+            if args.output_format == "yaml":
+                platform_key = platform_key or f"{attribute_name}-{term.replace(' ', '-').replace('.cpp', '').lower()}"
+                platform_name_full = platform_name_full or f"Systems from {attribute_name} '{term}'"
 
         if args.output_format == "yaml":
             if not all([platform_key, platform_name_full, media_type]):
@@ -1468,8 +1457,8 @@ def main():
             systems_to_process, search_term_for_core, args.output_format,
             platform_key, platform_name_full, platform_categories, media_type,
             enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params,
-            args.output_file, driver_status_filter, emulation_status_filter,
-            show_systems_only_flag, show_extra_info_flag, source_xml_root, sort_by=sort_by_flag
+            output_file_path, driver_status_filter, emulation_status_filter,
+            show_systems_only_flag, show_extra_info_flag, source_xml_root, sort_by=sort_by_flag, search_mode=args.search_mode
         )
 
     elif args.command == "copy-roms":
