@@ -422,7 +422,7 @@ def parse_software_list_from_file(search="", expected_softlist_name=None, system
 
     return results
 
-def output_to_yaml_file(input_systems, all_software_entries, platform_key, platform_name_full, media_type, 
+def output_to_yaml_file(input_systems, all_software_entries, platform_key, platform_name_full, platform_categories, media_type, 
                          enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
                          output_file_path=None):
     """
@@ -463,10 +463,13 @@ def output_to_yaml_file(input_systems, all_software_entries, platform_key, platf
     new_platform_entry = {
         "platform": {
             "name": platform_name_full
-        },
-        "media_type": media_type,
+        }
     }
+    
+    if platform_categories:
+        new_platform_entry["platform_category"] = platform_categories
 
+    new_platform_entry["media_type"] = media_type
     new_platform_entry["enable_custom_command_line_param_per_software_id"] = enable_custom_cmd_per_title
 
     if emu_name:
@@ -622,7 +625,7 @@ def perform_rom_copy_operation(args):
     print(f"  Total Empty System Zips Created: {total_empty_system_zips}")
     print(f"======================================")
 
-def perform_mame_search_and_output(systems_to_process, search_term, output_format, platform_key, platform_name_full, media_type, 
+def perform_mame_search_and_output(systems_to_process, search_term, output_format, platform_key, platform_name_full, platform_categories, media_type, 
                                    enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
                                    output_file_path, driver_status_filter=None, emulation_status_filter=None, 
                                    show_systems_only=False, show_extra_info=False, source_xml_root=None, sort_by=None):
@@ -767,6 +770,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                 all_software_entries=all_software_entries_for_yaml_processing,
                 platform_key=platform_key,
                 platform_name_full=platform_name_full,
+                platform_categories=platform_categories,
                 media_type=media_type,
                 enable_custom_cmd_per_title=enable_custom_cmd_per_title,
                 emu_name=emu_name,
@@ -1107,13 +1111,17 @@ def display_platform_info(args):
 
     platform_info_rows = []
     headers = [
-        "Platform Key", "Platform Name", "Media Type", "Custom CMD per Title",
+        "Platform Key", "Platform Name", "Platform Category", "Media Type", "Custom CMD per Title",
         "Emulator Name", "Default Emu", "Default Emu Cmd Params",
         "# Systems", "# Softlists", "# Software IDs"
     ]
 
     for p_key, p_data in platforms_to_display.items():
         platform_name = p_data.get("platform", {}).get("name", "N/A")
+        
+        categories = p_data.get("platform_category", [])
+        category_str = ", ".join(categories) if categories else "N/A"
+        
         media_type = p_data.get("media_type", "N/A")
         enable_custom_cmd = p_data.get("enable_custom_command_line_param_per_software_id", False)
         
@@ -1136,7 +1144,7 @@ def display_platform_info(args):
                         num_software_ids += len(softlist_detail.get("software_id", []))
 
         platform_info_rows.append([
-            p_key, platform_name, media_type, enable_custom_cmd,
+            p_key, platform_name, category_str, media_type, enable_custom_cmd,
             emulator_name, default_emulator, default_emu_cmd,
             num_systems, num_softlists, num_software_ids
         ])
@@ -1219,13 +1227,11 @@ def main():
     search_parser = subparsers.add_parser("search", help="Search MAME systems and generate YAML/table.")
     search_subparsers = search_parser.add_subparsers(dest="search_mode", required=True, help="How to specify systems for search.")
 
-    show_extra_info_help_text = "[For Table Output] Show additional columns: System Description, Manufacturer, and Software Publisher."
     sort_by_choices = ['system_name', 'system_desc', 'manufacturer', 'software_id', 'title', 'publisher', 'driver_status', 'emulation_status']
 
-    # Common arguments for table-producing commands
     table_args_parser = argparse.ArgumentParser(add_help=False)
     table_args_parser.add_argument("--show-systems-only", action="store_true", help="[For Table] Only show one row per system.")
-    table_args_parser.add_argument("--show-extra-info", action="store_true", help=show_extra_info_help_text)
+    table_args_parser.add_argument("--show-extra-info", action="store_true", help="[For Table Output] Show additional columns: System Description, Manufacturer, and Software Publisher.")
     table_args_parser.add_argument("--sort-by", choices=sort_by_choices, help="[For Table] Sort the output table by a specific column.")
 
     by_name_parser = search_subparsers.add_parser("by-name", help="Search systems by explicit names or fuzzy prefix.", parents=[table_args_parser])
@@ -1239,6 +1245,7 @@ def main():
     by_name_parser.add_argument("--output-file", help="Path to the output YAML file. Defaults to config.")
     by_name_parser.add_argument("--platform-key", help="[Required for YAML] Top-level key for the platform in YAML.")
     by_name_parser.add_argument("--platform-name-full", help="[Required for YAML] Full, descriptive name of the platform.")
+    by_name_parser.add_argument("--platform-category", nargs='+', help="[For YAML] One or more categories for the platform.")
     by_name_parser.add_argument("--media-type", help="[Required for YAML] Media type for the platform (e.g., 'cart').")
     by_name_parser.add_argument("-ect", "--enable-custom-cmd-per-title", action="store_true", help="Set 'enable_custom_command_line_param_per_software_id: true'.")
     by_name_parser.add_argument("-en", "--emu-name", help="Sets the 'emulator.name'.")
@@ -1255,6 +1262,7 @@ def main():
     by_xml_parser.add_argument("--output-file", help="Path to the output YAML file. Defaults to config.")
     by_xml_parser.add_argument("--platform-key", help="Overrides auto-set platform key.")
     by_xml_parser.add_argument("--platform-name-full", help="Overrides auto-set platform name.")
+    by_xml_parser.add_argument("--platform-category", nargs='+', help="[For YAML] One or more categories for the platform (overrides defaults).")
     by_xml_parser.add_argument("--media-type", default="cart", help="Overrides auto-set media type (default: 'cart').")
     by_xml_parser.add_argument("-ect", "--enable-custom-cmd-per-title", action="store_true", help="Overrides auto-set option.")
     by_xml_parser.add_argument("-en", "--emu-name", default="MAME (Cartridge)", help="Overrides auto-set emulator name.")
@@ -1272,6 +1280,7 @@ def main():
     by_filter_parser.add_argument("--output-file", help="Path to the output YAML file. Defaults to config.")
     by_filter_parser.add_argument("--platform-key", help="[Required for YAML] Top-level key for the platform in YAML.")
     by_filter_parser.add_argument("--platform-name-full", help="[Required for YAML] Full, descriptive name of the platform.")
+    by_filter_parser.add_argument("--platform-category", nargs='+', help="[For YAML] One or more categories for the platform.")
     by_filter_parser.add_argument("--media-type", default="cart", help="[Required for YAML] Media type for the platform (default: 'cart').")
     by_filter_parser.add_argument("-ect", "--enable-custom-cmd-per-title", action="store_true", help="Set 'enable_custom_command_line_param_per_software_id: true'.")
     by_filter_parser.add_argument("-en", "--emu-name", help="Sets the 'emulator.name'.")
@@ -1350,6 +1359,7 @@ def main():
 
         platform_key = args.platform_key
         platform_name_full = args.platform_name_full
+        platform_categories = getattr(args, 'platform_category', None)
         media_type = args.media_type
         enable_custom_cmd_per_title = args.enable_custom_cmd_per_title
         emu_name = args.emu_name
@@ -1405,6 +1415,9 @@ def main():
             if xml_filename_base == MESS_SOFTLIST_XML_FILE: auto_platform_name = "MESS (Softlist Capable)"
             elif xml_filename_base == MESS_NOSOFTLIST_XML_FILE: auto_platform_name = "MESS (No Softlist)"
             
+            auto_platform_categories = [auto_platform_name]
+            platform_categories = args.platform_category if args.platform_category is not None else auto_platform_categories
+
             platform_key = args.platform_key or auto_platform_key
             platform_name_full = args.platform_name_full or auto_platform_name
             media_type = args.media_type
@@ -1442,7 +1455,7 @@ def main():
         
         perform_mame_search_and_output(
             systems_to_process, search_term_for_core, args.output_format,
-            platform_key, platform_name_full, media_type,
+            platform_key, platform_name_full, platform_categories, media_type,
             enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params,
             args.output_file, driver_status_filter, emulation_status_filter,
             show_systems_only_flag, show_extra_info_flag, source_xml_root, sort_by=sort_by_flag
