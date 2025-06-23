@@ -1295,7 +1295,7 @@ def main():
     by_name_parser.add_argument("--limit", type=int, help="Optional: Limit the number of systems processed.")
     by_name_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     by_name_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="table", help="Output format: 'table' (default), 'yaml', or 'csv'.")
-    by_name_parser.add_argument("--output-file", help="Path to the output file (required for 'csv' format, optional for 'yaml').")
+    by_name_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
     by_name_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_name_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
 
@@ -1304,17 +1304,17 @@ def main():
     by_xml_parser.add_argument("search_term", nargs='?', default="", help="Optional: Search term for software ID or description.")
     by_xml_parser.add_argument("--limit", type=int, help="Optional: Limit the number of systems processed.")
     by_xml_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="yaml", help="Output format: 'table', 'yaml' (default), or 'csv'.")
-    by_xml_parser.add_argument("--output-file", help="Path to the output file (required for 'csv' format, optional for 'yaml').")
+    by_xml_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
     by_xml_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_xml_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
     
     by_filter_parser = search_subparsers.add_parser("by-filter", help="Search MAME machines by their XML attributes (e.g., description).", parents=[table_args_parser, yaml_args_parser, inclusion_args_parser])
-    by_filter_parser.add_argument("description_term", help="Term to search within machine descriptions.")
+    by_filter_parser.add_argument("description_terms", nargs='+', help="One or more terms to search for within machine descriptions.")
     by_filter_parser.add_argument("--softlist-capable", action="store_true", help="Only include machines with a <softwarelist> tag.")
     by_filter_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     by_filter_parser.add_argument("--limit", type=int, help="Optional: Limit the number of matching machines processed.")
     by_filter_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="table", help="Output format: 'table' (default), 'yaml', or 'csv'.")
-    by_filter_parser.add_argument("--output-file", help="Path to the output file (required for 'csv' format, optional for 'yaml').")
+    by_filter_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
     by_filter_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_filter_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
 
@@ -1323,7 +1323,7 @@ def main():
     by_sourcefile_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     by_sourcefile_parser.add_argument("--limit", type=int, help="Optional: Limit the number of matching machines processed.")
     by_sourcefile_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="table", help="Output format: 'table' (default), 'yaml', or 'csv'.")
-    by_sourcefile_parser.add_argument("--output-file", help="Path to the output file (required for 'csv' format, optional for 'yaml').")
+    by_sourcefile_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
     by_sourcefile_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_sourcefile_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
 
@@ -1443,20 +1443,21 @@ def main():
                 platform_name_full = platform_name_full or auto_platform_name
             
         elif args.search_mode in ("by-filter", "by-sourcefile"):
-            term = args.description_term if args.search_mode == "by-filter" else args.sourcefile_term
+            term_list = args.description_terms if args.search_mode == "by-filter" else [args.sourcefile_term]
             attribute_name = "description" if args.search_mode == "by-filter" else "sourcefile"
             
             for machine_element in source_xml_root.findall("machine"):
                 attr_value = machine_element.findtext(attribute_name, "") if attribute_name == "description" else machine_element.get(attribute_name, "")
-                if term.lower() in attr_value.lower():
+                if any(term.lower() in attr_value.lower() for term in term_list):
                     if args.search_mode == "by-filter" and hasattr(args, 'softlist_capable') and args.softlist_capable and machine_element.find("softwarelist") is None: 
                         continue
                     processed_systems_set.add(machine_element.get("name"))
             
             search_term_for_core = ""
             if args.output_format == "yaml":
-                platform_key = platform_key or f"{attribute_name}-{term.replace(' ', '-').replace('.cpp', '').lower()}"
-                platform_name_full = platform_name_full or f"Systems from {attribute_name} '{term}'"
+                auto_name_part = "-".join(term_list).replace(' ', '-').replace('.cpp', '')
+                platform_key = platform_key or f"{attribute_name}-{auto_name_part}"
+                platform_name_full = platform_name_full or f"Systems from {attribute_name} matching '{', '.join(term_list)}'"
         
         # Universal include/exclude logic for all search modes
         if hasattr(args, 'include_systems') and args.include_systems:
