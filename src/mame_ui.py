@@ -111,11 +111,13 @@ class MameRomManagerApp(QMainWindow):
         
         self.main_tab_widget = QTabWidget()
 
+        # Create tabs
         self.platforms_tab = PlatformsTab(self.log_output.append, self)
         self.search_tab = SearchTab(self.log_output.append, self)
         self.rom_copy_tab = RomCopyTab(self.log_output.append, self)
         self.settings_tab = SettingsTab(self.log_output.append, self)
 
+        # Add tabs
         self.main_tab_widget.addTab(self.platforms_tab, "Platforms")
         self.main_tab_widget.addTab(self.search_tab, "Search")
         self.main_tab_widget.addTab(self.rom_copy_tab, "ROM Copy")
@@ -565,7 +567,8 @@ class SearchTab(QWidget):
         self.search_tabs = QTabWidget()
         main_layout.addWidget(self.search_tabs)
 
-        self.by_name_tab_components = self._create_by_name_tab()
+        # Create individual search tabs, storing their components
+        self.by_name_tab_components = self._create_search_tab("by-name")
         self.by_xml_tab_components = self._create_by_xml_tab()
         self.by_filter_tab_components = self._create_by_filter_tab()
         self.by_sourcefile_tab_components = self._create_by_sourcefile_tab()
@@ -581,34 +584,39 @@ class SearchTab(QWidget):
 
     def _create_base_search_layout(self):
         page = QWidget()
-        main_layout = QVBoxLayout(page)
+        layout = QVBoxLayout(page)
         
-        hbox = QHBoxLayout()
-        left_vbox = QVBoxLayout()
-        right_vbox = QVBoxLayout()
-        hbox.addLayout(left_vbox, 1)
-        hbox.addLayout(right_vbox, 1)
-        
-        search_criteria_group = QGroupBox("Search Criteria")
+        # --- Options Group (now on the left) ---
         options_group = QGroupBox("Options")
-        
-        left_vbox.addWidget(search_criteria_group)
-        right_vbox.addWidget(options_group)
-        
-        search_layout = QFormLayout(search_criteria_group)
         options_layout = QVBoxLayout(options_group)
-
+        
         table_options = TableOptionsWidget()
         yaml_options = YamlOptionsWidget()
         emu_options = EmuOptionsWidget()
         inclusion_options = InclusionOptionsWidget()
+        
+        # Add widgets to layout
         options_layout.addWidget(table_options)
+        options_layout.addWidget(inclusion_options)
         options_layout.addWidget(yaml_options)
         options_layout.addWidget(emu_options)
-        options_layout.addWidget(inclusion_options)
+        options_layout.addStretch()
+
+        # --- Main content area (with search criteria on right) ---
+        main_hbox = QHBoxLayout()
+        search_criteria_group = QGroupBox("Search Criteria")
+        search_layout = QFormLayout(search_criteria_group)
         
-        main_layout.addLayout(hbox)
+        main_hbox.addWidget(options_group, 1)
+        main_hbox.addWidget(search_criteria_group, 2)
         
+        layout.addLayout(main_hbox)
+
+        # Hide YAML/Emu options by default
+        yaml_options.hide()
+        emu_options.hide()
+
+        # --- Output and Run Section ---
         output_group = QGroupBox("Output")
         output_layout = QHBoxLayout(output_group)
         output_format_cb = QComboBox()
@@ -625,17 +633,65 @@ class SearchTab(QWidget):
         output_layout.addStretch()
         output_layout.addWidget(run_search_btn)
         
-        main_layout.addWidget(output_group)
+        layout.addWidget(output_group)
+        
+        # Connect signal to show/hide options
+        output_format_cb.currentTextChanged.connect(lambda text: self.toggle_yaml_options(text, yaml_options, emu_options))
 
-        components = {
+        return {
             'page': page, 'search_layout': search_layout,
             'table_options': table_options, 'yaml_options': yaml_options,
             'emu_options': emu_options, 'inclusion_options': inclusion_options,
             'output_format_cb': output_format_cb, 'output_file_le': output_file_le,
             'browse_output_btn': browse_output_btn, 'run_search_btn': run_search_btn
         }
-        return components
 
+    def toggle_yaml_options(self, text, yaml_widget, emu_widget):
+        is_yaml = (text == 'yaml')
+        yaml_widget.setVisible(is_yaml)
+        emu_widget.setVisible(is_yaml)
+
+    def _create_search_tab(self, mode):
+        c = self._create_base_search_layout()
+        
+        c['limit_le'] = QLineEdit()
+        c['limit_le'].setValidator(QIntValidator(0, 99999))
+        c['limit_le'].setFixedWidth(50)
+
+        if mode == "by-name":
+            c['systems_te'] = QTextEdit()
+            c['systems_te'].setPlaceholderText("Enter system names, one per line or separated by space/comma.")
+            c['fuzzy_le'] = QLineEdit()
+            c['search_term_le'] = QLineEdit()
+            c['search_layout'].addRow("Systems:", c['systems_te'])
+            c['search_layout'].addRow("Fuzzy Prefix:", c['fuzzy_le'])
+            c['search_layout'].addRow("Software Search Term:", c['search_term_le'])
+            c['run_search_btn'].clicked.connect(lambda: self.run_generic_search(c, self._get_by_name_args))
+        elif mode == "by-xml":
+            c['xml_filepath_le'] = QLineEdit()
+            c['xml_browse_btn'] = QPushButton("...")
+            xml_hbox = QHBoxLayout()
+            xml_hbox.addWidget(c['xml_filepath_le'])
+            xml_hbox.addWidget(c['xml_browse_btn'])
+            c['search_layout'].addRow("XML File Path:", xml_hbox)
+            c['search_term_le'] = QLineEdit()
+            c['search_layout'].addRow("Software Search Term:", c['search_term_le'])
+            c['xml_browse_btn'].clicked.connect(lambda: self.main_app_ref.settings_tab.browse_file(c['xml_filepath_le'], "Select MAME XML", "XML Files (*.xml)"))
+            c['run_search_btn'].clicked.connect(lambda: self.run_generic_search(c, self._get_by_xml_args))
+        elif mode == "by-filter":
+            c['description_terms_le'] = QLineEdit()
+            c['description_terms_le'].setPlaceholderText("Space-separated list of terms (e.g., \"in 1\" handheld)")
+            c['search_layout'].addRow("Description Contains:", c['description_terms_le'])
+            c['run_search_btn'].clicked.connect(lambda: self.run_generic_search(c, self._get_by_filter_args))
+        elif mode == "by-sourcefile":
+            c['sourcefile_term_le'] = QLineEdit()
+            c['sourcefile_term_le'].setPlaceholderText("e.g., xavix.cpp or just xavix")
+            c['search_layout'].addRow("Source File Contains:", c['sourcefile_term_le'])
+            c['run_search_btn'].clicked.connect(lambda: self.run_generic_search(c, self._get_by_sourcefile_args))
+        
+        c['search_layout'].addRow("Limit Results:", c['limit_le'])
+        return c
+    
     def _create_by_name_tab(self):
         c = self._create_base_search_layout()
         
