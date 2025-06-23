@@ -306,12 +306,11 @@ def get_all_mame_systems_by_prefix_from_root(prefix, xml_root):
 
 def get_machine_details_and_filters_from_root(system_name, source_xml_root): 
     """
-    Extracts machine details (softlist filters, driver status, description, manufacturer, sourcefile)
-    from a given XML root for a specific system.
+    Extracts machine details from a given XML root for a specific system.
     Returns a tuple: (filters_dict, machine_metadata_dict)
     """
     filters = {}
-    machine_metadata = {"description": "N/A", "manufacturer": "N/A", "status": "N/A", "emulation": "N/A", "sourcefile": "N/A"}
+    machine_metadata = {"description": "N/A", "manufacturer": "N/A", "year": "N/A", "status": "N/A", "emulation": "N/A", "sourcefile": "N/A"}
     
     debug_print(f"Extracting details for '{system_name}' from provided XML root.")
     
@@ -323,6 +322,7 @@ def get_machine_details_and_filters_from_root(system_name, source_xml_root):
 
         machine_metadata["description"] = machine_element.findtext("description", "N/A").strip()
         machine_metadata["manufacturer"] = machine_element.findtext("manufacturer", "N/A").strip()
+        machine_metadata["year"] = machine_element.findtext("year", "N/A").strip()
         machine_metadata["sourcefile"] = machine_element.get("sourcefile", "N/A")
 
         driver_element = machine_element.find("driver")
@@ -701,7 +701,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
             
             headers = ["System"]
             if show_extra_info:
-                headers.extend(["Description", "Manufacturer"])
+                headers.extend(["Description", "Manufacturer", "Year"])
             headers.extend(["Softlist", "Software ID", "Title"])
             if show_extra_info:
                 headers.append("Publisher")
@@ -718,12 +718,13 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                     emulation_status = machine_metadata['emulation']
                     machine_description = machine_metadata['description']
                     machine_manufacturer = machine_metadata['manufacturer']
+                    machine_year = machine_metadata['year']
                     source_file = machine_metadata['sourcefile']
 
                     if show_systems_only:
                         row = [sys_name]
                         if show_extra_info:
-                            row.extend([machine_description, machine_manufacturer])
+                            row.extend([machine_description, machine_manufacturer, machine_year])
                         row.extend(["N/A", "N/A", machine_description])
                         if show_extra_info:
                             row.append("N/A")
@@ -735,7 +736,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                         for softlist_name, _, swid, desc, publisher in system_data_info['software_entries']:
                             row = [sys_name] 
                             if show_extra_info:
-                                row.extend([machine_description, machine_manufacturer])
+                                row.extend([machine_description, machine_manufacturer, machine_year])
                             row.extend([softlist_name, swid, desc])
                             if show_extra_info:
                                 row.append(publisher)
@@ -746,7 +747,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                     else:
                         row = [sys_name]
                         if show_extra_info:
-                            row.extend([machine_description, machine_manufacturer])
+                            row.extend([machine_description, machine_manufacturer, machine_year])
                         row.extend(["N/A", "N/A", machine_description])
                         if show_extra_info:
                             row.append("N/A")
@@ -757,7 +758,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
             
             if sort_by and table_display_data:
                 key_to_header = {
-                    'system_name': 'System', 'system_desc': 'Description', 'manufacturer': 'Manufacturer',
+                    'system_name': 'System', 'system_desc': 'Description', 'manufacturer': 'Manufacturer', 'year': 'Year',
                     'softlist': 'Softlist', 'software_id': 'Software ID', 'title': 'Title',
                     'publisher': 'Publisher', 'driver_status': 'Driver Status', 'emulation_status': 'Emulation Status',
                     'sourcefile': 'Source File'
@@ -1003,7 +1004,7 @@ def display_yaml_table(args, source_xml_root):
     
     headers = ["System"]
     if args.show_extra_info:
-        headers.extend(["Description", "Manufacturer"])
+        headers.extend(["Description", "Manufacturer", "Year"])
     headers.extend(["Softlist", "Software ID", "Title"])
     if args.show_extra_info:
         headers.append("Publisher")
@@ -1032,12 +1033,13 @@ def display_yaml_table(args, source_xml_root):
             emulation_status = machine_metadata['emulation']
             machine_description = machine_metadata['description']
             machine_manufacturer = machine_metadata['manufacturer']
+            machine_year = machine_metadata['year']
             source_file = machine_metadata['sourcefile']
 
             if args.show_systems_only:
                 row = [system_name]
                 if args.show_extra_info:
-                    row.extend([machine_description, machine_manufacturer])
+                    row.extend([machine_description, machine_manufacturer, machine_year])
                 row.extend(["N/A", "N/A", machine_description])
                 if args.show_extra_info:
                     row.append("N/A")
@@ -1055,7 +1057,7 @@ def display_yaml_table(args, source_xml_root):
                             publisher = "N/A (YAML Source)" 
                             row = [system_name]
                             if args.show_extra_info:
-                                row.extend([machine_description, machine_manufacturer])
+                                row.extend([machine_description, machine_manufacturer, machine_year])
                             row.extend([softlist_name, swid, "N/A (YAML Source)"])
                             if args.show_extra_info:
                                 row.append(publisher)
@@ -1066,7 +1068,7 @@ def display_yaml_table(args, source_xml_root):
                     else:
                         row = [system_name]
                         if args.show_extra_info:
-                            row.extend([machine_description, machine_manufacturer])
+                            row.extend([machine_description, machine_manufacturer, machine_year])
                         row.extend([softlist_name, "N/A", "N/A (No IDs)", "N/A"])
                         if args.show_extra_info:
                             row.append("N/A")
@@ -1077,7 +1079,7 @@ def display_yaml_table(args, source_xml_root):
             else:
                 row = [system_name]
                 if args.show_extra_info:
-                    row.extend([machine_description, machine_manufacturer])
+                    row.extend([machine_description, machine_manufacturer, machine_year])
                 row.extend(["N/A", "N/A", machine_description])
                 if args.show_extra_info:
                     row.append("N/A")
@@ -1088,7 +1090,7 @@ def display_yaml_table(args, source_xml_root):
 
     if args.sort_by and table_display_data:
         key_to_header = {
-            'system_name': 'System', 'system_desc': 'Description', 'manufacturer': 'Manufacturer',
+            'system_name': 'System', 'system_desc': 'Description', 'manufacturer': 'Manufacturer', 'year': 'Year',
             'softlist': 'Softlist', 'software_id': 'Software ID', 'title': 'Title',
             'publisher': 'Publisher', 'driver_status': 'Driver Status', 'emulation_status': 'Emulation Status',
             'sourcefile': 'Source File'
@@ -1265,11 +1267,11 @@ def main():
     search_parser = subparsers.add_parser("search", help="Search MAME systems and generate YAML/table.")
     search_subparsers = search_parser.add_subparsers(dest="search_mode", required=True, help="How to specify systems for search.")
 
-    sort_by_choices = ['system_name', 'system_desc', 'manufacturer', 'software_id', 'title', 'publisher', 'driver_status', 'emulation_status', 'sourcefile']
+    sort_by_choices = ['system_name', 'system_desc', 'manufacturer', 'year', 'software_id', 'title', 'publisher', 'driver_status', 'emulation_status', 'sourcefile']
 
     table_args_parser = argparse.ArgumentParser(add_help=False)
     table_args_parser.add_argument("--show-systems-only", action="store_true", help="[For Table] Only show one row per system.")
-    table_args_parser.add_argument("--show-extra-info", action="store_true", help="[For Table Output] Show additional columns: Description, Manufacturer, Publisher, and Source File.")
+    table_args_parser.add_argument("--show-extra-info", action="store_true", help="[For Table Output] Show additional columns: Description, Manufacturer, Year, Publisher, and Source File.")
     table_args_parser.add_argument("--sort-by", choices=sort_by_choices, help="[For Table] Sort the output table by a specific column.")
 
     # Base parser for YAML output arguments, to avoid repetition
@@ -1295,7 +1297,7 @@ def main():
     by_name_parser.add_argument("--limit", type=int, help="Optional: Limit the number of systems processed.")
     by_name_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     by_name_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="table", help="Output format: 'table' (default), 'yaml', or 'csv'.")
-    by_name_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
+    by_name_parser.add_argument("--output-file", help="Path to the output file (required for 'csv' format, optional for 'yaml').")
     by_name_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_name_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
 
@@ -1304,7 +1306,7 @@ def main():
     by_xml_parser.add_argument("search_term", nargs='?', default="", help="Optional: Search term for software ID or description.")
     by_xml_parser.add_argument("--limit", type=int, help="Optional: Limit the number of systems processed.")
     by_xml_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="yaml", help="Output format: 'table', 'yaml' (default), or 'csv'.")
-    by_xml_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
+    by_xml_parser.add_argument("--output-file", help="Path to the output file (required for 'csv' format, optional for 'yaml').")
     by_xml_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_xml_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
     
@@ -1314,7 +1316,7 @@ def main():
     by_filter_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     by_filter_parser.add_argument("--limit", type=int, help="Optional: Limit the number of matching machines processed.")
     by_filter_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="table", help="Output format: 'table' (default), 'yaml', or 'csv'.")
-    by_filter_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
+    by_filter_parser.add_argument("--output-file", help="Path to the output file (required for 'csv' format, optional for 'yaml').")
     by_filter_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_filter_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
 
@@ -1323,7 +1325,7 @@ def main():
     by_sourcefile_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     by_sourcefile_parser.add_argument("--limit", type=int, help="Optional: Limit the number of matching machines processed.")
     by_sourcefile_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="table", help="Output format: 'table' (default), 'yaml', or 'csv'.")
-    by_sourcefile_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
+    by_sourcefile_parser.add_argument("--output-file", help="Path to the output file (required for 'csv' format, optional for 'yaml').")
     by_sourcefile_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_sourcefile_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
 
