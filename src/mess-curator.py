@@ -1283,44 +1283,47 @@ def main():
     yaml_args_parser.add_argument("-de", "--default-emu", action="store_true", help="Set 'emulator.default_emulator: true'.")
     yaml_args_parser.add_argument("-dec", "--default-emu-cmd-params", help="Sets 'emulator.default_command_line_parameters'.")
 
-    by_name_parser = search_subparsers.add_parser("by-name", help="Search systems by explicit names or fuzzy prefix.", parents=[table_args_parser, yaml_args_parser])
+    # Base parser for system inclusion/exclusion
+    inclusion_args_parser = argparse.ArgumentParser(add_help=False)
+    inclusion_args_parser.add_argument("--include-systems", nargs='+', default=[], help="Space-separated list of MAME system short names to explicitly include in processing.")
+    inclusion_args_parser.add_argument("--exclude-systems", nargs='+', default=[], help="Space-separated list of MAME system short names to explicitly exclude.")
+
+    by_name_parser = search_subparsers.add_parser("by-name", help="Search systems by explicit names or fuzzy prefix.", parents=[table_args_parser, yaml_args_parser, inclusion_args_parser])
     by_name_parser.add_argument("systems", nargs='*', default=[], help="One or more MAME system short names (e.g., 'ekara', 'nes').")
     by_name_parser.add_argument("search_term", nargs='?', default="", help="Optional: Search term for software ID or description.")
     by_name_parser.add_argument("--fuzzy", help="Optional: Prefix to fuzzy match MAME system names (e.g., 'jak_').")
-    by_name_parser.add_argument("--include-systems", nargs='+', default=[], help="Space-separated list of MAME system short names to explicitly include in processing.")
-    by_name_parser.add_argument("--exclude-systems", nargs='+', default=[], help="Space-separated list of MAME system short names to explicitly exclude.")
     by_name_parser.add_argument("--limit", type=int, help="Optional: Limit the number of systems processed.")
     by_name_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     by_name_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="table", help="Output format: 'table' (default), 'yaml', or 'csv'.")
-    by_name_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
+    by_name_parser.add_argument("--output-file", help="Path to the output file (required for 'csv' format, optional for 'yaml').")
     by_name_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_name_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
 
-    by_xml_parser = search_subparsers.add_parser("by-xml", help="Search systems from a generated XML file (e.g., mess-softlist.xml).", parents=[table_args_parser, yaml_args_parser])
+    by_xml_parser = search_subparsers.add_parser("by-xml", help="Search systems from a generated XML file (e.g., mess-softlist.xml).", parents=[table_args_parser, yaml_args_parser, inclusion_args_parser])
     by_xml_parser.add_argument("xml_filepath", help="Path to the XML file with machine definitions.")
     by_xml_parser.add_argument("search_term", nargs='?', default="", help="Optional: Search term for software ID or description.")
     by_xml_parser.add_argument("--limit", type=int, help="Optional: Limit the number of systems processed.")
     by_xml_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="yaml", help="Output format: 'table', 'yaml' (default), or 'csv'.")
-    by_xml_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
+    by_xml_parser.add_argument("--output-file", help="Path to the output file (required for 'csv' format, optional for 'yaml').")
     by_xml_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_xml_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
     
-    by_filter_parser = search_subparsers.add_parser("by-filter", help="Search MAME machines by their XML attributes (e.g., description).", parents=[table_args_parser, yaml_args_parser])
+    by_filter_parser = search_subparsers.add_parser("by-filter", help="Search MAME machines by their XML attributes (e.g., description).", parents=[table_args_parser, yaml_args_parser, inclusion_args_parser])
     by_filter_parser.add_argument("description_term", help="Term to search within machine descriptions.")
     by_filter_parser.add_argument("--softlist-capable", action="store_true", help="Only include machines with a <softwarelist> tag.")
     by_filter_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     by_filter_parser.add_argument("--limit", type=int, help="Optional: Limit the number of matching machines processed.")
     by_filter_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="table", help="Output format: 'table' (default), 'yaml', or 'csv'.")
-    by_filter_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
+    by_filter_parser.add_argument("--output-file", help="Path to the output file (required for 'csv' format, optional for 'yaml').")
     by_filter_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_filter_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
 
-    by_sourcefile_parser = search_subparsers.add_parser("by-sourcefile", help="Search MAME machines by their driver source file (e.g., 'xavix.cpp').", parents=[table_args_parser, yaml_args_parser])
+    by_sourcefile_parser = search_subparsers.add_parser("by-sourcefile", help="Search MAME machines by their driver source file (e.g., 'xavix.cpp').", parents=[table_args_parser, yaml_args_parser, inclusion_args_parser])
     by_sourcefile_parser.add_argument("sourcefile_term", help="Term to search within the machine's sourcefile attribute.")
     by_sourcefile_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' from config or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     by_sourcefile_parser.add_argument("--limit", type=int, help="Optional: Limit the number of matching machines processed.")
     by_sourcefile_parser.add_argument("--output-format", choices=["table", "yaml", "csv"], default="table", help="Output format: 'table' (default), 'yaml', or 'csv'.")
-    by_sourcefile_parser.add_argument("--output-file", help="Path to the output file (required for 'yaml' and 'csv' formats).")
+    by_sourcefile_parser.add_argument("--output-file", help="Path to the output file (required for 'csv' format, optional for 'yaml').")
     by_sourcefile_parser.add_argument("--driver-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'status'.")
     by_sourcefile_parser.add_argument("--emulation-status", choices=["good", "imperfect", "preliminary", "unsupported"], help="Filter machines by driver 'emulation' status.")
 
@@ -1392,7 +1395,7 @@ def main():
             sys.exit(1)
 
     if args.command == "search":
-        systems_to_process = []
+        processed_systems_set = set()
         search_term_for_core = "" 
         
         # Consolidate argument retrieval
@@ -1414,36 +1417,18 @@ def main():
         output_file_path = args.output_file
 
         if args.search_mode == "by-name":
-            processed_systems_set = set(args.systems)
-            if args.fuzzy:
+            processed_systems_set.update(args.systems)
+            if hasattr(args, 'fuzzy') and args.fuzzy:
                 fuzzy_matches = get_all_mame_systems_by_prefix_from_root(args.fuzzy, source_xml_root)
                 if fuzzy_matches:
                     processed_systems_set.update(fuzzy_matches)
                     print(f"[INFO] Found {len(fuzzy_matches)} systems matching '{args.fuzzy}'.")
                 else:
                     print(f"[INFO] No systems found matching '--fuzzy {args.fuzzy}'.")
-
-            if args.include_systems:
-                initial_count = len(processed_systems_set)
-                processed_systems_set.update(args.include_systems)
-                added_count = len(processed_systems_set) - initial_count
-                if added_count > 0:
-                    print(f"[INFO] Included {added_count} additional system(s) via --include-systems.")
-
-            if args.exclude_systems:
-                initial_count = len(processed_systems_set)
-                processed_systems_set -= set(args.exclude_systems)
-                excluded_count = initial_count - len(processed_systems_set)
-                if excluded_count > 0:
-                    print(f"[INFO] Excluded {excluded_count} system(s) via --exclude-systems.")
-
-            systems_to_process = sorted(list(processed_systems_set))
-            if args.limit is not None: systems_to_process = systems_to_process[:args.limit]
             search_term_for_core = args.search_term
 
         elif args.search_mode == "by-xml":
-            systems_to_process = sorted(list(get_all_mame_systems_from_xml_file(args.xml_filepath)))
-            if args.limit is not None: systems_to_process = systems_to_process[:args.limit]
+            processed_systems_set.update(get_all_mame_systems_from_xml_file(args.xml_filepath))
             search_term_for_core = args.search_term
             if args.output_format == "yaml":
                 xml_filename_base = os.path.basename(args.xml_filepath)
@@ -1466,20 +1451,38 @@ def main():
                 if term.lower() in attr_value.lower():
                     if args.search_mode == "by-filter" and hasattr(args, 'softlist_capable') and args.softlist_capable and machine_element.find("softwarelist") is None: 
                         continue
-                    systems_to_process.append(machine_element.get("name"))
+                    processed_systems_set.add(machine_element.get("name"))
             
-            systems_to_process.sort()
-            if args.limit is not None: systems_to_process = systems_to_process[:args.limit]
             search_term_for_core = ""
-            
             if args.output_format == "yaml":
                 platform_key = platform_key or f"{attribute_name}-{term.replace(' ', '-').replace('.cpp', '').lower()}"
                 platform_name_full = platform_name_full or f"Systems from {attribute_name} '{term}'"
+        
+        # Universal include/exclude logic for all search modes
+        if hasattr(args, 'include_systems') and args.include_systems:
+            initial_count = len(processed_systems_set)
+            processed_systems_set.update(args.include_systems)
+            added_count = len(processed_systems_set) - initial_count
+            if added_count > 0:
+                print(f"[INFO] Included {added_count} additional system(s) via --include-systems.")
 
-        if args.output_format in ("yaml", "csv") and not output_file_path:
-            parser.error(f"--output-file is required when using --output-format {args.output_format}")
+        if hasattr(args, 'exclude_systems') and args.exclude_systems:
+            initial_count = len(processed_systems_set)
+            processed_systems_set -= set(args.exclude_systems)
+            excluded_count = initial_count - len(processed_systems_set)
+            if excluded_count > 0:
+                print(f"[INFO] Excluded {excluded_count} system(s) via --exclude-systems.")
+        
+        systems_to_process = sorted(list(processed_systems_set))
+        if hasattr(args, 'limit') and args.limit is not None: systems_to_process = systems_to_process[:args.limit]
+        
+        # Validation
+        if args.output_format == "csv" and not output_file_path:
+            parser.error("--output-file is required when using --output-format csv")
         
         if args.output_format == "yaml":
+            if not output_file_path:
+                output_file_path = APP_CONFIG['system_softlist_yaml_file']
             if not all([platform_key, platform_name_full, media_type]):
                 parser.error("For YAML output, --platform-key, --platform-name-full, and --media-type are required.")
             if (default_emu or default_emu_cmd_params) and not emu_name:
