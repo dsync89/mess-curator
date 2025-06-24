@@ -20,8 +20,6 @@ def debug_print(message):
 # === Configuration Management ===
 CONFIG_FILE = "config.yaml"
 
-# This dictionary holds the application's configuration.
-# It's populated by load_configuration() or the initial setup wizard.
 APP_CONFIG = {
     "mame_executable": "",
     "softlist_rom_sources_dir": "",
@@ -32,7 +30,6 @@ APP_CONFIG = {
 }
 
 def _load_yaml_file(file_path):
-    """Loads YAML data from a given file path, returns empty dict if not found or invalid."""
     if not os.path.exists(file_path):
         return {}
     try:
@@ -47,7 +44,6 @@ def _load_yaml_file(file_path):
         return {}
 
 def save_configuration():
-    """Saves the current APP_CONFIG dictionary to the config.yaml file."""
     try:
         with open(CONFIG_FILE, "w", encoding="utf-8") as f:
             yaml.dump(APP_CONFIG, f, default_flow_style=False, sort_keys=False)
@@ -58,10 +54,6 @@ def save_configuration():
         return False
 
 def load_configuration():
-    """
-    Loads configuration from config.yaml into the global APP_CONFIG.
-    Returns True on success, False if the file doesn't exist.
-    """
     if not os.path.exists(CONFIG_FILE):
         return False
     
@@ -70,7 +62,6 @@ def load_configuration():
         print(f"[WARNING] '{CONFIG_FILE}' is empty or invalid. Please run the setup wizard or use the 'config' command.")
         return False
 
-    # Update APP_CONFIG with loaded values, keeping defaults for missing keys
     for key in APP_CONFIG:
         if key in config_data:
             APP_CONFIG[key] = config_data[key]
@@ -79,7 +70,6 @@ def load_configuration():
     return True
 
 def run_initial_setup_wizard():
-    """Guides the user through the initial setup process if config.yaml is not found."""
     print("=" * 60)
     print(" MAME MESS Curator Tool - Initial Setup Wizard")
     print("=" * 60)
@@ -88,7 +78,6 @@ def run_initial_setup_wizard():
 
     temp_config = {}
 
-    # 1. MAME Executable
     while True:
         prompt = "\n[1/5] Please enter the full path to your MAME executable (e.g., C:\\MAME\\mame.exe):\n> "
         path = input(prompt).strip().replace('"', '')
@@ -97,7 +86,6 @@ def run_initial_setup_wizard():
             break
         print("[!] Invalid path. Please ensure the path points to 'mame.exe' and the file exists.")
 
-    # 2. Softlist ROMs Directory
     while True:
         prompt = "\n[2/5] Please enter the path to your MAME 'softlist' ROMs directory:\n      (This is where subfolders like 'nes', 'ekara_cart', etc., are located)\n> "
         path = input(prompt).strip().replace('"', '')
@@ -106,17 +94,14 @@ def run_initial_setup_wizard():
             break
         print("[!] Invalid path. Please ensure the directory exists.")
 
-    # 3. Output Curated ROMs Directory
     while True:
         prompt = "\n[3/5] Please enter the path for the curated output ROMsets:\n      (This directory will be created if it doesn't exist)\n> "
         path = input(prompt).strip().replace('"', '')
-        if path: # Basic check for non-empty string
+        if path:
             temp_config["out_romset_dir"] = path
             break
         print("[!] Path cannot be empty.")
     
-    # 4. MESS.ini Path
-    # Auto-detect first
     potential_mess_ini = os.path.join(os.path.dirname(os.path.dirname(temp_config["mame_executable"])), "folders", "mess.ini")
     if os.path.isfile(potential_mess_ini):
         print(f"\n[4/5] Auto-detected 'mess.ini' at: {potential_mess_ini}")
@@ -131,14 +116,11 @@ def run_initial_setup_wizard():
                 break
             print("[!] Invalid path. Please ensure the file exists.")
 
-    # 5. system_softlist.yml filename (using default)
     temp_config["system_softlist_yaml_file"] = "system_softlist.yml"
     print(f"\n[5/5] The generated platform metadata will be saved as '{temp_config['system_softlist_yaml_file']}' in the current directory.")
     
-    # Set default for mess.xml
     temp_config["mess_xml_file"] = "mess.xml"
 
-    # --- Confirmation ---
     print("\n" + "=" * 20 + " Configuration Summary " + "=" * 20)
     for key, value in temp_config.items():
         print(f"{key+':':<30} {value}")
@@ -158,11 +140,9 @@ def run_initial_setup_wizard():
         sys.exit(0)
 
 def initialize_application():
-    """Loads config, runs wizard if needed, and checks for essential files."""
     if not load_configuration():
         run_initial_setup_wizard()
     
-    # Post-setup/load check for mess.xml
     if not os.path.exists(APP_CONFIG['mess_xml_file']):
         print(f"\n[INFO] The filtered machine list '{APP_CONFIG['mess_xml_file']}' was not found.")
         print("       This file is highly recommended as it speeds up searches by focusing only on MESS systems.")
@@ -170,29 +150,19 @@ def initialize_application():
         generate = input(prompt).strip().lower()
         if generate in ['', 'y', 'yes']:
             print("\n[INFO] Running the 'split' process to generate required XML files...")
-            # We can call the function directly as we have all the config needed
             from argparse import Namespace
             split_args = Namespace(mess_ini=APP_CONFIG['mess_ini_path'])
             run_split_command(split_args)
         else:
             print("[WARNING] Skipping generation. Some commands may be slower or require specifying a source XML manually.")
 
-# === Configuration Paths (NOW LOADED FROM CONFIG) ===
 MAME_ALL_MACHINES_XML_CACHE = "mame.xml"
 MESS_XML_FILE = "mess.xml"
 MESS_SOFTLIST_XML_FILE = "mess-softlist.xml"
 MESS_NOSOFTLIST_XML_FILE = "mess-nosoftlist.xml"
-
-# === Temporary XML Files (short-lived, auto-cleaned) ===
 TMP_SOFTWARE_XML_FILE = "tmp_software.xml"
 
-# === Helper Functions (YAML, XML Parsing, MAME Interaction) ===
-
 def run_mame_command(args, output_file, use_cache=False): 
-    """
-    Runs a MAME command and pipes output to a file.
-    If use_cache is True, it checks if output_file already exists and skips MAME execution if so.
-    """
     if use_cache and os.path.exists(output_file):
         print(f"[INFO] Using cached XML file: '{output_file}'. Skipping MAME execution.")
         return True
@@ -243,10 +213,6 @@ def run_mame_command(args, output_file, use_cache=False):
 
 
 def get_parsed_mame_xml_root(xml_filepath):
-    """
-    Ensures a MAME XML file exists and is parsed. Runs MAME -listxml to generate if necessary.
-    Returns the parsed ElementTree root, or None on failure.
-    """
     if not os.path.exists(xml_filepath):
         print(f"[INFO] Generating '{xml_filepath}' using MAME. This may take a moment...")
         if not run_mame_command(["-listxml"], xml_filepath, use_cache=False): 
@@ -267,10 +233,6 @@ def get_parsed_mame_xml_root(xml_filepath):
 
 
 def get_all_mame_systems_from_xml_file(xml_filepath):
-    """
-    Parses an XML file (like mess-softlist.xml) and extracts all machine names.
-    Returns a set of machine names.
-    """
     machines = set()
     root = get_parsed_mame_xml_root(xml_filepath)
     if root is None:
@@ -288,9 +250,6 @@ def get_all_mame_systems_from_xml_file(xml_filepath):
 
 
 def get_all_mame_systems_by_prefix_from_root(prefix, xml_root):
-    """
-    Extracts machine names from a given XML root that start with the prefix.
-    """
     matching_systems = []
     debug_print(f"Filtering machines from provided XML by prefix '{prefix}'.")
     try:
@@ -305,10 +264,6 @@ def get_all_mame_systems_by_prefix_from_root(prefix, xml_root):
 
 
 def get_machine_details_and_filters_from_root(system_name, source_xml_root): 
-    """
-    Extracts machine details from a given XML root for a specific system.
-    Returns a tuple: (filters_dict, machine_metadata_dict)
-    """
     filters = {}
     machine_metadata = {"description": "N/A", "manufacturer": "N/A", "year": "N/A", "status": "N/A", "emulation": "N/A", "sourcefile": "N/A"}
     
@@ -350,10 +305,6 @@ def get_machine_details_and_filters_from_root(system_name, source_xml_root):
 
 
 def parse_software_list_from_file(search="", expected_softlist_name=None, system_name="", machine_softlist_filters=None):
-    """
-    Parses the software list XML, applying search and machine-defined compatibility filters.
-    Returns a list of tuples: (softlist_name_from_xml, system_name, swid, desc, publisher)
-    """
     if machine_softlist_filters is None:
         machine_softlist_filters = {}
 
@@ -425,7 +376,6 @@ def parse_software_list_from_file(search="", expected_softlist_name=None, system
     return results
 
 def output_to_csv_file(headers, data, output_file_path):
-    """Writes the given headers and data to a CSV file."""
     try:
         with open(output_file_path, 'w', newline='', encoding='utf-8') as csvfile:
             writer = csv.writer(csvfile)
@@ -438,9 +388,6 @@ def output_to_csv_file(headers, data, output_file_path):
 def output_to_yaml_file(input_systems, all_software_entries, platform_key, platform_name_full, platform_categories, media_type, 
                          enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
                          output_file_path=None):
-    """
-    Generates or updates the system_softlist.yml file with the platform and software IDs.
-    """
     software_info_by_system = {} 
 
     for softlist_name_xml, sys_name, swid, desc, publisher in all_software_entries:
@@ -507,6 +454,49 @@ def output_to_yaml_file(input_systems, all_software_entries, platform_key, platf
         print("---------------------------------------------")
     except Exception as e:
         print(f"[ERROR] Failed to write YAML to '{target_file}': {e}")
+
+
+def update_platform_metadata_only(platform_key, platform_name_full, platform_categories, media_type,
+                                  enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params,
+                                  output_file_path, **kwargs):
+    """Updates only the metadata of an existing platform entry in the YAML, leaving the system list untouched."""
+    print(f"[INFO] Starting metadata-only update for platform '{platform_key}' in '{output_file_path}'.")
+    
+    existing_data = _load_yaml_file(output_file_path)
+    if platform_key not in existing_data:
+        print(f"[ERROR] Platform key '{platform_key}' not found in '{output_file_path}'. Cannot update metadata.")
+        return
+        
+    platform_entry = existing_data[platform_key]
+    
+    # Update platform info
+    platform_entry['platform'] = {'name': platform_name_full}
+    if platform_categories:
+        platform_entry['platform_category'] = platform_categories
+    elif 'platform_category' in platform_entry:
+        del platform_entry['platform_category']
+        
+    platform_entry['media_type'] = media_type
+    platform_entry['enable_custom_command_line_param_per_software_id'] = enable_custom_cmd_per_title
+    
+    # Update emulator info
+    if emu_name:
+        if 'emulator' not in platform_entry:
+            platform_entry['emulator'] = {}
+        platform_entry['emulator']['name'] = emu_name
+        platform_entry['emulator']['default_emulator'] = default_emu
+        if default_emu_cmd_params:
+            platform_entry['emulator']['default_command_line_parameters'] = default_emu_cmd_params
+    elif 'emulator' in platform_entry:
+        del platform_entry['emulator']
+        
+    # Save the modified data back to the file
+    try:
+        with open(output_file_path, "w", encoding="utf-8") as f:
+            yaml.dump(existing_data, f, default_flow_style=False, sort_keys=False)
+        print(f"[SUCCESS] Metadata for platform '{platform_key}' updated in '{output_file_path}'.")
+    except Exception as e:
+        print(f"[ERROR] Failed to save updated YAML: {e}")
 
 # === ROM Copying Functions ===
 
