@@ -85,8 +85,8 @@ takara-popira:
 1.  **Python 3.x:** Ensure you have Python 3.7+ installed. You can download it from [python.org](https://www.python.org/downloads/).
 2.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/YourUsername/mame-curator.git # Replace 'YourUsername' with your actual GitHub username
-    cd mame-curator/src # Navigate to the directory containing mess-curator.py
+    git clone https://github.com/dsync89/mess-curator.git
+    cd mess-curator/src 
     ```
 3.  **Install Dependencies:**
     ```bash
@@ -99,10 +99,10 @@ takara-popira:
 Before running most commands, the tool needs to know where your MAME executable, ROMs, and output files are located.
 
 **First Run (Guided Setup):**
-The very first time you run `mess-curator.py` (and `config.yaml` doesn't exist), it will automatically launch a guided setup process:
+The very first time you run `mess_curator.py` (and `config.yaml` doesn't exist), it will automatically launch a guided setup process:
 
 ```bash
-python mess-curator.py
+python mess_curator.py
 ```
 
 Follow the prompts to set your paths. It will attempt to auto-detect sensible defaults.
@@ -110,17 +110,17 @@ Follow the prompts to set your paths. It will attempt to auto-detect sensible de
 **Viewing Current Configuration:**
 
 ```
-python mess-curator.py config    
+python mess_curator.py config    
 ```
 
 **Setting Specific Paths (Command Line):**
 
 ```
-python mess-curator.py config --set-mame-exe-path "C:\Programs\LaunchBox\Emulators\MAME 0.277\mame.exe"
-python mess-curator.py config --set-softlist-rom-dir "C:\Programs\LaunchBox\Emulators\MAME 0.277\roms"
-python mess-curator.py config --set-output-rom-dir "C:\Users\Gary\Documents\Github-dsync89\mess-curator\out\mame_curated_romset"
-python mess-curator.py config --set-mess-ini-path "C:\Programs\LaunchBox\Emulators\MAME 0.277\folders\mess.ini"
-python mess-curator.py config --set-system-softlist-yaml-file "C:\Users\Gary\Documents\Github-dsync89\mess-curator\data\my_platforms.yml"
+python mess_curator.py config --set-mame-exe-path "C:\Programs\LaunchBox\Emulators\MAME 0.277\mame.exe"
+python mess_curator.py config --set-softlist-rom-dir "C:\Programs\LaunchBox\Emulators\MAME 0.277\roms"
+python mess_curator.py config --set-output-rom-dir "C:\Users\Gary\Documents\Github-dsync89\mess-curator\out\mame_curated_romset"
+python mess_curator.py config --set-mess-ini-path "C:\Programs\LaunchBox\Emulators\MAME 0.277\folders\mess.ini"
+python mess_curator.py config --set-system-softlist-yaml-file "C:\Users\Gary\Documents\Github-dsync89\mess-curator\data\my_platforms.yml"
 ```
 
 *(Paths shown are examples, adjust to your system. Note: `MAME_EXECUTABLE's` parent directory is used to guess mess.ini default path)*
@@ -130,7 +130,7 @@ python mess-curator.py config --set-system-softlist-yaml-file "C:\Users\Gary\Doc
 For the best performance, the tool relies on filtered XML files for MESS (non-Arcade) instead of the full systems `mame.xml`. After the initial setup, you will be prompted to generate them. You can also do this manually at any time:
 
 ```
-python mess-curator.py split
+python mess_curator.py split
 ```
 
 This command will:
@@ -141,7 +141,7 @@ This command will:
 
 ## Usage
 
-All commands follow a subcommand structure. Use `python mess-curator.py <command> -h` for specific help.
+All commands follow a subcommand structure. Use `python mess_curator.py <command> -h` for specific help.
 
 **Important Notes for Windows (PowerShell/CMD):**
 
@@ -150,7 +150,7 @@ If your paths or arguments contain spaces, enclose them in double quotes "like t
 When breaking a long command across multiple lines, use the backtick (`) at the end of each line (except the last one):
 
 ```
-python mess-curator.py search by-xml `
+python mess_curator.py search by-xml `
     --output-format yaml `
     --platform-key my-platform `
     "../data/mess-softlist.xml"
@@ -162,7 +162,7 @@ python mess-curator.py search by-xml `
 This command is crucial for optimizing later search operations. It filters your entire `mame.xml` based on the systems in `mess.ini` and then splits the result.
 
 ```
-python mess-curator.py split
+python mess_curator.py split
 ```
 
 Output Files (generated in the script's directory):
@@ -244,13 +244,13 @@ Options Specific to search `by-name`:
 - **Table output for a single system and its software:**
 
 ```
-python mess-curator.py search by-name ekara --output-format table
+python mess_curator.py search by-name ekara --output-format table
 ```
 
 - **YAML output for a specific platform:**
 
 ```
-python mess-curator.py search by-name jpopira --output-format yaml `
+python mess_curator.py search by-name jpopira --output-format yaml `
     --platform-key jpopira-platform `
     --platform-name-full "Takara J-Popira Karaoke Systems" `
     --media-type cart
@@ -259,7 +259,7 @@ python mess-curator.py search by-name jpopira --output-format yaml `
 - **YAML output for multiple JAKKS systems (fuzzy search + exclude) with emulator details:**
 
 ```
-python mess-curator.py search by-name `
+python mess_curator.py search by-name `
     --platform-key jakks-pacific-tv-game `
     --platform-name-full "JAKKS Pacific TV Game" `
     --media-type cart `
@@ -288,7 +288,7 @@ python mess-curator.py search by-name `
 **Generate YAML for MESS systems with no softlist, limited to 5, with auto-defaults:**
 
 ```
-python mess-curator.py search by-xml `
+python mess_curator.py search by-xml `
     --output-format yaml `
     --limit 5 `
     ..\data\mess-nosoftlist.xml # Assumes this file exists from 'split' command
@@ -299,7 +299,7 @@ python mess-curator.py search by-xml `
 - **Generate YAML for XaviXPort systems from mess.xml, with custom platform/emulator names:**
 
 ```
-python mess-curator.py search by-xml `
+python mess_curator.py search by-xml `
     --output-format yaml `
     --platform-key xavixport `
     --platform-name-full "XaviXPORT Systems" `
@@ -314,7 +314,7 @@ python mess-curator.py search by-xml `
 - **Table output for good emulation systems from mess-softlist.xml:**
 
 ```
-python mess-curator.py search by-xml `
+python mess_curator.py search by-xml `
     --output-format table `
     --show-extra-info `
     --emulation-status good `
@@ -340,7 +340,7 @@ Options Specific to `search by-filter`:
 - **Find "in-1" multigame systems from `mess.xml`, output to YAML:**
 
 ```
-python mess-curator.py search by-filter "in-1" `
+python mess_curator.py search by-filter "in-1" `
     --input-xml ..\data\mess.xml `
     --platform-key mess-filtered-all-in-one-systems `
     --platform-name-full "MESS (All-In-One Systems)" `
@@ -358,7 +358,7 @@ python mess-curator.py search by-filter "in-1" `
 - **Find "XavixPort" systems (by description) from `mess.xml`:**
 
 ```
-python mess-curator.py search by-filter "xavixport" `
+python mess_curator.py search by-filter "xavixport" `
     --input-xml ..\data\mess.xml `
     --platform-key xavixport `
     --platform-name-full "XaviXPORT" `
@@ -374,7 +374,7 @@ python mess-curator.py search by-filter "xavixport" `
 Reads your `system_softlist.yml` and copies/creates dummy `.zip` if that is a system files in a structured output directory.
 
 ```
-python mess-curator.py copy-roms --input-file system_softlist.yml
+python mess_curator.py copy-roms --input-file system_softlist.yml
 ```
 
 **Output Structure Example:**
@@ -388,7 +388,7 @@ python mess-curator.py copy-roms --input-file system_softlist.yml
 Parses and displays the contents of your `system_softlist.yml` in a detailed table.
 
 ```
-python mess-curator.py table --platform-key nintendo-game-and-watch --mame-xml-source ..\data\mess.xml --show-extra-info
+python mess_curator.py table --platform-key nintendo-game-and-watch --mame-xml-source ..\data\mess.xml --show-extra-info
 ```
 
 **Options:**
@@ -408,7 +408,7 @@ python mess-curator.py table --platform-key nintendo-game-and-watch --mame-xml-s
 Provides a high-level overview of platforms defined in your `system_softlist.yml`, including counts of systems, softlists, and software IDs.
 
 ```
-python mess-curator.py platform-info
+python mess_curator.py platform-info
 ```
 
 **Options:**
@@ -542,7 +542,7 @@ Total platforms displayed: 105
 Allows you to view or change the program's configuration paths.
 
 ```
-python mess-curator.py config
+python mess_curator.py config
 ```
 
 Options (Mutually Exclusive - choose one per command):
