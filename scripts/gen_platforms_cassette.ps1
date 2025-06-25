@@ -8,7 +8,7 @@ python ..\src\mess_curator.py search by-name `
     --media-type cartridge `
     --emu-name "MAME (Cassette)" `
     --default-emu `
-    --default-emu-cmd-params '-keyboardprovider dinput electron -skip_gameinfo -autoboot_delay "2" -autoboot_command "*tape\nchain""""""\n" -cass' `
+    --default-emu-cmd-params '-keyboardprovider dinput electron -skip_gameinfo -autoboot_delay \"2\" -autoboot_command \"*tape\nchain\"\"\"\"\"\"\n\" -cass' `
     --output-format yaml `
     --output-file system_softlist.yml `
     electron
@@ -38,7 +38,7 @@ python ..\src\mess_curator.py search by-name `
     --media-type cartridge `
     --emu-name "MAME (Cassette)" `
     --default-emu `
-    --default-emu-cmd-params '-keyboardprovider dinput sorcerer2 -autoboot_command "LOG\n" -autoboot_delay 3 -cass1' `
+    --default-emu-cmd-params '-keyboardprovider dinput sorcerer2 -autoboot_command \"LOG\n\" -autoboot_delay 3 -cass1' `
     --output-format yaml `
     --output-file system_softlist.yml `
     sorcerer2

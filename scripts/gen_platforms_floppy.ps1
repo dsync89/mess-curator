@@ -23,7 +23,7 @@ python ..\src\mess_curator.py search by-name `
     --media-type floppy `
     --emu-name "MAME (Computers)" `
     --default-emu `
-    --default-emu-cmd-params '-keyboardprovider dinput atom -autoboot_delay "2" -autoboot_command "DOS\nCAT\n*RUN"" -flop1' `
+    --default-emu-cmd-params '-keyboardprovider dinput atom -autoboot_delay \"2\" -autoboot_command \"DOS\nCAT\n*RUN\"\" -flop1' `
     --output-format yaml `
     --output-file system_softlist.yml `
     atom
@@ -68,7 +68,7 @@ python ..\src\mess_curator.py search by-name `
     --media-type floppy `
     --emu-name "MAME (Computers)" `
     --default-emu `
-    --default-emu-cmd-params '-keyboardprovider dinput lynx128k -autoboot_delay "2" -autoboot_command "XROM\n\n\nEXT DIR\n\n\n\n\n\n\n\nEXT LOAD "" -flop1' `
+    --default-emu-cmd-params '-keyboardprovider dinput lynx128k -autoboot_delay \"2\" -autoboot_command \"XROM\n\n\nEXT DIR\n\n\n\n\n\n\n\nEXT LOAD \"\" -flop1' `
     --output-format yaml `
     --output-file system_softlist.yml `
     lynx128k 
@@ -98,7 +98,7 @@ python ..\src\mess_curator.py search by-name `
     --media-type floppy `
     --emu-name "MAME (Computers)" `
     --default-emu `
-    --default-emu-cmd-params '-keyboardprovider dinput samcoupe -autoboot_delay 2 -skip_gameinfo -autoboot_command "\nBOOT\n" -flop1' `
+    --default-emu-cmd-params '-keyboardprovider dinput samcoupe -autoboot_delay 2 -skip_gameinfo -autoboot_command \"\nBOOT\n\" -flop1' `
     --output-format yaml `
     --output-file system_softlist.yml `
     samcoupe  
