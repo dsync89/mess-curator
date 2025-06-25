@@ -1,7 +1,7 @@
 # ----------------------
 # Acorn Electron
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key acorn-electron `
     --platform-name-full "Acorn Electron" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -16,7 +16,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Amstrad GX4000
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key amstrad-gx4000 `
     --platform-name-full "Amstrad GX4000" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -31,7 +31,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Atari XEGS
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key atari-xegs `
     --platform-name-full "Atari XEGS" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -46,7 +46,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Bally Astrocade
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key bally-astrocade `
     --platform-name-full "Bally Astrocade" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -61,7 +61,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Bambino Handhelds (LCD)
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key bambino-handhelds-lcd `
     --platform-name-full "Bambino Handhelds (LCD)" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -76,7 +76,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Bandai Gundam RX-78
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key bandai-gundam-rx-78 `
     --platform-name-full "Bandai Gundam RX-78" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -91,7 +91,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Bandai Handheld (LCD)
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key bandai-handhelds-lcd `
     --platform-name-full "Bandai Handheld (LCD)" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -106,7 +106,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Bandai Let's! TV Play
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key bandai-lets-tv-play `
     --platform-name-full "Bandai Let's! TV Play" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -122,7 +122,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Bandai Super Note Club
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key bandai-super-note-club `
     --platform-name-full "Bandai Super Note Club" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -137,7 +137,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Bandai Super Vision 8000
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key bandai-super-vision-8000 `
     --platform-name-full "Bandai Super Vision 8000" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -152,7 +152,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Bandai Tamagotchi
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key bandai-tamagotchi `
     --platform-name-full "Bandai Tamagotchi" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -167,7 +167,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Bit Corp Gamate
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key bit-corp-gamate `
     --platform-name-full "Bit Corp Gamate" `
     --platform-category "Handhelds" "MESS (Handhelds)" "MESS (System w/ Softlist)" `
@@ -182,7 +182,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Casio Loopy
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key casio-loopy `
     --platform-name-full "Casio Loopy" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -197,7 +197,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Casio PV-1000
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key casio-pv-1000 `
     --platform-name-full "Casio PV-1000" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -212,7 +212,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Casio PV-2000
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key casio-pv-2000 `
     --platform-name-full "Casio PV-2000" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -227,7 +227,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Coleco Handheld (LCD)
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key coleco-handhelds-lcd `
     --platform-name-full "Coleco Handheld (LCD)" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -242,7 +242,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Commodore VIC-10
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key commodore-vic-10 `
     --platform-name-full "Commodore VIC-10" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -257,7 +257,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Commodore VIC-20
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key commodore-vic-20 `
     --platform-name-full "Commodore VIC-20" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -272,7 +272,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Conny TV Games
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key conny-tv-games `
     --platform-name-full "Conny TV Games" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -287,7 +287,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Creatronic Mega Duck
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key creatronic-mega-duck `
     --platform-name-full "Creatronic Mega Duck" `
     --platform-category "Handhelds" "MESS (Handhelds)" "MESS (System w/ Softlist)" `
@@ -302,7 +302,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Dragon
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key dragon `
     --platform-name-full "Dragon" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -317,7 +317,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Emerson Arcadia 2001
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key emerson-arcadia-2001 `
     --platform-name-full "Emerson Arcadia 2001" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -332,7 +332,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Entex Adventure Vision
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key entex-adventure-vision `
     --platform-name-full "Entex Adventure Vision" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -347,7 +347,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Entex Handhelds (LCD)
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key entex-handhelds-lcd `
     --platform-name-full "Entex Handhelds (LCD)" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -362,7 +362,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Epoch Game Pocket Computer
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key epoch-game-pocket-computer `
     --platform-name-full "Epoch Game Pocket Computer" `
     --platform-category "Handhelds" "MESS (Handhelds)" "MESS (System w/ Softlist)" `
@@ -377,7 +377,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Epoch Handhelds (LCD)
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key epoch-handhelds-lcd `
     --platform-name-full "Epoch Handhelds (LCD)" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -392,7 +392,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Epoch Super Cassette Vision
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key epoch-super-cassette-vision `
     --platform-name-full "Epoch Super Cassette Vision" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -407,7 +407,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Epoch TV Games
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key epoch-tv-games `
     --platform-name-full "Epoch TV Games" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -422,7 +422,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Epoch TV PC
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key epoch-tv-pc `
     --platform-name-full "Epoch TV PC" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -437,7 +437,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Exelvision EXL 100
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key exelvision-exl-100 `
     --platform-name-full "Exelvision EXL 100" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -452,7 +452,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Funtech Super Acan
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key funtech-super-acan `
     --platform-name-full "Funtech Super Acan" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -467,7 +467,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Gakken Handhelds (LCD)
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key gakken-handhelds-lcd `
     --platform-name-full "Gakken Handhelds (LCD)" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -482,7 +482,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # GamePark GP32
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key gamepark-gp32 `
     --platform-name-full "GamePark GP32" `
     --platform-category "Handhelds" "MESS (Handhelds)" "MESS (System w/ Softlist)" `
@@ -497,7 +497,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Hartung Game Master
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key hartung-game-master `
     --platform-name-full "Hartung Game Master" `
     --platform-category "Handhelds" "MESS (Handhelds)" "MESS (System w/ Softlist)" `
@@ -512,7 +512,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Hasbro TV Games
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key hasbro-tv-games `
     --platform-name-full "Hasbro TV Games" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -527,7 +527,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Interton VC 4000
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key interton-vc-4000 `
     --platform-name-full "Interton VC 4000" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -542,7 +542,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # JAKKS Pacific Telestory
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key jakks-pacific-telestory `
     --platform-name-full "JAKKS Pacific Telestory" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -557,7 +557,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # JAKKS Pacific TV Game
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key jakks-pacific-tv-game `
     --platform-name-full "JAKKS Pacific TV Game" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -574,7 +574,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # JAKKS Pacific TV Motion Game
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key jakks-pacific-tv-motion-game `
     --platform-name-full "JAKKS Pacific TV Motion Game" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -590,7 +590,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # JoyPalette TV Games
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key joypalette-tv-games `
     --platform-name-full "JoyPalette TV Games" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -605,7 +605,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # JungleTac Vii
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key jungletac-vii `
     --platform-name-full "JungleTac Vii" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -620,7 +620,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Koei PasoGo
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key koei-pasogo `
     --platform-name-full "Koei PasoGo" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -635,7 +635,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Konami Handhelds (LCD)
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key konami-handhelds-lcd `
     --platform-name-full "Konami Handhelds (LCD)" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -650,7 +650,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Lexibook TV Games
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key lexibook-tv-games `
     --platform-name-full "Lexibook TV Games" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -665,7 +665,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Mattel Electronics Handhelds (LCD)
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key mattel-electronics-handhelds-lcd `
     --platform-name-full "Mattel Electronics Handhelds (LCD)" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -680,7 +680,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Mattel Intellivision ECS
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key mattel-intellivision-ecs `
     --platform-name-full "Mattel Intellivision ECS" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -695,7 +695,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Milton Bradley Handhelds (LCD)
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key milton-bradley-handhelds-lcd `
     --platform-name-full "Milton Bradley Handhelds (LCD)" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -710,7 +710,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Nichibutsu My Vision
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key nichibutsu-my-vision `
     --platform-name-full "Nichibutsu My Vision" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -725,7 +725,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Nintendo FamicomBox
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key nintendo-famicombox `
     --platform-name-full "Nintendo FamicomBox" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -740,7 +740,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Nintendo Game & Watch
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key nintendo-game-and-watch `
     --platform-name-full "Nintendo Game & Watch" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -755,7 +755,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Nintendo Super Game Boy
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key nintendo-super-game-boy `
     --platform-name-full "Nintendo Super Game Boy" `
     --platform-category "Handhelds" "MESS (Handhelds)" "MESS (System w/ Softlist)" `
@@ -770,7 +770,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Parker Brothers Handhelds (LCD)
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key parker-brothers-handhelds-lcd `
     --platform-name-full "Parker Brothers Handhelds (LCD)" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -785,7 +785,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Philips Videopac+
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key philips-videopac-plus `
     --platform-name-full "Philips Videopac+" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -800,7 +800,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Play Vision TV Games
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key play-vision-tv-games `
     --platform-name-full "Play Vision TV Games" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -815,7 +815,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # RADICA Play TV
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key radica-play-tv `
     --platform-name-full "RADICA Play TV" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -830,7 +830,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # RCA Studio II
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key rca-studio-ii `
     --platform-name-full "RCA Studio II" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -845,7 +845,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Sega Beena
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key sega-beena `
     --platform-name-full "Sega Beena" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -860,7 +860,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Sega SC-3000
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key sega-sc-3000 `
     --platform-name-full "Sega SC-3000" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -875,7 +875,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Senario TV Games
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key senario-tv-games `
     --platform-name-full "Senario TV Games" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -890,7 +890,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Sord M5
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key sord-m5 `
     --platform-name-full "Sord M5" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -905,7 +905,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Spectravision SVI-318
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key spectravision-svi-318 `
     --platform-name-full "Spectravision SVI-318" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -920,7 +920,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Super Impulse TV Games
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key super-impulse-tv-games `
     --platform-name-full "Super Impulse TV Games" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -935,7 +935,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Takara e-kara
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key takara-e-kara `
     --platform-name-full "Takara e-kara" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -950,7 +950,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Takara Jumping Popira
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key takara-jumping-popira `
     --platform-name-full "Takara Jumping Popira" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -965,7 +965,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Takara Popira
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key takara-popira `
     --platform-name-full "Takara Popira" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -981,7 +981,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Takara Tomy TV Game
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key takara-tomy-tv-game `
     --platform-name-full "Takara Tomy TV Game" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -998,7 +998,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Tandy TRS-80 Color Computer
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key tandy-trs-80-color-computer `
     --platform-name-full "Tandy TRS-80 Color Computer" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -1013,7 +1013,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Technosys Aamber Pegasus
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key technosys-aamber-pegasus `
     --platform-name-full "Technosys Aamber Pegasus" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -1028,7 +1028,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Tiger Electronics Handhelds (LCD)
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key tiger-electronics-handhelds-lcd `
     --platform-name-full "Tiger Electronics Handhelds (LCD)" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -1043,7 +1043,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Tiger Game.com
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key tiger-game-com `
     --platform-name-full "Tiger Game.com" `
     --platform-category "Handhelds" "MESS (Handhelds)" "MESS (System w/ Softlist)" `
@@ -1058,7 +1058,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # TimeTop Game King
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key timetop-game-king `
     --platform-name-full "TimeTop Game King" `
     --platform-category "Handhelds" "MESS (Handhelds)" "MESS (System w/ Softlist)" `
@@ -1073,7 +1073,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # TimeTop Game King 3
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key timetop-game-king-3 `
     --platform-name-full "TimeTop Game King 3" `
     --platform-category "Handhelds" "MESS (Handhelds)" "MESS (System w/ Softlist)" `
@@ -1088,7 +1088,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Tomy evio
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key tomy-evio `
     --platform-name-full "Tomy evio" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -1103,7 +1103,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Tomy Handhelds (LCD)
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key tomy-handhelds-lcd `
     --platform-name-full "Tomy Handhelds (LCD)" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -1118,7 +1118,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Tomy Tutor
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key tomy-tutor `
     --platform-name-full "Tomy Tutor" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -1133,7 +1133,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Tronica Handhelds (LCD)
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key tronica-handhelds-lcd `
     --platform-name-full "Tronica Handhelds (LCD)" `
     --platform-category "Handhelds" "MESS (Handhelds LCD)" `
@@ -1148,7 +1148,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Ultimate Products TV Games
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key ultimate-products-tv-games `
     --platform-name-full "Ultimate Products TV Games" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -1163,7 +1163,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Uzebox
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key uzebox `
     --platform-name-full "Uzebox" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -1178,7 +1178,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # VideoBrain Family Computer
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key videobrain-family-computer `
     --platform-name-full "VideoBrain Family Computer" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -1193,7 +1193,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Videoton TVC 64
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key videoton-tvc-64 `
     --platform-name-full "Videoton TVC 64" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -1208,7 +1208,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # VTech Creativision
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key vtech-creativision `
     --platform-name-full "VTech Creativision" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -1223,7 +1223,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # VTech Genius Leader Color
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key vtech-genius-leader-color `
     --platform-name-full "VTech Genius Leader Color" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -1238,7 +1238,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # VTech Socrates
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key vtech-socrates `
     --platform-name-full "VTech Socrates" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -1253,7 +1253,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # VTech TV Games
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key vtech-tv-games `
     --platform-name-full "VTech TV Games" `
     --platform-category "Consoles" "MESS (TV Games)" `
@@ -1268,7 +1268,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # VTech VSmile
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key vtech-vsmile `
     --platform-name-full "VTech VSmile" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -1283,7 +1283,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # VTech VSmile Baby
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key vtech-vsmile-baby `
     --platform-name-full "VTech VSmile Baby" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -1298,7 +1298,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # VTech VSmile Motion
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key vtech-vsmile-motion `
     --platform-name-full "VTech VSmile Motion" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -1313,7 +1313,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Watara Supervision
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key watara-supervision `
     --platform-name-full "Watara Supervision" `
     --platform-category "Handhelds" "MESS (Handhelds)" "MESS (System w/ Softlist)" `

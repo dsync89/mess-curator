@@ -1,7 +1,7 @@
 # ----------------------
 # Acorn Electron
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key acorn-electron `
     --platform-name-full "Acorn Electron" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -16,7 +16,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # EACA EG2000 Colour Genie
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key eaca-eg2000-colour-genie `
     --platform-name-full "EACA EG2000 Colour Genie" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -31,7 +31,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Exidy Sorcerer
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key exidy-sorcerer `
     --platform-name-full "Exidy Sorcerer" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -46,7 +46,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Memotech MTX
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key memotech-mtx `
     --platform-name-full "Memotech MTX" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -61,7 +61,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Philips VG 5000
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key philips-vg-5000 `
     --platform-name-full "Philips VG 5000" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -76,7 +76,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Tandy TRS-80
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key tandy-trs-80 `
     --platform-name-full "Tandy TRS-80" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -91,7 +91,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Tangerine Oric-1
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key tangerine-oric-1 `
     --platform-name-full "Tangerine Oric-1" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `

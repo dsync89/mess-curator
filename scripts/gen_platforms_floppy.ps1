@@ -1,7 +1,7 @@
 # ----------------------
 # Acorn Archimedes
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key acorn-archimedes `
     --platform-name-full "Acorn Archimedes" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -16,7 +16,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Acorn Atom
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key acorn-atom `
     --platform-name-full "Acorn Atom" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -31,7 +31,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Amstrad CPC
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key amstrad-cpc `
     --platform-name-full "Amstrad CPC" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -46,7 +46,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # BBC Microcomputer System
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key bbc-microcomputer-system `
     --platform-name-full "BBC Microcomputer System" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -61,7 +61,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Camputers Lynx
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key camputers-lynx `
     --platform-name-full "Camputers Lynx" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -76,7 +76,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Coleco ADAM
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key coleco-adam `
     --platform-name-full "Coleco ADAM" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -91,7 +91,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # SAM Coupe
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key sam-coupe `
     --platform-name-full "SAM Coupe" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -106,7 +106,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Sharp MZ-2500
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key sharp-mz-2500 `
     --platform-name-full "Sharp MZ-2500" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
@@ -121,7 +121,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Vector-06C
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key vector-06c `
     --platform-name-full "Vector-06C" `
     --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `

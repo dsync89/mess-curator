@@ -1,7 +1,7 @@
 # ----------------------
 # Mattel Hyperscan
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
     --platform-key mattel-hyperscan `
     --platform-name-full "Mattel Hyperscan" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
@@ -16,7 +16,7 @@ python .\mess_curator.py search by-name `
 # ----------------------
 # Tandy Memorex VIS
 # ----------------------
-python .\mess_curator.py search by-name `
+python ..\src\mess_curator.py search by-name `
 --platform-key tandy-memorex-vis `
 --platform-name-full "Tandy Memorex VIS" `
 --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
