@@ -44,6 +44,8 @@ to automatically add platforms, emulators, metadata, and MAME command-line param
 
 - **Curated ROM Set Creation**: Automatically copy the required ROMs (or create dummy files for missing ones) into an organized folder structure that mirrors your YAML.
 
+- **GUI**: A GUI for those that prefer graphics.
+
 ## Why This Tool is Unique:
 
 Many existing tools focus on full ROMset validation or arcade-only management. MAME Curator specifically targets:
@@ -556,6 +558,14 @@ Options (Mutually Exclusive - choose one per command):
 - `--set-mess-ini-path <path>`: Set MESS.ini file path.
 
 - `--set-system-softlist-yaml-file <path>`: Set System Softlist YAML output file path.
+
+## GUI
+
+Run
+
+```
+python src\mess_ui.py
+```
 
 ## Contribution
 
