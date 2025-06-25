@@ -111,13 +111,11 @@ class MameRomManagerApp(QMainWindow):
         
         self.main_tab_widget = QTabWidget()
 
-        # Create tabs
         self.platforms_tab = PlatformsTab(self.log_output.append, self)
         self.search_tab = SearchTab(self.log_output.append, self)
         self.rom_copy_tab = RomCopyTab(self.log_output.append, self)
         self.settings_tab = SettingsTab(self.log_output.append, self)
 
-        # Add tabs
         self.main_tab_widget.addTab(self.platforms_tab, "Platforms")
         self.main_tab_widget.addTab(self.search_tab, "Search")
         self.main_tab_widget.addTab(self.rom_copy_tab, "ROM Copy")
@@ -159,14 +157,82 @@ class MameRomManagerApp(QMainWindow):
         self.progress_index = (self.progress_index + 1) % len(self.progress_chars)
 
 
+# === Reusable UI Components ===
+class TableOptionsWidget(QGroupBox):
+    def __init__(self, parent=None):
+        super().__init__("Table/CSV Options", parent)
+        layout = QFormLayout(self)
+        self.show_systems_only_cb = QCheckBox("Show Systems Only")
+        self.show_extra_info_cb = QCheckBox("Show Extra Info (Manufacturer, Year, etc.)")
+        sort_by_choices = ['system_name', 'system_desc', 'manufacturer', 'year', 'software_id', 'title', 'publisher', 'driver_status', 'emulation_status', 'sourcefile']
+        self.sort_by_combo = QComboBox()
+        self.sort_by_combo.addItems(["(No Sorting)"] + sort_by_choices)
+        
+        layout.addRow(self.show_systems_only_cb)
+        layout.addRow(self.show_extra_info_cb)
+        layout.addRow("Sort By:", self.sort_by_combo)
+
+class YamlOptionsWidget(QGroupBox):
+    def __init__(self, parent=None, existing_categories=None):
+        super().__init__("YAML Platform Options", parent)
+        if existing_categories is None:
+            existing_categories = set()
+            
+        layout = QFormLayout(self)
+        self.platform_key_le = QLineEdit()
+        self.platform_name_full_le = QLineEdit()
+        self.platform_category_cb = QComboBox()
+        self.platform_category_cb.setEditable(True)
+        self.platform_category_cb.addItems(sorted(list(existing_categories)))
+        self.media_type_cb = QComboBox()
+        self.media_type_cb.addItems(["cart", "disk", "cdrom", "cassette", "rom"])
+
+        layout.addRow("Platform Key:", self.platform_key_le)
+        layout.addRow("Platform Name:", self.platform_name_full_le)
+        layout.addRow("Platform Category:", self.platform_category_cb)
+        layout.addRow("Media Type:", self.media_type_cb)
+
+class EmuOptionsWidget(QGroupBox):
+    def __init__(self, parent=None, existing_emu_names=None):
+        super().__init__("Emulator Options (for YAML)", parent)
+        if existing_emu_names is None:
+            existing_emu_names = set()
+            
+        layout = QFormLayout(self)
+        self.enable_custom_cmd_cb = QCheckBox("Enable Custom Cmd Per Title")
+        self.emu_name_cb = QComboBox()
+        self.emu_name_cb.setEditable(True)
+        self.emu_name_cb.addItems(sorted(list(existing_emu_names)))
+        self.default_emu_cb = QCheckBox("Set as Default Emulator")
+        self.default_emu_cmd_params_le = QLineEdit()
+
+        layout.addRow(self.enable_custom_cmd_cb)
+        layout.addRow("Emulator Name:", self.emu_name_cb)
+        layout.addRow(self.default_emu_cb)
+        layout.addRow("Default Cmd Params:", self.default_emu_cmd_params_le)
+
+class InclusionOptionsWidget(QGroupBox):
+    def __init__(self, parent=None):
+        super().__init__("System Inclusions / Exclusions", parent)
+        layout = QFormLayout(self)
+        self.include_systems_le = QLineEdit()
+        self.exclude_systems_le = QLineEdit()
+        self.include_systems_le.setPlaceholderText("Space-separated list")
+        self.exclude_systems_le.setPlaceholderText("Space-separated list")
+
+        layout.addRow("Include Systems:", self.include_systems_le)
+        layout.addRow("Exclude Systems:", self.exclude_systems_le)
+
+
 # === Platform Configuration Dialog ===
 class PlatformConfigDialog(QDialog):
-    def __init__(self, parent=None, platform_data=None):
+    def __init__(self, parent=None, platform_data=None, existing_values=None):
         super().__init__(parent)
         self.setWindowTitle("Add/Edit Platform Configuration")
         self.setGeometry(150, 150, 600, 500)
 
         self.platform_data = platform_data if platform_data is not None else {}
+        self.existing_values = existing_values if existing_values is not None else {'categories': set(), 'emu_names': set()}
         self.is_editing = 'platform_key' in self.platform_data and self.platform_data['platform_key']
 
         self.init_ui()
@@ -175,31 +241,16 @@ class PlatformConfigDialog(QDialog):
 
     def init_ui(self):
         layout = QVBoxLayout(self)
-        form_layout = QFormLayout()
-
-        # Basic Info
-        self.platform_key_le = QLineEdit()
-        self.platform_name_full_le = QLineEdit()
-        self.platform_category_le = QLineEdit()
-        self.media_type_cb = QComboBox()
-        self.media_type_cb.addItems(["cart", "disk", "cdrom", "cassette", "rom"])
         
+        self.yaml_options = YamlOptionsWidget(self, existing_categories=self.existing_values['categories'])
         if self.is_editing:
-            self.platform_key_le.setReadOnly(True)
-            self.platform_key_le.setStyleSheet("background-color: #f0f0f0;")
+            self.yaml_options.platform_key_le.setReadOnly(True)
+            self.yaml_options.platform_key_le.setStyleSheet("background-color: #f0f0f0;")
+        layout.addWidget(self.yaml_options)
 
-        form_layout.addRow("Platform Key:", self.platform_key_le)
-        form_layout.addRow("Platform Name:", self.platform_name_full_le)
-        form_layout.addRow("Platform Category(s):", self.platform_category_le)
-        self.platform_category_le.setPlaceholderText("Space-separated list")
-        form_layout.addRow("Media Type:", self.media_type_cb)
-        layout.addLayout(form_layout)
-
-        # Emulator Options
-        self.emu_options = EmuOptionsWidget(self)
+        self.emu_options = EmuOptionsWidget(self, existing_emu_names=self.existing_values['emu_names'])
         layout.addWidget(self.emu_options)
 
-        # System Sourcing
         sourcing_group = QGroupBox("System Sourcing")
         sourcing_layout = QFormLayout(sourcing_group)
         self.systems_te = QTextEdit()
@@ -219,7 +270,6 @@ class PlatformConfigDialog(QDialog):
         sourcing_layout.addRow("Software Search Term:", self.search_term_le)
         layout.addWidget(sourcing_group)
 
-        # Dialog Buttons
         self.button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
@@ -227,16 +277,16 @@ class PlatformConfigDialog(QDialog):
         self.setLayout(layout)
 
     def load_data(self):
-        self.platform_key_le.setText(self.platform_data.get('platform_key', ''))
-        self.platform_name_full_le.setText(self.platform_data.get('platform_name_full', ''))
-        self.platform_category_le.setText(' '.join(self.platform_data.get('platform_category', [])))
+        self.yaml_options.platform_key_le.setText(self.platform_data.get('platform_key', ''))
+        self.yaml_options.platform_name_full_le.setText(self.platform_data.get('platform_name_full', ''))
+        self.yaml_options.platform_category_cb.setCurrentText(' '.join(self.platform_data.get('platform_category', [])))
         
-        media_type_index = self.media_type_cb.findText(self.platform_data.get('media_type', 'cart'))
+        media_type_index = self.yaml_options.media_type_cb.findText(self.platform_data.get('media_type', 'cart'))
         if media_type_index >= 0:
-            self.media_type_cb.setCurrentIndex(media_type_index)
+            self.yaml_options.media_type_cb.setCurrentIndex(media_type_index)
 
         self.emu_options.enable_custom_cmd_cb.setChecked(self.platform_data.get('enable_custom_cmd_per_title', False))
-        self.emu_options.emu_name_le.setText(self.platform_data.get('emu_name', ''))
+        self.emu_options.emu_name_cb.setCurrentText(self.platform_data.get('emu_name', ''))
         self.emu_options.default_emu_cb.setChecked(self.platform_data.get('default_emu', False))
         self.emu_options.default_emu_cmd_params_le.setText(self.platform_data.get('default_emu_cmd_params', ''))
         
@@ -247,7 +297,7 @@ class PlatformConfigDialog(QDialog):
         self.search_term_le.setText(self.platform_data.get('search_term', ''))
 
     def get_data(self):
-        platform_key = self.platform_key_le.text().strip()
+        platform_key = self.yaml_options.platform_key_le.text().strip()
         if not platform_key:
             QMessageBox.warning(self, "Input Required", "Platform Key is a mandatory field.")
             return None
@@ -263,22 +313,22 @@ class PlatformConfigDialog(QDialog):
             
         return {
             'platform_key': platform_key,
-            'platform_name_full': self.platform_name_full_le.text().strip(),
-            'platform_categories': [c.strip() for c in self.platform_category_le.text().split() if c.strip()],
-            'media_type': self.media_type_cb.currentText(),
+            'platform_name_full': self.yaml_options.platform_name_full_le.text().strip(),
+            'platform_categories': [c.strip() for c in self.yaml_options.platform_category_cb.currentText().split() if c.strip()],
+            'media_type': self.yaml_options.media_type_cb.currentText(),
             'systems': systems,
             'fuzzy': fuzzy,
             'include_systems': include_systems,
             'exclude_systems': [s.strip() for s in self.exclude_systems_le.text().split() if s.strip()],
             'search_term': self.search_term_le.text().strip(),
             'enable_custom_cmd_per_title': self.emu_options.enable_custom_cmd_cb.isChecked(),
-            'emu_name': self.emu_options.emu_name_le.text().strip(),
+            'emu_name': self.emu_options.emu_name_cb.currentText().strip(),
             'default_emu': self.emu_options.default_emu_cb.isChecked(),
             'default_emu_cmd_params': self.emu_options.default_emu_cmd_params_le.text().strip(),
         }
 
 
-# === Platforms Tab ===
+# === Main UI Tabs ===
 class PlatformsTab(QWidget):
     def __init__(self, log_func, main_app_ref):
         super().__init__()
@@ -360,7 +410,8 @@ class PlatformsTab(QWidget):
         self.log(f"Loaded {len(platforms)} platforms from '{yaml_path}'.")
 
     def add_platform(self):
-        dialog = PlatformConfigDialog(self)
+        existing_values = self._get_existing_yaml_values()
+        dialog = PlatformConfigDialog(self, existing_values=existing_values)
         if dialog.exec() == QDialog.Accepted:
             data = dialog.get_data()
             if data:
@@ -374,13 +425,30 @@ class PlatformsTab(QWidget):
 
         row = selected_rows[0].row()
         platform_data_for_dialog = self.platforms_table.item(row, 0).data(Qt.UserRole)
+        existing_values = self._get_existing_yaml_values()
         
-        dialog = PlatformConfigDialog(self, platform_data=platform_data_for_dialog)
+        dialog = PlatformConfigDialog(self, platform_data=platform_data_for_dialog, existing_values=existing_values)
         if dialog.exec() == QDialog.Accepted:
             data = dialog.get_data()
             if data:
                 self.process_platform_dialog_data(data, is_new=False)
 
+    def _get_existing_yaml_values(self):
+        categories = set()
+        emu_names = set()
+        yaml_path = self.main_app_ref.settings_tab.system_softlist_yaml_file_le.text()
+        if not yaml_path or not os.path.exists(yaml_path):
+            return {'categories': categories, 'emu_names': emu_names}
+
+        platforms = core_logic._load_yaml_file(yaml_path)
+        for data in platforms.values():
+            cats = data.get('platform_category', [])
+            if isinstance(cats, list):
+                categories.update(cats)
+            if 'emulator' in data and 'name' in data['emulator']:
+                emu_names.add(data['emulator']['name'])
+        return {'categories': categories, 'emu_names': emu_names}
+        
     def process_platform_dialog_data(self, data, is_new=False):
         if is_new:
             self.run_full_search_for_platform(data)
@@ -460,7 +528,7 @@ class PlatformsTab(QWidget):
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
-        self.worker.finished.connect(self.main_app_ref.stop_long_operation)
+        self.thread.finished.connect(self.main_app_ref.stop_long_operation)
         self.worker.progress.connect(self.log)
         self.worker.error.connect(lambda msg: self.log(f"<font color='red'>{msg}</font>"))
         self.worker.finished.connect(self.load_platforms)
@@ -498,64 +566,6 @@ class PlatformsTab(QWidget):
             self.load_platforms()
 
 
-# === Reusable UI Components for Search Tabs ===
-class TableOptionsWidget(QGroupBox):
-    def __init__(self, parent=None):
-        super().__init__("Table/CSV Options", parent)
-        layout = QFormLayout(self)
-        self.show_systems_only_cb = QCheckBox("Show Systems Only")
-        self.show_extra_info_cb = QCheckBox("Show Extra Info (Manufacturer, Year, etc.)")
-        sort_by_choices = ['system_name', 'system_desc', 'manufacturer', 'year', 'software_id', 'title', 'publisher', 'driver_status', 'emulation_status', 'sourcefile']
-        self.sort_by_combo = QComboBox()
-        self.sort_by_combo.addItems(["(No Sorting)"] + sort_by_choices)
-        
-        layout.addRow(self.show_systems_only_cb)
-        layout.addRow(self.show_extra_info_cb)
-        layout.addRow("Sort By:", self.sort_by_combo)
-
-class YamlOptionsWidget(QGroupBox):
-    def __init__(self, parent=None):
-        super().__init__("YAML Platform Options", parent)
-        layout = QFormLayout(self)
-        self.platform_key_le = QLineEdit()
-        self.platform_name_full_le = QLineEdit()
-        self.platform_category_le = QLineEdit()
-        self.media_type_cb = QComboBox()
-        self.media_type_cb.addItems(["cart", "disk", "cdrom", "cassette", "rom"])
-
-        layout.addRow("Platform Key:", self.platform_key_le)
-        layout.addRow("Platform Name:", self.platform_name_full_le)
-        layout.addRow("Platform Category(s):", self.platform_category_le)
-        self.platform_category_le.setPlaceholderText("Space-separated list")
-        layout.addRow("Media Type:", self.media_type_cb)
-
-class EmuOptionsWidget(QGroupBox):
-    def __init__(self, parent=None):
-        super().__init__("Emulator Options (for YAML)", parent)
-        layout = QFormLayout(self)
-        self.enable_custom_cmd_cb = QCheckBox("Enable Custom Cmd Per Title")
-        self.emu_name_le = QLineEdit()
-        self.default_emu_cb = QCheckBox("Set as Default Emulator")
-        self.default_emu_cmd_params_le = QLineEdit()
-
-        layout.addRow(self.enable_custom_cmd_cb)
-        layout.addRow("Emulator Name:", self.emu_name_le)
-        layout.addRow(self.default_emu_cb)
-        layout.addRow("Default Cmd Params:", self.default_emu_cmd_params_le)
-
-class InclusionOptionsWidget(QGroupBox):
-    def __init__(self, parent=None):
-        super().__init__("System Inclusions / Exclusions", parent)
-        layout = QFormLayout(self)
-        self.include_systems_le = QLineEdit()
-        self.exclude_systems_le = QLineEdit()
-        self.include_systems_le.setPlaceholderText("Space-separated list")
-        self.exclude_systems_le.setPlaceholderText("Space-separated list")
-
-        layout.addRow("Include Systems:", self.include_systems_le)
-        layout.addRow("Exclude Systems:", self.exclude_systems_le)
-
-
 # === Main Search Tab Container ===
 class SearchTab(QWidget):
     def __init__(self, log_func, main_app_ref):
@@ -567,11 +577,10 @@ class SearchTab(QWidget):
         self.search_tabs = QTabWidget()
         main_layout.addWidget(self.search_tabs)
 
-        # Create individual search tabs, storing their components
         self.by_name_tab_components = self._create_search_tab("by-name")
-        self.by_xml_tab_components = self._create_by_xml_tab()
-        self.by_filter_tab_components = self._create_by_filter_tab()
-        self.by_sourcefile_tab_components = self._create_by_sourcefile_tab()
+        self.by_xml_tab_components = self._create_search_tab("by-xml")
+        self.by_filter_tab_components = self._create_search_tab("by-filter")
+        self.by_sourcefile_tab_components = self._create_search_tab("by-sourcefile")
 
         self.search_tabs.addTab(self.by_name_tab_components['page'], "By Name")
         self.search_tabs.addTab(self.by_xml_tab_components['page'], "By XML File")
@@ -586,37 +595,30 @@ class SearchTab(QWidget):
         page = QWidget()
         layout = QVBoxLayout(page)
         
-        # --- Options Group (now on the left) ---
+        main_hbox = QHBoxLayout()
+        search_criteria_group = QGroupBox("Search Criteria")
         options_group = QGroupBox("Options")
+        
+        search_layout = QFormLayout(search_criteria_group)
         options_layout = QVBoxLayout(options_group)
         
+        main_hbox.addWidget(search_criteria_group, 2)
+        main_hbox.addWidget(options_group, 1)
+        layout.addLayout(main_hbox)
+
         table_options = TableOptionsWidget()
         yaml_options = YamlOptionsWidget()
         emu_options = EmuOptionsWidget()
         inclusion_options = InclusionOptionsWidget()
-        
-        # Add widgets to layout
         options_layout.addWidget(table_options)
         options_layout.addWidget(inclusion_options)
         options_layout.addWidget(yaml_options)
         options_layout.addWidget(emu_options)
         options_layout.addStretch()
 
-        # --- Main content area (with search criteria on right) ---
-        main_hbox = QHBoxLayout()
-        search_criteria_group = QGroupBox("Search Criteria")
-        search_layout = QFormLayout(search_criteria_group)
-        
-        main_hbox.addWidget(options_group, 1)
-        main_hbox.addWidget(search_criteria_group, 2)
-        
-        layout.addLayout(main_hbox)
-
-        # Hide YAML/Emu options by default
         yaml_options.hide()
         emu_options.hide()
 
-        # --- Output and Run Section ---
         output_group = QGroupBox("Output")
         output_layout = QHBoxLayout(output_group)
         output_format_cb = QComboBox()
@@ -635,9 +637,8 @@ class SearchTab(QWidget):
         
         layout.addWidget(output_group)
         
-        # Connect signal to show/hide options
-        output_format_cb.currentTextChanged.connect(lambda text: self.toggle_yaml_options(text, yaml_options, emu_options))
-
+        output_format_cb.currentTextChanged.connect(lambda text: self.toggle_yaml_options(text, yaml_options, emu_options, table_options))
+        
         return {
             'page': page, 'search_layout': search_layout,
             'table_options': table_options, 'yaml_options': yaml_options,
@@ -645,11 +646,12 @@ class SearchTab(QWidget):
             'output_format_cb': output_format_cb, 'output_file_le': output_file_le,
             'browse_output_btn': browse_output_btn, 'run_search_btn': run_search_btn
         }
-
-    def toggle_yaml_options(self, text, yaml_widget, emu_widget):
+        
+    def toggle_yaml_options(self, text, yaml_widget, emu_widget, table_widget):
         is_yaml = (text == 'yaml')
         yaml_widget.setVisible(is_yaml)
         emu_widget.setVisible(is_yaml)
+        table_widget.setVisible(not is_yaml)
 
     def _create_search_tab(self, mode):
         c = self._create_base_search_layout()
@@ -691,76 +693,7 @@ class SearchTab(QWidget):
         
         c['search_layout'].addRow("Limit Results:", c['limit_le'])
         return c
-    
-    def _create_by_name_tab(self):
-        c = self._create_base_search_layout()
         
-        c['systems_te'] = QTextEdit()
-        c['systems_te'].setPlaceholderText("Enter system names, one per line or separated by space/comma.")
-        c['fuzzy_le'] = QLineEdit()
-        c['search_term_le'] = QLineEdit()
-        c['limit_le'] = QLineEdit()
-        c['limit_le'].setValidator(QIntValidator(0, 99999))
-        c['limit_le'].setFixedWidth(50)
-        
-        c['search_layout'].addRow("Systems:", c['systems_te'])
-        c['search_layout'].addRow("Fuzzy Prefix:", c['fuzzy_le'])
-        c['search_layout'].addRow("Software Search Term:", c['search_term_le'])
-        c['search_layout'].addRow("Limit Results:", c['limit_le'])
-        
-        c['run_search_btn'].clicked.connect(lambda: self.run_generic_search(c, self._get_by_name_args))
-        return c
-
-    def _create_by_xml_tab(self):
-        c = self._create_base_search_layout()
-
-        c['xml_filepath_le'] = QLineEdit()
-        c['xml_browse_btn'] = QPushButton("...")
-        xml_hbox = QHBoxLayout()
-        xml_hbox.addWidget(c['xml_filepath_le'])
-        xml_hbox.addWidget(c['xml_browse_btn'])
-        c['search_layout'].addRow("XML File Path:", xml_hbox)
-        
-        c['search_term_le'] = QLineEdit()
-        c['search_layout'].addRow("Software Search Term:", c['search_term_le'])
-
-        c['limit_le'] = QLineEdit()
-        c['limit_le'].setValidator(QIntValidator(0, 99999))
-        c['limit_le'].setFixedWidth(50)
-        c['search_layout'].addRow("Limit Results:", c['limit_le'])
-
-        c['xml_browse_btn'].clicked.connect(lambda: self.main_app_ref.settings_tab.browse_file(c['xml_filepath_le'], "Select MAME XML", "XML Files (*.xml)"))
-        c['run_search_btn'].clicked.connect(lambda: self.run_generic_search(c, self._get_by_xml_args))
-        return c
-
-    def _create_by_filter_tab(self):
-        c = self._create_base_search_layout()
-        c['description_terms_le'] = QLineEdit()
-        c['description_terms_le'].setPlaceholderText("Space-separated list of terms (e.g., \"in 1\" handheld)")
-        c['search_layout'].addRow("Description Contains:", c['description_terms_le'])
-        
-        c['limit_le'] = QLineEdit()
-        c['limit_le'].setValidator(QIntValidator(0, 99999))
-        c['limit_le'].setFixedWidth(50)
-        c['search_layout'].addRow("Limit Results:", c['limit_le'])
-        
-        c['run_search_btn'].clicked.connect(lambda: self.run_generic_search(c, self._get_by_filter_args))
-        return c
-
-    def _create_by_sourcefile_tab(self):
-        c = self._create_base_search_layout()
-        c['sourcefile_term_le'] = QLineEdit()
-        c['sourcefile_term_le'].setPlaceholderText("e.g., xavix.cpp or just xavix")
-        c['search_layout'].addRow("Source File Contains:", c['sourcefile_term_le'])
-        
-        c['limit_le'] = QLineEdit()
-        c['limit_le'].setValidator(QIntValidator(0, 99999))
-        c['limit_le'].setFixedWidth(50)
-        c['search_layout'].addRow("Limit Results:", c['limit_le'])
-        
-        c['run_search_btn'].clicked.connect(lambda: self.run_generic_search(c, self._get_by_sourcefile_args))
-        return c
-
     def run_generic_search(self, components, get_specific_args_func):
         try:
             initial_args_dict = get_specific_args_func(components)
@@ -834,10 +767,10 @@ class SearchTab(QWidget):
                 'sort_by': table_opts.sort_by_combo.currentText() if table_opts.sort_by_combo.currentIndex() > 0 else None,
                 'platform_key': yaml_opts.platform_key_le.text(),
                 'platform_name_full': yaml_opts.platform_name_full_le.text(),
-                'platform_categories': [c.strip() for c in yaml_opts.platform_category_le.text().split() if c.strip()],
+                'platform_categories': [c.strip() for c in yaml_opts.platform_category_cb.currentText().split() if c.strip()],
                 'media_type': yaml_opts.media_type_cb.currentText(),
                 'enable_custom_cmd_per_title': emu_opts.enable_custom_cmd_cb.isChecked(),
-                'emu_name': emu_opts.emu_name_le.text(),
+                'emu_name': emu_opts.emu_name_cb.currentText().strip(),
                 'default_emu': emu_opts.default_emu_cb.isChecked(),
                 'default_emu_cmd_params': emu_opts.default_emu_cmd_params_le.text(),
                 'source_xml_root': source_xml_root
