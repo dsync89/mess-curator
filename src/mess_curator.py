@@ -575,6 +575,7 @@ def perform_rom_copy_operation(args):
     total_software_copied = 0
     total_software_missing = 0
     total_empty_system_zips = 0
+    missing_roms_summary = [] # New list to track missing ROMs
 
     for platform_key, platform_data in system_softlist_data.items():
         platform_name = platform_data.get("platform", {}).get("name", platform_key)
@@ -617,6 +618,8 @@ def perform_rom_copy_operation(args):
                             copied, missing = _copy_single_rom(swid, softlist_name_for_copy, system_name, platform_key)
                             total_software_copied += copied
                             total_software_missing += missing
+                            if missing > 0:
+                                missing_roms_summary.append([swid, softlist_name_for_copy, system_name, platform_key])
             else:
                 print(f"[WARNING] Invalid system entry type in YAML: {system_entry}. Skipping.")
 
@@ -627,6 +630,12 @@ def perform_rom_copy_operation(args):
     print(f"  Total Software ROMs Missing (Dummy Created): {total_software_missing}")
     print(f"  Total Empty System Zips Created: {total_empty_system_zips}")
     print(f"======================================")
+    
+    if missing_roms_summary:
+        print("\n===== Missing ROMs Summary =====")
+        headers = ["Software ID", "From Softlist", "For System", "In Platform"]
+        print(tabulate(sorted(missing_roms_summary), headers=headers, tablefmt="github"))
+        print(f"==============================")
 
 def perform_mame_search_and_output(systems_to_process, search_term, output_format, platform_key, platform_name_full, platform_categories, media_type, 
                                    enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
