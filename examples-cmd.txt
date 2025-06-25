@@ -1,0 +1,113 @@
+# seasrch only
+python .\search_mame_softlist.py --output-format table pyuuta
+
+# ---
+python .\search_mame_softlist.py --platform-key jpopira --platform-name-full jpopira --media-type cart --output-format yaml jpopira
+
+
+
+
+# mess
+
+python .\mess_curator.py search by-xml `
+    --platform-key mess-nosoftlist `
+    --platform-name-full "MESS (No Softlist)" `
+    --media-type cart `
+    --emu-name "MAME (Cartridge)"  `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput" `
+    --output-format yaml `
+    --limit 5 `
+    ../data/mess-nosoftlist.xml   
+
+## Examples
+
+# search for multigames where the machine description has "in-1" or " in 1" texts in it. Use " in 1" instead of "in 1" otherwise system like "Fountain 1942" will be added.
+python .\mess_curator.py search by-filter --show-extra-info --output-format yaml "in-1" " in 1" --input-xml ..\data\mess.xml `
+    --platform-key mess-filtered-all-in-one-systems `
+    --platform-name-full "MESS (All-In-One Systems)" `
+    --media-type cart `
+    --emu-name "MAME (Cartridge)"  `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput" `
+    --output-format yaml `
+    --output-file system_softlist.yml `
+    --include-systems conyteni pdc100 conyfght conyping dorapdc pdc150t pdc200 pdc40t pdc50 tmntpdc vjpp2 `
+    --exclude-systems apexc
+
+
+## XavixPort
+python .\mess_curator.py search by-filter --show-extra-info --output-format yaml "xavixport" --input-xml ..\data\mess.xml `
+    --platform-key xavixport2 `
+    --platform-name-full "XaviXPORT2" `
+    --media-type cart `
+    --emu-name "MAME (Cartridge)"  `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput"
+
+
+
+# new subcommand version
+
+To use this new version:
+
+    Standard search/YAML generation:
+    python search_mame_softlist.py search jak_batm --output-format yaml --platform-key myplatform --platform-name-full "My Platform" --media-type cart
+
+    Copy ROMs:
+    python search_mame_softlist.py copy-roms --input-file system_softlist.yml
+
+    List all good emulation drivers (excluding arcade):
+    python search_mame_softlist.py list-good-emulation --exclude-arcade
+
+    List good emulation drivers from mess.ini:
+    python search_mame_softlist.py mess list-good-emulation
+
+    List good emulation drivers from mess.ini that are softlist-capable:
+    python search_mame_softlist.py mess list-good-emulation --exclude-arcade
+
+
+# table test
+
+python .\mess_curator.py search by-xml `
+    --output-format table `
+    --show-extra-info `
+    --emulation-status good `
+    ../data/mess-softlist.xml   
+
+
+
+python .\mess_curator.py search by-xml `
+    --output-format table `
+    --show-extra-info `
+    --sort-by manufacturer `
+    ../data/mess-nosoftlist.xml > nosoftlistv3.txt
+
+# csv
+# systems only
+python .\mess_curator.py search by-xml `
+    --output-format csv `
+    --output-file all-nosoftlist.csv `
+    --show-extra-info `
+    --sort-by manufacturer `
+    ../data/mess-nosoftlist.xml
+
+# get all systems that has softlist names, but only output the systems info instead of all softlist titles in that softlist
+python .\mess_curator.py search by-xml `
+    --output-format csv `
+    --output-file all-softlist.csv `
+    --show-extra-info `
+    --sort-by manufacturer `
+    --show-systems-only `
+    ../data/mess-softlist.xml
+
+# get all systems that has softlist names, but only output the systems info instead of all softlist titles in that softlist
+python .\mess_curator.py search by-xml `
+    --output-format table `
+    --show-extra-info `
+    --sort-by manufacturer `
+    --show-systems-only `
+    ../data/mess-softlist.xml --limit 10
+
+# platform info
+python .\mess_curator.py table --mame-xml-source ..\data\mess.xml --show-extra-info --platform-key nintendo-game-and-watch
