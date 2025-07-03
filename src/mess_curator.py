@@ -1530,7 +1530,7 @@ def main():
     elif args.command == "table":
         if args.output_format == "csv" and not args.output_file:
             parser.error("--output-file is required when using --output-format csv")
-        mame_xml_source = args.mame_xml_source or MAME_ALL_MACHINES_XML_CACHE
+        mame_xml_source = args.mame_xml_source or APP_CONFIG.get('mess_xml_file') or MAME_ALL_MACHINES_XML_CACHE
         table_source_xml_root = get_parsed_mame_xml_root(mame_xml_source)
         if table_source_xml_root:
             display_yaml_table(args, table_source_xml_root)
