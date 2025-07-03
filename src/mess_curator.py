@@ -8,6 +8,9 @@ import argparse
 import shutil # For file copying
 import zipfile # For creating dummy zips
 import csv # For CSV output
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
 
 # === Global Debug Flag ===
 DEBUG_MODE_ENABLED = False 
@@ -18,7 +21,7 @@ def debug_print(message):
         print(f"[DEBUG] {message}")
 
 # === Configuration Management ===
-CONFIG_FILE = "config.yaml"
+CONFIG_FILE = BASE_DIR.parent / "config.yaml"
 
 APP_CONFIG = {
     "mame_executable": "",
@@ -54,18 +57,30 @@ def save_configuration():
         return False
 
 def load_configuration():
-    if not os.path.exists(CONFIG_FILE):
+    if not CONFIG_FILE.exists():
+        print(f"[ERROR] Config file not found: {CONFIG_FILE}")
         return False
-    
+
     config_data = _load_yaml_file(CONFIG_FILE)
     if not config_data:
         print(f"[WARNING] '{CONFIG_FILE}' is empty or invalid. Please run the setup wizard or use the 'config' command.")
         return False
 
+    config_dir = CONFIG_FILE.parent
+
+    def resolve_path(val):
+        path = Path(val)
+        return str(path) if path.is_absolute() else str((config_dir / path).resolve())
+
     for key in APP_CONFIG:
         if key in config_data:
-            APP_CONFIG[key] = config_data[key]
-    
+            value = config_data[key]
+            # If it's a path-like value, resolve it
+            if isinstance(value, str) and ("\\" in value or "/" in value):
+                APP_CONFIG[key] = resolve_path(value)
+            else:
+                APP_CONFIG[key] = value
+
     print(f"[INFO] Configuration loaded from '{CONFIG_FILE}'.")
     return True
 
@@ -156,11 +171,11 @@ def initialize_application():
         else:
             print("[WARNING] Skipping generation. Some commands may be slower or require specifying a source XML manually.")
 
-MAME_ALL_MACHINES_XML_CACHE = "mame.xml"
-MESS_XML_FILE = "mess.xml"
-MESS_SOFTLIST_XML_FILE = "mess-softlist.xml"
-MESS_NOSOFTLIST_XML_FILE = "mess-nosoftlist.xml"
-TMP_SOFTWARE_XML_FILE = "tmp_software.xml"
+MAME_ALL_MACHINES_XML_CACHE = BASE_DIR.parent / "mame.xml"
+MESS_XML_FILE = BASE_DIR.parent / "mess.xml"
+MESS_SOFTLIST_XML_FILE = BASE_DIR.parent / "mess-softlist.xml"
+MESS_NOSOFTLIST_XML_FILE = BASE_DIR.parent / "mess-nosoftlist.xml"
+TMP_SOFTWARE_XML_FILE = BASE_DIR.parent / "tmp_software.xml"
 
 def run_mame_command(args, output_file, use_cache=False): 
     if use_cache and os.path.exists(output_file):
