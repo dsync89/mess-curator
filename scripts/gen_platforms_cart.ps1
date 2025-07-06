@@ -71,7 +71,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems bambball bmboxing bmcfball bmsafari bmsoccer splasfgt ssfball ufombs
+    --include-systems "bambball bmboxing bmcfball bmsafari bmsoccer splasfgt ssfball ufombs"
 
 # ----------------------
 # Bandai Gundam RX-78
@@ -101,7 +101,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems bbtime bcclimbr bcheetah bdoramon bfriskyt bgalaxn bgunf bpengo bultrman bzaxxon ggdman ktparman machiman paccon packmon pairmtch racetime tc7atc tkjmaru uboat zackman
+    --include-systems "bbtime bcclimbr bcheetah bdoramon bfriskyt bgalaxn bgunf bpengo bultrman bzaxxon ggdman ktparman machiman paccon packmon pairmtch racetime tc7atc tkjmaru uboat zackman"
 
 # ----------------------
 # Bandai Let's! TV Play
@@ -117,7 +117,7 @@ python ..\src\mess_curator.py search by-name `
     --output-format yaml `
     --output-file system_softlist.yml `
     --fuzzy ban_ `
-    --include-systems anpantv dmbtjunc dmnslayg paccon ltv_naru ltv_tam maxheart mrangbat namcons1 namcons2 taitons1 taitons2
+    --include-systems "anpantv dmbtjunc dmnslayg paccon ltv_naru ltv_tam maxheart mrangbat namcons1 namcons2 taitons1 taitons2"
 
 # ----------------------
 # Bandai Super Note Club
@@ -162,7 +162,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems digimon digimonv2 digimonv3 tama tamaang tamag2 tamamot tamapix tamamot
+    --include-systems "digimon digimonv2 digimonv3 tama tamaang tamag2 tamamot tamapix tamamot"
 
 # ----------------------
 # Bit Corp Gamate
@@ -237,7 +237,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems alnattck amaztron cdkong cgalaxn cmspacmn cpacman cpacmanr1 cqback cfrogger
+    --include-systems "alnattck amaztron cdkong cgalaxn cmspacmn cpacman cpacmanr1 cqback cfrogger"
 
 # ----------------------
 # Commodore VIC-10
@@ -282,7 +282,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems conyteni pdc100 conyfght conyping dorapdc pdc150t pdc200 pdc40t pdc50 tmntpdc vjpp2
+    --include-systems "conyteni pdc100 conyfght conyping dorapdc pdc150t pdc200 pdc40t pdc50 tmntpdc vjpp2"
 
 # ----------------------
 # Creatronic Mega Duck
@@ -357,7 +357,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems blastit ebaskb2 ebball ebball2 ebball3 ebknight efootb4 egalaxn2 einvader einvader2 einvaderc epacman2 epacman2r esbattle esoccer estargte eturtles mmarvin raisedvl
+    --include-systems "blastit ebaskb2 ebball ebball2 ebball3 ebknight efootb4 egalaxn2 einvader einvader2 einvaderc epacman2 epacman2r esbattle esoccer estargte eturtles mmarvin raisedvl"
 
 # ----------------------
 # Epoch Game Pocket Computer
@@ -387,7 +387,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems alienfev astrocmd edracula efball einspace galaxy2 galaxy2b
+    --include-systems "alienfev astrocmd edracula efball einspace galaxy2 galaxy2b"
 
 # ----------------------
 # Epoch Super Cassette Vision
@@ -477,7 +477,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems fxmcr165 gckong gdefender gdigdug ghalien ginv ginv1000 ginv2000 gjackpot gpoker gscobra gjungler
+    --include-systems "fxmcr165 gckong gdefender gdigdug ghalien ginv ginv1000 ginv2000 gjackpot gpoker gscobra gjungler"
 
 # ----------------------
 # GamePark GP32
@@ -522,7 +522,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems beambox dreamlif dsgnwrld gigapets parcade has_wamg dreamlss pballpup swclone
+    --include-systems "beambox dreamlif dsgnwrld gigapets parcade has_wamg dreamlss pballpup swclone"
 
 # ----------------------
 # Interton VC 4000
@@ -569,7 +569,7 @@ python ..\src\mess_curator.py search by-name `
     --output-format yaml `
     --output-file system_softlist.yml `
     --fuzzy jak `
-    --exclude-systems jak_pf jak_prft jak_s500 jak_smwm jak_ths jak_tink jak_totm jak_umdf
+    --exclude-systems "jak_pf jak_prft jak_s500 jak_smwm jak_ths jak_tink jak_totm jak_umdf"
 
 # ----------------------
 # JAKKS Pacific TV Motion Game
@@ -585,7 +585,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    jaks
+    --include-systems "jak_pf jak_prft jak_s500 jak_smwm jak_ths jak_tink jak_totm jak_umdf"
 
 # ----------------------
 # JoyPalette TV Games
@@ -600,7 +600,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems anpanbd anpanm15 anpanm19 anpanmdx apmj2009
+    --include-systems "anpanbd anpanm15 anpanm19 anpanmdx apmj2009"
 
 # ----------------------
 # JungleTac Vii
@@ -645,7 +645,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems kbilly kblades kbottom9 kbucky kchqflag kcontra kdribble kgarfld kgradius kloneran knascar knfl kskatedie kst25 ktmnt ktmnt2 ktmnt3 ktmntbb ktopgun ktopgun2
+    --include-systems "kbilly kblades kbottom9 kbucky kchqflag kcontra kdribble kgarfld kgradius kloneran knascar knfl kskatedie kst25 ktmnt ktmnt2 ktmnt3 ktmntbb ktopgun ktopgun2"
 
 # ----------------------
 # Lexibook TV Games
@@ -660,7 +660,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems lexiart lexifit lexitvsprt lx_aven lx_frozen lx_jg7420 lx_jg7425 lxairjet lxspidaj lexizeus lx_jg7410 lx_jg7415 lexiseal
+    --include-systems "lexiart lexifit lexitvsprt lx_aven lx_frozen lx_jg7420 lx_jg7425 lxairjet lxspidaj lexizeus lx_jg7410 lx_jg7415 lexiseal"
 
 # ----------------------
 # Mattel Electronics Handhelds (LCD)
@@ -675,7 +675,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems autorace brainbaf funjacks funrlgl funtag gravity horocomp horseran lafootb mbaseb mbaskb mbaskb2 mcompgin mdallas mdndclab mfootb mfootb2 mhockey mhockeya misatk msoccer msoccer2 msthawk mwcbaseb mwcfootb
+    --include-systems "autorace brainbaf funjacks funrlgl funtag gravity horocomp horseran lafootb mbaseb mbaskb mbaskb2 mcompgin mdallas mdndclab mfootb mfootb2 mhockey mhockeya misatk msoccer msoccer2 msthawk mwcbaseb mwcfootb"
 
 # ----------------------
 # Mattel Intellivision ECS
@@ -705,7 +705,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems arcmania bigtrak bship bshipb bshipg comp4 lightfgt mbdtower plus1 simon simonf ssimon
+    --include-systems "arcmania bigtrak bship bshipb bshipg comp4 lightfgt mbdtower plus1 simon simonf ssimon"
 
 # ----------------------
 # Nichibutsu My Vision
@@ -732,7 +732,7 @@ python ..\src\mess_curator.py search by-name `
     --media-type cart `
     --emu-name "MAME (Cartridge)" `
     --default-emu `
-    --default-emu-cmd-params "-keyboardprovider dinput famibox" `
+    --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
     famibox
@@ -765,7 +765,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems supergb supergb2
+    --include-systems "supergb supergb2"
 
 # ----------------------
 # Parker Brothers Handhelds (LCD)
@@ -780,7 +780,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems bankshot cnsector lostreas merlin mmerlin pbmastm pbqbert splitsec stopthief stopthiefp talkingbb talkingfb wildfire
+    --include-systems "bankshot cnsector lostreas merlin mmerlin pbmastm pbqbert splitsec stopthief stopthiefp talkingbb talkingfb wildfire"
 
 # ----------------------
 # Philips Videopac+
@@ -810,7 +810,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems pvmil pvmil8 pvmilfin pvwwcas
+    --include-systems "pvmil pvmil8 pvmilfin pvwwcas"
 
 # ----------------------
 # RADICA Play TV
@@ -885,7 +885,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems ddmmeg12 ddmsup drumsups gssytts guitarss guitarssa guitarst senapren senbbs sencosmo senmil senpmate senspeed senspid senstriv sentx6p sentx6pd senwfit totspies sentx6puk mysprtch mysprtcp mysptqvc
+    --include-systems "ddmmeg12 ddmsup drumsups gssytts guitarss guitarssa guitarst senapren senbbs sencosmo senmil senpmate senspeed senspid senstriv sentx6p sentx6pd senwfit totspies sentx6puk mysprtch mysprtcp mysptqvc"
 
 # ----------------------
 # Sord M5
@@ -930,7 +930,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems mapacman siddr tagalaga taspinv taturtf
+    --include-systems "mapacman siddr tagalaga taspinv taturtf"
 
 # ----------------------
 # Takara e-kara
@@ -993,7 +993,7 @@ python ..\src\mess_curator.py search by-name `
     --output-format yaml `
     --output-file system_softlist.yml `
     --fuzzy tak_ `
-    --include-systems duelmast gungunad gungunrv jarajal pocketmp pocketmr prail prailpls rizstals tmy_rkmj tomthr tomyegg tcarnavi tmy_thom tom_dpgm tom_jump tom_tvho tomcpin tomplc tomshoot ttv_swj tomycar
+    --include-systems "duelmast gungunad gungunrv jarajal pocketmp pocketmr prail prailpls rizstals tmy_rkmj tomthr tomyegg tcarnavi tmy_thom tom_dpgm tom_jump tom_tvho tomcpin tomplc tomshoot ttv_swj tomycar"
 
 # ----------------------
 # Tandy TRS-80 Color Computer
@@ -1038,7 +1038,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems copycat copycata ditto dxfootb fingbowl hccbaskb rockpin rzbatfor rzindy500 rztoshden subwars t7in1ss taddams taltbeast tapollo13 tbatfor tbatman tbatmana tbtoads tbttf tddragon tddragon2 tddragon3 tdennis tdummies tflash tgaiden tgaiden3 tgargnf tgaunt tgoldeye tgoldnaxe thalone thalone2 thook tinday tjdredd tjpark tkarnov tkazaam tkkongq tlluke2 tmchammer tmegaman3 tmigmax tmkombat tnmarebc topaliens tpitfight trobhood trobocop2 trobocop3 trockteer tsddragon tsf2010 tsfight2 tshadow tsharr2 tsimquest tsjam tskelwarr tsonic tsonic2 tspidman tstrider tsuperman tswampt ttransf2 tvindictr twworld txmen txmenpx
+    --include-systems "copycat copycata ditto dxfootb fingbowl hccbaskb rockpin rzbatfor rzindy500 rztoshden subwars t7in1ss taddams taltbeast tapollo13 tbatfor tbatman tbatmana tbtoads tbttf tddragon tddragon2 tddragon3 tdennis tdummies tflash tgaiden tgaiden3 tgargnf tgaunt tgoldeye tgoldnaxe thalone thalone2 thook tinday tjdredd tjpark tkarnov tkazaam tkkongq tlluke2 tmchammer tmegaman3 tmigmax tmkombat tnmarebc topaliens tpitfight trobhood trobocop2 trobocop3 trockteer tsddragon tsf2010 tsfight2 tshadow tsharr2 tsimquest tsjam tskelwarr tsonic tsonic2 tspidman tstrider tsuperman tswampt ttransf2 tvindictr twworld txmen txmenpx"
 
 # ----------------------
 # Tiger Game.com
@@ -1113,7 +1113,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems alnchase bombman kingman phpball tbreakup tcaveman tccombat tmbaskb tmpacman tmscramb tmtennis tmtron tmvolleyb
+    --include-systems "alnchase bombman kingman phpball tbreakup tcaveman tccombat tmbaskb tmpacman tmscramb tmtennis tmtron tmvolleyb"
 
 # ----------------------
 # Tomy Tutor
@@ -1143,7 +1143,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems tigarden trclchick trdivadv trsgkeep trshutvoy trspacadv trspacmis trspider trsrescue trthuball
+    --include-systems "tigarden trclchick trdivadv trsgkeep trshutvoy trspacadv trspacmis trspider trsrescue trthuball"
 
 # ----------------------
 # Ultimate Products TV Games
@@ -1158,7 +1158,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems zone100 zone60 zon32bit rockstar react zone40 zonemini
+    --include-systems "zone100 zone60 zon32bit rockstar react zone40 zonemini"
 
 # ----------------------
 # Uzebox
@@ -1263,7 +1263,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --output-file system_softlist.yml `
-    --include-systems doraglob doraglobf doraglobg doraphon doraphonf hippofr kidizmb kidizmp vtechtvsgr vtechtvssp
+    --include-systems "doraglob doraglobf doraglobg doraphon doraphonf hippofr kidizmb kidizmp vtechtvsgr vtechtvssp"
 
 # ----------------------
 # VTech VSmile

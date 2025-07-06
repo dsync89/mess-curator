@@ -11,6 +11,7 @@ python ..\src\mess_curator.py search by-name `
     --default-emu-cmd-params '-keyboardprovider dinput hyprscan -cdrom' `
     --output-format yaml `
     --output-file system_softlist.yml `
+    --exclude-softlist "hyperscan_card" `
     hyprscan
 
 # ----------------------
