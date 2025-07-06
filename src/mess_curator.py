@@ -413,7 +413,10 @@ def output_to_csv_file(headers, data, output_file_path):
 ### --- MODIFICATION START --- ###
 def output_to_yaml_file(input_systems, all_software_entries, platform_key, platform_name_full, platform_categories, media_type,
                          enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params,
-                         output_file_path=None, software_configs_to_add=None):
+                         output_file_path=None, softlist_configs_to_add=None, software_configs_to_add=None):
+    if softlist_configs_to_add is None:
+        softlist_configs_to_add = {}
+
     if software_configs_to_add is None:
         software_configs_to_add = {}
     
@@ -447,10 +450,16 @@ def output_to_yaml_file(input_systems, all_software_entries, platform_key, platf
                 software_lists_array.append(softlist_entry)
 
                 # <--- CHANGE 4: Now, iterate through the software again to find matching custom configs.
+                # Check for a default config for this softlist
+                if softlist_name in softlist_configs_to_add:
+                    if softlist_name not in configs_for_this_system:
+                        configs_for_this_system[softlist_name] = {}
+                    configs_for_this_system[softlist_name]['_default_config'] = softlist_configs_to_add[softlist_name]
+
+                # Check for per-title configs
                 for swid in soft_ids_set:
                     custom_config = software_configs_to_add.get(softlist_name, {}).get(swid)
                     if custom_config:
-                        # If a config is found, add it to our temporary dictionary.
                         if softlist_name not in configs_for_this_system:
                             configs_for_this_system[softlist_name] = {}
                         configs_for_this_system[softlist_name][swid] = custom_config
@@ -716,7 +725,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                                    enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
                                    output_file_path, driver_status_filter=None, emulation_status_filter=None, 
                                    show_systems_only=False, show_extra_info=False, source_xml_root=None, sort_by=None, search_mode=None,
-                                   include_softlist=None, exclude_softlist=None, software_configs_to_add=None):
+                                   include_softlist=None, exclude_softlist=None, softlist_configs_to_add=None, software_configs_to_add=None):
     """
     Performs the MAME listsoftware search and outputs results as table or YAML.
     """
@@ -880,6 +889,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                 default_emu=default_emu,
                 default_emu_cmd_params=default_emu_cmd_params,
                 output_file_path=output_file_path,
+                softlist_configs_to_add=softlist_configs_to_add,
                 software_configs_to_add=software_configs_to_add
             )
     else:
@@ -1371,7 +1381,9 @@ def main():
     yaml_args_parser.add_argument("-de", "--default-emu", action="store_true", help="Set 'emulator.default_emulator: true'.")
     yaml_args_parser.add_argument("-dec", "--default-emu-cmd-params", help="Sets 'emulator.default_command_line_parameters'.")
     ### --- MODIFICATION START --- ###
-    # This is the argument definition you were missing.
+    # Default cmd line param that applies to all softlist titles for a softlist
+    yaml_args_parser.add_argument("--add-softlist-config", action="append", metavar='SOFTLIST:"PARAMETERS"', help="[For YAML] Add a default command for an entire softlist. Format: softlist_name:\"command params\". Can be used multiple times.")
+    # Per softlist title override, this will override the above
     yaml_args_parser.add_argument("--add-software-config", action="append", metavar='SOFTLIST:SWID:"PARAMETERS"', help="[For YAML] Add a custom command for a specific software ID. Format: softlist_name:software_id:\"command params\". Can be used multiple times.")
     ### --- MODIFICATION END --- ###
 
@@ -1511,6 +1523,26 @@ def main():
         sort_by_flag = args.sort_by
         output_file_path = args.output_file
 
+        # default cmd line param that applies to all titles for a softlist
+        softlist_configs_to_add = {}
+        if hasattr(args, 'add_softlist_config') and args.add_softlist_config:
+            for config_str in args.add_softlist_config:
+                try:
+                    parts = config_str.split(':', 1)
+                    if len(parts) != 2:
+                        raise ValueError("Invalid format")
+                    
+                    softlist_name, params = parts
+                    params = params.strip('"')
+
+                    softlist_configs_to_add[softlist_name] = {"command_line_parameters": params}
+                    print(f"[INFO] Queued default command for softlist '{softlist_name}'.")
+
+                except ValueError:
+                    print(f"[ERROR] Invalid format for --add-softlist-config: '{config_str}'. Expected SOFTLIST:\"PARAMETERS\". Aborting.")
+                    sys.exit(1)        
+
+        # a per title cmd line param that will override add_softlist_config
         software_configs_to_add = {}
         if hasattr(args, 'add_software_config') and args.add_software_config:
             for config_str in args.add_software_config:
@@ -1629,6 +1661,7 @@ def main():
             show_systems_only_flag, show_extra_info_flag, source_xml_root, sort_by=sort_by_flag, search_mode=args.search_mode,
             include_softlist=include_softlist_arg,
             exclude_softlist=exclude_softlist_arg,
+            softlist_configs_to_add=softlist_configs_to_add,
             software_configs_to_add=software_configs_to_add
         )
 
