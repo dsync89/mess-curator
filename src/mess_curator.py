@@ -319,9 +319,11 @@ def get_machine_details_and_filters_from_root(system_name, source_xml_root):
     return filters, machine_metadata
 
 
-def parse_software_list_from_file(search="", expected_softlist_name=None, system_name="", machine_softlist_filters=None):
+def parse_software_list_from_file(search="", expected_softlist_name=None, system_name="", machine_softlist_filters=None, exclude_softlist=None):
     if machine_softlist_filters is None:
         machine_softlist_filters = {}
+    if exclude_softlist is None:
+        exclude_softlist = []
 
     try:
         tree = ET.parse(TMP_SOFTWARE_XML_FILE)
@@ -351,6 +353,10 @@ def parse_software_list_from_file(search="", expected_softlist_name=None, system
         current_softlist_name_from_xml = swlist_elem.get("name")
         if not current_softlist_name_from_xml:
             debug_print(f"Skipping softwarelist element without 'name' attribute.")
+            continue
+
+        if current_softlist_name_from_xml in exclude_softlist:
+            debug_print(f"Skipping softlist '{current_softlist_name_from_xml}' due to --exclude-softlist.")
             continue
 
         processed_softlists_count += 1
@@ -655,10 +661,13 @@ def perform_rom_copy_operation(args):
 def perform_mame_search_and_output(systems_to_process, search_term, output_format, platform_key, platform_name_full, platform_categories, media_type, 
                                    enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
                                    output_file_path, driver_status_filter=None, emulation_status_filter=None, 
-                                   show_systems_only=False, show_extra_info=False, source_xml_root=None, sort_by=None, search_mode=None):
+                                   show_systems_only=False, show_extra_info=False, source_xml_root=None, sort_by=None, search_mode=None,
+                                   exclude_softlist=None):
     """
     Performs the MAME listsoftware search and outputs results as table or YAML.
     """
+    if exclude_softlist is None:
+        exclude_softlist = []
     all_software_entries_for_yaml_processing = []
     
     processed_system_info = {} 
@@ -692,7 +701,8 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
             entries_from_parse_func = parse_software_list_from_file(
                 search=search_term,
                 system_name=current_system,
-                machine_softlist_filters=machine_softlist_filters
+                machine_softlist_filters=machine_softlist_filters,
+                exclude_softlist=exclude_softlist
             )
             if entries_from_parse_func:
                 processed_system_info[current_system]['software_entries'].extend(entries_from_parse_func)
@@ -703,6 +713,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
 
         if os.path.exists(TMP_SOFTWARE_XML_FILE):
             os.remove(TMP_SOFTWARE_XML_FILE)
+
 
     print("\n--- Finished processing all systems ---")
 
@@ -1301,8 +1312,9 @@ def main():
 
     # Base parser for system inclusion/exclusion
     inclusion_args_parser = argparse.ArgumentParser(add_help=False)
-    inclusion_args_parser.add_argument("--include-systems", nargs='+', default=[], help="Space-separated list of MAME system short names to explicitly include in processing.")
-    inclusion_args_parser.add_argument("--exclude-systems", nargs='+', default=[], help="Space-separated list of MAME system short names to explicitly exclude.")
+    inclusion_args_parser.add_argument("--include-systems", default="", help="A space-separated string of MAME system short names to explicitly include (e.g., \"nes snes\").")
+    inclusion_args_parser.add_argument("--exclude-systems", default="", help="A space-separated string of MAME system short names to explicitly exclude (e.g., \"nes snes\").")
+    inclusion_args_parser.add_argument("--exclude-softlist", default="", help="A space-separated string of software lists to explicitly exclude (e.g., \"nes_ade nes_datach\").")
 
     by_name_parser = search_subparsers.add_parser("by-name", help="Search systems by explicit names or fuzzy prefix.", parents=[table_args_parser, yaml_args_parser, inclusion_args_parser])
     by_name_parser.add_argument("systems", nargs='*', default=[], help="One or more MAME system short names (e.g., 'ekara', 'nes').")
@@ -1477,18 +1489,26 @@ def main():
         
         # Universal include/exclude logic for all search modes
         if hasattr(args, 'include_systems') and args.include_systems:
+            include_systems_list = [item.strip() for item in args.include_systems.replace(',', ' ').split() if item.strip()]
             initial_count = len(processed_systems_set)
-            processed_systems_set.update(args.include_systems)
+            processed_systems_set.update(include_systems_list)
             added_count = len(processed_systems_set) - initial_count
             if added_count > 0:
                 print(f"[INFO] Included {added_count} additional system(s) via --include-systems.")
 
         if hasattr(args, 'exclude_systems') and args.exclude_systems:
+            exclude_systems_list = [item.strip() for item in args.exclude_systems.replace(',', ' ').split() if item.strip()]
             initial_count = len(processed_systems_set)
-            processed_systems_set -= set(args.exclude_systems)
+            processed_systems_set -= set(exclude_systems_list)
             excluded_count = initial_count - len(processed_systems_set)
             if excluded_count > 0:
                 print(f"[INFO] Excluded {excluded_count} system(s) via --exclude-systems.")
+
+        exclude_softlist_arg = []
+        if hasattr(args, 'exclude_softlist') and args.exclude_softlist:
+            exclude_softlist_arg = [item.strip() for item in args.exclude_softlist.replace(',', ' ').split() if item.strip()]
+            if exclude_softlist_arg:
+                print(f"[INFO] Will exclude the following software list(s): {', '.join(exclude_softlist_arg)}")
         
         systems_to_process = sorted(list(processed_systems_set))
         if hasattr(args, 'limit') and args.limit is not None: systems_to_process = systems_to_process[:args.limit]
@@ -1512,7 +1532,8 @@ def main():
             platform_key, platform_name_full, platform_categories, media_type,
             enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params,
             output_file_path, driver_status_filter, emulation_status_filter,
-            show_systems_only_flag, show_extra_info_flag, source_xml_root, sort_by=sort_by_flag, search_mode=args.search_mode
+            show_systems_only_flag, show_extra_info_flag, source_xml_root, sort_by=sort_by_flag, search_mode=args.search_mode,
+            exclude_softlist=exclude_softlist_arg
         )
 
     elif args.command == "copy-roms":
