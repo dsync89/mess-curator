@@ -377,9 +377,7 @@ def parse_software_list_from_file(search="", expected_softlist_name=None, system
             is_compatible = True
             if required_compatibility_filter:
                 compatibility_feat = sw.find('sharedfeat[@name="compatibility"]')
-                if compatibility_feat is None:
-                    is_compatible = False
-                else:
+                if compatibility_feat is not None: # Only perform check if the feature tag exists
                     sharedfeat_values_str = compatibility_feat.get("value", "").upper()
                     sharedfeat_values = [v.strip() for v in sharedfeat_values_str.split(',') if v.strip()]
                     if required_compatibility_filter not in sharedfeat_values:
