@@ -619,6 +619,19 @@ def perform_rom_copy_operation(args):
     if not system_softlist_data:
         print(f"[ERROR] No data found in '{input_file}'. Nothing to copy.")
         return
+    
+    platforms_to_process = {}
+    if args.platform_key:
+        if args.platform_key in system_softlist_data:
+            print(f"[INFO] Filtering copy operation for platform key: '{args.platform_key}'")
+            platforms_to_process[args.platform_key] = system_softlist_data[args.platform_key]
+        else:
+            print(f"[ERROR] Platform key '{args.platform_key}' not found in '{input_file}'. Nothing to copy.")
+            print(f"Available platforms are: {', '.join(system_softlist_data.keys())}")
+            return
+    else:
+        print("[INFO] No platform key specified. Processing all platforms.")
+        platforms_to_process = system_softlist_data    
 
     total_systems_processed = 0
     total_software_copied = 0
@@ -626,7 +639,7 @@ def perform_rom_copy_operation(args):
     total_empty_system_zips = 0
     missing_roms_summary = [] # New list to track missing ROMs
 
-    for platform_key, platform_data in system_softlist_data.items():
+    for platform_key, platform_data in platforms_to_process.items():
         platform_name = platform_data.get("platform", {}).get("name", platform_key)
         media_type = platform_data.get("media_type", "unknown")
         systems_in_platform = platform_data.get("system", [])
@@ -686,7 +699,7 @@ def perform_rom_copy_operation(args):
                 print(f"[WARNING] Invalid system entry type in YAML: {system_entry}. Skipping.")
 
     print(f"\n===== ROM Copy Operation Summary =====")
-    print(f"  Total Platforms Processed: {len(system_softlist_data)}")
+    print(f"  Total Platforms Processed: {len(platforms_to_process)}")
     print(f"  Total Systems Processed: {total_systems_processed}")
     print(f"  Total Software ROMs Copied: {total_software_copied}")
     print(f"  Total Software ROMs Missing (Dummy Created): {total_software_missing}")
@@ -1060,15 +1073,18 @@ def display_yaml_table(args, source_xml_root):
         print(f"[ERROR] No data found in '{input_file}'. Nothing to display.")
         return
 
-    platforms_to_display = {}
+    platforms_to_process  = {}
     if args.platform_key:
         if args.platform_key in system_softlist_data:
-            platforms_to_display[args.platform_key] = system_softlist_data[args.platform_key]
+            print(f"[INFO] Filtering copy operation for platform key: '{args.platform_key}'")
+            platforms_to_process [args.platform_key] = system_softlist_data[args.platform_key]
         else:
-            print(f"[ERROR] Platform '{args.platform_key}' not found in '{input_file}'.")
+            print(f"[ERROR] Platform key '{args.platform_key}' not found in '{input_file}'. Nothing to copy.")
+            print(f"Available platforms are: {', '.join(system_softlist_data.keys())}")
             return
     else:
-        platforms_to_display = system_softlist_data
+        print("[INFO] No platform key specified. Processing all platforms.")
+        platforms_to_process = system_softlist_data
 
     table_display_data = []
     
@@ -1082,7 +1098,7 @@ def display_yaml_table(args, source_xml_root):
     if args.show_extra_info:
         headers.append("Source File")
 
-    for platform_key, platform_data in platforms_to_display.items():
+    for platform_key, platform_data in platforms_to_process.items():
         print(f"\n--- Platform: {platform_data.get('platform',{}).get('name',platform_key)} (Key: {platform_key}) ---")
         
         systems_in_platform = platform_data.get("system", [])
@@ -1407,6 +1423,7 @@ def main():
 
     copy_parser = subparsers.add_parser("copy-roms", help="Copy/create ROM zips based on system_softlist.yml.")
     copy_parser.add_argument("--input-file", help="Path to the input YAML file. Defaults to config.")
+    copy_parser.add_argument("--platform-key", help="Optional: Copy ROMs only for a specific platform by its key.")
 
     list_good_parser = subparsers.add_parser("list-good-emulation", help="List MAME machines with 'good' emulation status.")
     list_good_parser.add_argument("--exclude-arcade", action="store_true", help="Excludes machines without a software list (typically arcade).")
