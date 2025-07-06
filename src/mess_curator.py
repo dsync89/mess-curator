@@ -319,7 +319,7 @@ def get_machine_details_and_filters_from_root(system_name, source_xml_root):
     return filters, machine_metadata
 
 
-def parse_software_list_from_file(search="", expected_softlist_name=None, system_name="", machine_softlist_filters=None, exclude_softlist=None):
+def parse_software_list_from_file(search="", expected_softlist_name=None, system_name="", machine_softlist_filters=None, include_softlist=None, exclude_softlist=None):
     if machine_softlist_filters is None:
         machine_softlist_filters = {}
     if exclude_softlist is None:
@@ -355,6 +355,12 @@ def parse_software_list_from_file(search="", expected_softlist_name=None, system
             debug_print(f"Skipping softwarelist element without 'name' attribute.")
             continue
 
+        # Filter for inclusion first. If the include list is not empty, the softlist MUST be in it.
+        if include_softlist and current_softlist_name_from_xml not in include_softlist:
+            debug_print(f"Skipping softlist '{current_softlist_name_from_xml}' as it is not in the --include-softlist.")
+            continue
+
+        # Then filter for exclusion
         if current_softlist_name_from_xml in exclude_softlist:
             debug_print(f"Skipping softlist '{current_softlist_name_from_xml}' due to --exclude-softlist.")
             continue
@@ -697,10 +703,12 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                                    enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
                                    output_file_path, driver_status_filter=None, emulation_status_filter=None, 
                                    show_systems_only=False, show_extra_info=False, source_xml_root=None, sort_by=None, search_mode=None,
-                                   exclude_softlist=None, software_configs_to_add=None):
+                                   include_softlist=None, exclude_softlist=None, software_configs_to_add=None):
     """
     Performs the MAME listsoftware search and outputs results as table or YAML.
     """
+    if include_softlist is None:
+        include_softlist = []    
     if exclude_softlist is None:
         exclude_softlist = []
     all_software_entries_for_yaml_processing = []
@@ -737,6 +745,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                 search=search_term,
                 system_name=current_system,
                 machine_softlist_filters=machine_softlist_filters,
+                include_softlist=include_softlist,
                 exclude_softlist=exclude_softlist
             )
             if entries_from_parse_func:
@@ -1354,6 +1363,7 @@ def main():
     inclusion_args_parser = argparse.ArgumentParser(add_help=False)
     inclusion_args_parser.add_argument("--include-systems", default="", help="A space-separated string of MAME system short names to explicitly include (e.g., \"nes snes\").")
     inclusion_args_parser.add_argument("--exclude-systems", default="", help="A space-separated string of MAME system short names to explicitly exclude (e.g., \"nes snes\").")
+    inclusion_args_parser.add_argument("--include-softlist", default="", help="A space-separated string of software lists to ONLY include (e.g., \"nes nes_vt_cart\").")    
     inclusion_args_parser.add_argument("--exclude-softlist", default="", help="A space-separated string of software lists to explicitly exclude (e.g., \"nes_ade nes_datach\").")
 
     by_name_parser = search_subparsers.add_parser("by-name", help="Search systems by explicit names or fuzzy prefix.", parents=[table_args_parser, yaml_args_parser, inclusion_args_parser])
@@ -1565,6 +1575,12 @@ def main():
             if excluded_count > 0:
                 print(f"[INFO] Excluded {excluded_count} system(s) via --exclude-systems.")
 
+        include_softlist_arg = []
+        if hasattr(args, 'include_softlist') and args.include_softlist:
+            include_softlist_arg = [item.strip() for item in args.include_softlist.replace(',', ' ').split() if item.strip()]
+            if include_softlist_arg:
+                print(f"[INFO] Will ONLY include the following software list(s): {', '.join(include_softlist_arg)}")
+
         exclude_softlist_arg = []
         if hasattr(args, 'exclude_softlist') and args.exclude_softlist:
             exclude_softlist_arg = [item.strip() for item in args.exclude_softlist.replace(',', ' ').split() if item.strip()]
@@ -1594,6 +1610,7 @@ def main():
             enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params,
             output_file_path, driver_status_filter, emulation_status_filter,
             show_systems_only_flag, show_extra_info_flag, source_xml_root, sort_by=sort_by_flag, search_mode=args.search_mode,
+            include_softlist=include_softlist_arg,
             exclude_softlist=exclude_softlist_arg,
             software_configs_to_add=software_configs_to_add
         )
