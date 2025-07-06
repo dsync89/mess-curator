@@ -404,11 +404,16 @@ def output_to_csv_file(headers, data, output_file_path):
     except IOError as e:
         print(f"[ERROR] Failed to write to CSV file '{output_file_path}': {e}")
 
-def output_to_yaml_file(input_systems, all_software_entries, platform_key, platform_name_full, platform_categories, media_type, 
-                         enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
-                         output_file_path=None):
-    software_info_by_system = {} 
+### --- MODIFICATION START --- ###
+def output_to_yaml_file(input_systems, all_software_entries, platform_key, platform_name_full, platform_categories, media_type,
+                         enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params,
+                         output_file_path=None, software_configs_to_add=None):
+    if software_configs_to_add is None:
+        software_configs_to_add = {}
+    
+    software_info_by_system = {}
 
+    # <--- CHANGE 1: Go back to using a simple set to collect unique software IDs.
     for softlist_name_xml, sys_name, swid, desc, publisher in all_software_entries:
         if sys_name not in software_info_by_system:
             software_info_by_system[sys_name] = {'softlists_data': {}}
@@ -424,20 +429,39 @@ def output_to_yaml_file(input_systems, all_software_entries, platform_key, platf
 
         if sys_name in software_info_by_system:
             software_lists_array = []
+            # <--- CHANGE 2: Create a new dictionary to hold the configs for just this system.
+            configs_for_this_system = {} 
+
             for softlist_name, soft_ids_set in sorted(software_info_by_system[sys_name]['softlists_data'].items()):
+                # <--- CHANGE 3: Build the simple software_lists block first.
                 softlist_entry = {"softlist_name": softlist_name}
                 if soft_ids_set:
+                    # The software_id list is now always a simple, sorted list of strings.
                     softlist_entry["software_id"] = sorted(list(soft_ids_set))
                 software_lists_array.append(softlist_entry)
+
+                # <--- CHANGE 4: Now, iterate through the software again to find matching custom configs.
+                for swid in soft_ids_set:
+                    custom_config = software_configs_to_add.get(softlist_name, {}).get(swid)
+                    if custom_config:
+                        # If a config is found, add it to our temporary dictionary.
+                        if softlist_name not in configs_for_this_system:
+                            configs_for_this_system[softlist_name] = {}
+                        configs_for_this_system[softlist_name][swid] = custom_config
             
             if software_lists_array:
                 system_details["software_lists"] = software_lists_array
+            
+            # <--- CHANGE 5: If we found any configs, add the whole software_configs block.
+            if configs_for_this_system:
+                system_details["software_configs"] = configs_for_this_system
         
         if system_details:
             system_list_for_yaml.append({sys_name: system_details})
         else:
             system_list_for_yaml.append(sys_name)
             print(f"[INFO] No detailed info (software_lists or software_id) for system '{sys_name}'. Will be listed as a simple string in YAML.")
+### --- MODIFICATION END --- ###
 
     new_platform_entry = {
         "platform": {
@@ -633,12 +657,25 @@ def perform_rom_copy_operation(args):
                             continue
 
                         print(f"  [INFO]   Copying ROMs from softlist '{softlist_name_for_copy}' for system '{system_name}'.")
-                        for swid in software_ids_for_softlist:
-                            copied, missing = _copy_single_rom(swid, softlist_name_for_copy, system_name, platform_key)
-                            total_software_copied += copied
-                            total_software_missing += missing
-                            if missing > 0:
-                                missing_roms_summary.append([swid, softlist_name_for_copy, system_name, platform_key])
+                        
+                        ### --- MODIFICATION START --- ###
+                        # This loop now handles both simple strings and dictionaries in the `software_id` list.
+                        for software_entry in software_ids_for_softlist:
+                            swid = ""
+                            if isinstance(software_entry, str):
+                                swid = software_entry
+                            elif isinstance(software_entry, dict) and 'id' in software_entry:
+                                swid = software_entry['id']
+                            
+                            if swid:
+                                copied, missing = _copy_single_rom(swid, softlist_name_for_copy, system_name, platform_key)
+                                total_software_copied += copied
+                                total_software_missing += missing
+                                if missing > 0:
+                                    missing_roms_summary.append([swid, softlist_name_for_copy, system_name, platform_key])
+                            else:
+                                print(f"[WARNING]   Skipping invalid software entry in YAML for '{softlist_name_for_copy}': {software_entry}")
+                        ### --- MODIFICATION END --- ###
             else:
                 print(f"[WARNING] Invalid system entry type in YAML: {system_entry}. Skipping.")
 
@@ -660,7 +697,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                                    enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params, 
                                    output_file_path, driver_status_filter=None, emulation_status_filter=None, 
                                    show_systems_only=False, show_extra_info=False, source_xml_root=None, sort_by=None, search_mode=None,
-                                   exclude_softlist=None):
+                                   exclude_softlist=None, software_configs_to_add=None):
     """
     Performs the MAME listsoftware search and outputs results as table or YAML.
     """
@@ -820,7 +857,8 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                 emu_name=emu_name,
                 default_emu=default_emu,
                 default_emu_cmd_params=default_emu_cmd_params,
-                output_file_path=output_file_path
+                output_file_path=output_file_path,
+                software_configs_to_add=software_configs_to_add
             )
     else:
         print(f"[i] No systems found for output after initial filtering or no matching software items found across any specified systems "
@@ -1307,6 +1345,10 @@ def main():
     yaml_args_parser.add_argument("-en", "--emu-name", help="Sets the 'emulator.name'.")
     yaml_args_parser.add_argument("-de", "--default-emu", action="store_true", help="Set 'emulator.default_emulator: true'.")
     yaml_args_parser.add_argument("-dec", "--default-emu-cmd-params", help="Sets 'emulator.default_command_line_parameters'.")
+    ### --- MODIFICATION START --- ###
+    # This is the argument definition you were missing.
+    yaml_args_parser.add_argument("--add-software-config", action="append", metavar='SOFTLIST:SWID:"PARAMETERS"', help="[For YAML] Add a custom command for a specific software ID. Format: softlist_name:software_id:\"command params\". Can be used multiple times.")
+    ### --- MODIFICATION END --- ###
 
     # Base parser for system inclusion/exclusion
     inclusion_args_parser = argparse.ArgumentParser(add_help=False)
@@ -1442,6 +1484,27 @@ def main():
         sort_by_flag = args.sort_by
         output_file_path = args.output_file
 
+        software_configs_to_add = {}
+        if hasattr(args, 'add_software_config') and args.add_software_config:
+            for config_str in args.add_software_config:
+                try:
+                    parts = config_str.split(':', 2)
+                    if len(parts) != 3:
+                        raise ValueError("Invalid format")
+                    
+                    softlist_name, swid, params = parts
+                    params = params.strip('"')
+
+                    if softlist_name not in software_configs_to_add:
+                        software_configs_to_add[softlist_name] = {}
+                    
+                    software_configs_to_add[softlist_name][swid] = {"command_line_parameters": params}
+                    print(f"[INFO] Queued custom command for '{swid}' in softlist '{softlist_name}'.")
+
+                except ValueError:
+                    print(f"[ERROR] Invalid format for --add-software-config: '{config_str}'. Expected SOFTLIST:SWID:\"PARAMETERS\". Aborting.")
+                    sys.exit(1)
+
         if args.search_mode == "by-name":
             processed_systems_set.update(args.systems)
             if hasattr(args, 'fuzzy') and args.fuzzy:
@@ -1531,7 +1594,8 @@ def main():
             enable_custom_cmd_per_title, emu_name, default_emu, default_emu_cmd_params,
             output_file_path, driver_status_filter, emulation_status_filter,
             show_systems_only_flag, show_extra_info_flag, source_xml_root, sort_by=sort_by_flag, search_mode=args.search_mode,
-            exclude_softlist=exclude_softlist_arg
+            exclude_softlist=exclude_softlist_arg,
+            software_configs_to_add=software_configs_to_add
         )
 
     elif args.command == "copy-roms":
