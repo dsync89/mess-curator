@@ -10,13 +10,15 @@ This tool allows you to:
 
 *   **Intelligently filter** MAME's vast machine list by name, fuzzy prefix, description, driver status, and emulation status.
 *   **Auto-generate structured YAML** configuration files (`system_softlist.yml`) for platforms, complete with systems, their associated software lists, and even individual software IDs.
+*   **Define per-game launch commands** directly from the command line, essential for computer systems.
+*   **Selectively include or exclude** entire software lists to fine-tune your platforms.
 *   **Copy and organize** ROMs into a curated folder structure, creating dummy `.zip` files for missing titles or standalone systems.
 *   **Pre-process MAME's XML data** by filtering for MESS systems (non-arcade) and splitting them into "softlist-capable" and "non-softlist" categories, significantly speeding up subsequent operations.
 *   **List "good" emulation drivers** for easy discovery of well-supported systems.
 *   **Provide detailed table outputs** for various data views directly from your YAML or MAME's XML.
 *   **Manage program configurations** easily via a `config.yaml` file or command-line arguments.
 
-## Companion Tool to my Launchbox Plug in - `MESS Curated Softlist Importer`
+## Companion Tool to my Launchbox Plugin - MESS Curated Softlist Importer
 
 The primary purpose of this tool is to generate a `system_softlist.yml` file, which acts as a direct input for my first Launchbox Plugin - [MESS Curated Softlist ROM Importer plugin for LaunchBox](https://github.com/dsync89/lb-mess-curated-platform-softlist-importer).
 
@@ -64,9 +66,9 @@ Note that the repo might not be updated as quickly as the MAME release.
 
 Take MAME 0.278 for example, it was released a week before 2025-07-07, but as of 2025-07-07 that repo still is yet to be updated with the `mess.ini` for 0.278 set. Fortunately you can simply use the `mess.ini` from the 0.277 release as the changes might be minor and you will probably not missing anything.
 
-## System-Softlist YAML
+## The System-Softlist YAML
 
-While you may use this tool as a lister to quickly filter out those systems/softlist that you like, or generate CSV then filter yourself, the most powerful power or the main motivation for this tool is to generate a YAML file, which I aptly called **System-Softlist YAML** that contains a list of systems, softlists, metadata, etc. that is later on used to readily import these as Platforms in Launcbhox using my [Launchbox MESS Curator Plugin] tool.
+While you may use this tool as a lister to quickly filter out those systems/softlist that you like, or generate CSV then filter yourself, the most powerful power or the main motivation for this tool is to generate a YAML file, which I aptly called **System-Softlist YAML** that contains a list of systems, softlists, metadata, etc. This file also acts as the blueprint for my [Launchbox MESS Curator Plugin] tool that can be used to readily import these system or titles as Platforms in Launchbox front end.
 
 ### Structure
 
@@ -269,23 +271,25 @@ You can extend or generate your own YAML Files.
 
 ## Installation
 
-1.  **Python 3.x:** Ensure you have Python 3.7+ installed. You can download it from [python.org](https://www.python.org/downloads/).
+1.  **Python 3.7+:** Ensure you have Python 3.7+ installed. You can download it from [python.org](https://www.python.org/downloads/).
 2.  **Clone the Repository:**
     ```bash
     git clone https://github.com/dsync89/mess-curator.git
-    cd mess-curator/src 
+    cd mess-curator 
     ```
 3.  **Install Dependencies:**
     ```bash
     pip install PyYAML tabulate
     ```
 4.  **MAME:** Ensure you have a MAME installation (0.277+ recommended) and know its executable path.
+5.  **mess.ini:** This tool requires a `mess.ini` file (typically placed in MAME's `folders` directory) to distinguish non-arcade systems. You can obtain this from communities like [AntoPISA's MAME Support Files](https://github.com/AntoPISA/MAME_SupportFiles).
 
-### Configuration
+## Getting Started
 
 Before running most commands, the tool needs to know where your MAME executable, ROMs, and output files are located.
 
-**First Run (Guided Setup):**
+### 1. Initial Configuration
+
 The very first time you run `mess_curator.py` (and `config.yaml` doesn't exist), it will automatically launch a guided setup process:
 
 ```bash
@@ -312,7 +316,7 @@ python src\mess_curator.py config --set-system-softlist-yaml-file "C:\Users\Gary
 
 *(Paths shown are examples, adjust to your system. Note: `MAME_EXECUTABLE's` parent directory is used to guess mess.ini default path)*
 
-### Notes 
+### 2. Pre-processing MAME Data (Recommended)
 
 For the best performance, the tool relies on filtered XML files for MESS (non-Arcade) instead of the full systems `mame.xml`. After the initial setup, you will be prompted to generate them. You can also do this manually at any time:
 
@@ -325,6 +329,8 @@ This command will:
 1. Generate `mame.xml` (a full machine list, which can take a few minutes).
 2. Read your `mess.ini` to create a filtered `mess.xml` containing all non-Arcade systems.
 3. Split `mess.xml` into `mess-softlist.xml` (systems with software lists) and `mess-nosoftlist.xml`.
+
+Note: this requires a `mess.ini` file (typically placed in MAME's `folders` directory) that distinguish non-arcade systems wher you can obtain from communities like [AntoPISA's MAME Support Files](https://github.com/AntoPISA/MAME_SupportFiles).
 
 ## Usage
 
@@ -749,6 +755,79 @@ Options (Mutually Exclusive - choose one per command):
 - `--set-mess-ini-path <path>`: Set MESS.ini file path.
 
 - `--set-system-softlist-yaml-file <path>`: Set System Softlist YAML output file path.
+
+### All Commands
+
+For detailed help on any command, use the `-h` flag (e.g., `python src/mess_curator.py search by-name -h`).
+
+*   **`config`**: View or update tool configuration.
+*   **`split`**: Generate filtered `mess.xml`, `mess-softlist.xml`, and `mess-nosoftlist.xml`.
+*   **`search`**: The main command for finding systems and generating output.
+    *   `by-name`: Search for systems by explicit name or fuzzy prefix.
+    *   `by-xml`: Use a pre-existing XML file as the source for systems.
+    *   `by-filter`: Find systems by searching their description text.
+    *   `by-sourcefile`: Find systems by their driver source file (e.g., `nes.cpp`).
+*   **`copy-roms`**: Copy ROMs based on your YAML file.
+*   **`table`**: Display the contents of a YAML file in a detailed table.
+*   **`platform-info`**: Show a high-level summary of the platforms in your YAML file.
+
+## Examples
+
+### **Example 1: Create a Platform for Acorn Archimedes with a Custom Game Command**
+
+This example generates a YAML entry for the `aa4401` system, but adds a specific `autoboot` command just for the game `elite`.
+
+```powershell
+python .\src\mess_curator.py search by-name `
+    --platform-key acorn-archimedes `
+    --platform-name-full "Acorn Archimedes" `
+    --platform-category "Computers" `
+    --media-type floppy `
+    --emu-name "MAME (Floppy)" `
+    --default-emu `
+    --default-emu-cmd-params '-keyboardprovider dinput aa4401 -flop' `
+    --output-format yaml `
+    --add-software-config 'arch_flop:elite:"-autoboot_delay 2 -autoboot_command \"*BASIC\nCHAIN \"ELITE\"\""' `
+    aa4401
+```
+
+### **Example 2: Create a Platform for Handhelds, Including Only Specific Softlists**
+
+This example finds all systems with "Entex" in their description, but **only includes** software from the `advision` and `svis_cart` softlists.
+
+```powershell
+python .\src\mess_curator.py search by-filter "Entex" `
+    --input-xml mess.xml `
+    --platform-key entex-handhelds `
+    --platform-name-full "Entex Handhelds" `
+    --media-type cart `
+    --emu-name "MAME (Cartridge)" `
+    --default-emu `
+    --output-format yaml `
+    --include-softlist "advision svis_cart"
+```
+
+### **Example 3: Find All "Good" TV Games and Output to a Table**
+
+This is useful for discovery. It searches all MESS systems for "TV Game" in the description, filters for "good" emulation, and displays the results in a clean table.
+
+```powershell
+python .\src\mess_curator.py search by-filter "TV Game" `
+    --input-xml mess.xml `
+    --emulation-status good `
+    --show-extra-info `
+    --output-format table
+```
+
+### **Example 4: Build Your Curated ROM Set**
+
+Once your `system_softlist.yml` is configured, this command will create a clean, organized folder structure with all the required ROMs.
+
+```bash
+python src/mess_curator.py copy-roms
+```
+
+This will read your YAML and copy the files into the configured output directory, ready for your frontend.
 
 ## GUI
 
