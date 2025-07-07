@@ -558,7 +558,7 @@ def update_platform_metadata_only(platform_key, platform_name_full, platform_cat
 
 # === ROM Copying Functions ===
 
-def _copy_single_rom(softid, softlist_name_for_copy, system_name, platform_key, create_dummy=False):
+def _copy_single_rom(softid, softlist_name_for_copy, system_name, platform_key, create_dummy=False, dry_run=False):
     """
     Copies a single software ROM or creates a dummy zip if not found.
     """
@@ -572,7 +572,8 @@ def _copy_single_rom(softid, softlist_name_for_copy, system_name, platform_key, 
     rom_dst_dir = os.path.join(out_romset_dir, platform_key, system_name, softlist_name_for_copy)
     rom_dst_path = os.path.join(rom_dst_dir, f"{softid}.zip")
 
-    os.makedirs(rom_dst_dir, exist_ok=True)
+    if not dry_run:
+        os.makedirs(rom_dst_dir, exist_ok=True)
 
     # If forced dummy creation is ON, OR if the source file doesn't exist, create a dummy.
     if create_dummy or not os.path.exists(rom_src_path):
@@ -583,13 +584,14 @@ def _copy_single_rom(softid, softlist_name_for_copy, system_name, platform_key, 
             # This is the original "missing file" message.
             print(f"[✗] Missing ROM: {softid}.zip from '{softlist_name_for_copy}'. Creating placeholder zip at {rom_dst_path}")
         
-        _create_dummy_zip_for_rom(rom_dst_path, softid)
+        _create_dummy_zip_for_rom(rom_dst_path, softid, dry_run=dry_run)
         missing = 1 # We use the 'missing' counter to track all created dummies.
     else:
         # This block only runs if create_dummy is False AND the file exists.
         try:
-            shutil.copy2(rom_src_path, rom_dst_path)
             print(f"[✓] Copied ROM: {softid}.zip → {rom_dst_path}")
+            if not dry_run:
+                shutil.copy2(rom_src_path, rom_dst_path)
             copied = 1
         except Exception as e:
             print(f"[ERROR] Failed to copy {softid}.zip from {rom_src_path} to {rom_dst_path}: {e}")
@@ -598,35 +600,45 @@ def _copy_single_rom(softid, softlist_name_for_copy, system_name, platform_key, 
     
     return copied, missing
 
-def _create_dummy_zip_for_rom(zip_path, softid):
+def _create_dummy_zip_for_rom(zip_path, softid, dry_run=False):
     """Creates an empty zip file for a specific software ID."""
-    try:
-        with zipfile.ZipFile(zip_path, 'w') as zipf:
-            pass
-        print(f"[○] Created dummy zip: {os.path.basename(zip_path)}")
-    except Exception as e:
-        print(f"[ERROR] Failed to create dummy zip {softid}.zip at {zip_path}: {e}")
+    if not dry_run:
+        try:
+            with zipfile.ZipFile(zip_path, 'w') as zipf:
+                pass
+        except Exception as e:
+            print(f"[ERROR] Failed to create dummy zip {softid}.zip at {zip_path}: {e}")
 
-def _create_dummy_zip_for_system(system_name, platform_key):
+def _create_dummy_zip_for_system(system_name, platform_key, dry_run=False):
     """Creates an empty zip file for a standalone system (no software_id specified)."""
     out_romset_dir = APP_CONFIG['out_romset_dir']
     dst_dir = os.path.join(out_romset_dir, platform_key, system_name)
     os.makedirs(dst_dir, exist_ok=True)
     zip_path = os.path.join(dst_dir, f"{system_name}.zip")
-    try:
-        with zipfile.ZipFile(zip_path, 'w') as zipf:
-            pass
-        print(f"[○] Created empty zip for standalone system: {zip_path}")
-        return 1
-    except Exception as e:
-        print(f"[ERROR] Failed to create empty zip for system {system_name} at {zip_path}: {e}")
-        return 0
+
+    print(f"[○] Created empty zip for standalone system: {zip_path}")
+
+    if not dry_run:
+        try:
+            os.makedirs(dst_dir, exist_ok=True)
+            with zipfile.ZipFile(zip_path, 'w') as zipf:
+                pass
+            return 1
+        except Exception as e:
+            print(f"[ERROR] Failed to create empty zip for system {system_name} at {zip_path}: {e}")
+            return 0
+            
+    return 1 # In a dry run, we simulate success
 
 def perform_rom_copy_operation(args):
     """
     Parses the system_softlist.yml file and copies/creates ROM zips based on its content.
     """
     print(f"\n===== Starting ROM Copy Operation =====")
+    if args.dry_run:
+        print("********** DRY RUN MODE ENABLED **********")
+        print("*** No files or directories will be created or modified. ***")
+
     print(f"Source MAME Softlist ROMs: {APP_CONFIG['softlist_rom_sources_dir']}")
     print(f"Destination Curated ROMset: {APP_CONFIG['out_romset_dir']}")
 
@@ -668,7 +680,7 @@ def perform_rom_copy_operation(args):
             if isinstance(system_entry, str):
                 system_name = system_entry
                 print(f"  [>] Processing standalone system: '{system_name}'")
-                total_empty_system_zips += _create_dummy_zip_for_system(system_name, platform_key)
+                total_empty_system_zips += _create_dummy_zip_for_system(system_name, platform_key, dry_run=args.dry_run)
             elif isinstance(system_entry, dict):
                 for system_name, details in system_entry.items():
                     print(f"  [>] Processing system with details: '{system_name}'")
@@ -704,7 +716,7 @@ def perform_rom_copy_operation(args):
                                 swid = software_entry['id']
                             
                             if swid:
-                                copied, missing = _copy_single_rom(swid, softlist_name_for_copy, system_name, platform_key, args.create_placeholder_zip)
+                                copied, missing = _copy_single_rom(swid, softlist_name_for_copy, system_name, platform_key, args.create_placeholder_zip, dry_run=args.dry_run)
                                 total_software_copied += copied
                                 total_software_missing += missing
                                 if missing > 0:
@@ -1445,6 +1457,7 @@ def main():
     copy_parser.add_argument("--input-file", help="Path to the input YAML file. Defaults to config.")
     copy_parser.add_argument("--platform-key", help="Optional: Copy ROMs only for a specific platform by its key.")
     copy_parser.add_argument("--create-placeholder-zip", action="store_true", help="Always create empty placeholder (dummy) zips instead of copying from the source directory.")
+    copy_parser.add_argument("--dry-run", action="store_true", help="Show what would be copied or created without modifying any files.")
 
     list_good_parser = subparsers.add_parser("list-good-emulation", help="List MAME machines with 'good' emulation status.")
     list_good_parser.add_argument("--exclude-arcade", action="store_true", help="Excludes machines without a software list (typically arcade).")
