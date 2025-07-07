@@ -1,7 +1,5 @@
 # MESS Curator Tool
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/B0B8WK7DL)
-
 ## Organize, Filter, and Curate Your MAME/MESS ROMsets with Ease
 
 This tool is a powerful command-line utility designed for the meticulous curation of MAME's non-arcade "MESS" platforms and their associated software lists. It is the only tool of its kind that provides the flexibility to parse, filter, and group any MAME systems into custom platforms, which can then be used to build perfectly organized ROM sets.
@@ -24,14 +22,12 @@ The primary purpose of this tool is to generate a `system_softlist.yml` file, wh
 
 The workflow is simple:
 
-1. Use this tool to define your platforms and generate the `system_softlist.yml` file.
+1. Use this tool to filter a list of platforms that you want into `system_softlist.yml` file.
 2. Use the `copy-roms` command to create a curated ROM set based on the YAML file.
 3. Use my LaunchBox plugin to import your games, which reads the generated `system_softlist.yml` 
-to automatically add platforms, emulators, metadata, and MAME command-line parameters in LaunchBox.
+to automatically add platforms, emulators, metadata, clones, mark broken games, and per title custom MAME command-line parameters in LaunchBox.
 
 ## Key Features
-
-- **Initial Setup Wizard***: A guided, interactive setup to configure all necessary paths, making first-time use easy.
 
 - **Flexible System Searching**:
   - By Name: Specify systems directly or use fuzzy prefixes (e.g., `jak_` to find all JAKKS Pacific systems).
@@ -46,41 +42,230 @@ to automatically add platforms, emulators, metadata, and MAME command-line param
 
 - **GUI**: A GUI for those that prefer graphics.
 
-## Why This Tool is Unique:
+- **Initial Setup Wizard***: A guided, interactive setup to configure all necessary paths, making first-time use easy.
 
-Many existing tools focus on full ROMset validation or arcade-only management. MAME Curator specifically targets:
+
+## Why This Tool is Unique
+
+Many existing tools focus on full ROMset validation or arcade-only management. MESS Curator specifically targets:
 
 *   **MESS Systems Integration:** Explicitly handles and filters non-arcade MAME systems.
-*   **Softlist Granularity:** Generates YAML that correctly distinguishes between multiple softlists per system, and individual software IDs within each.
-*   **Frontend-Friendly Output:** The YAML output (`system_softlist.yml`) is designed to be easily parseable by external tools (like a LaunchBox plugin) for automated import of platform and game metadata.
+*   **Softlist Granularity:** Generates YAML that correctly distinguishes between multiple softlists per system, and individual software IDs/titles within each.
+*   **Frontend-Friendly Output:** The YAML output (`system_softlist.yml`) is designed to be easily parseable by external tools (like my LaunchBox plugin) for automated import of platform and game metadata into Launchbox front-end.
 *   **Smart Caching:** Avoids repeatedly running slow `mame -listxml` commands by caching generated XMLs (`mame.xml`, `mess.xml`), making subsequent operations much faster.
 *   **Flexible Filtering:** Allows highly specific filtering by description, driver status, emulation status, and softlist capability, enabling users to build niche collections (e.g., "all good emulation handhelds," "all x-in-1 systems").
 
-Example `system_softlist.yml`
+
+## Dependencies
+
+MESS Curator requires the `mess.ini` maintained by the good Italian community at https://github.com/AntoPISA/MAME_SupportFiles that you put into `MAME\folders`. This `mess.ini` file is critical as it contains a list of machine/system names that is non-Arcade that would otherwise impossible to determined using the `mame.xml` that you generated using `mame -listxml` itself, as it does not contain any fields that indicate whether a system is Arcade or Non-Arcade.
+
+Note that the repo might not be updated as quickly as the MAME release. 
+
+Take MAME 0.278 for example, it was released a week before 2025-07-07, but as of 2025-07-07 that repo still is yet to be updated with the `mess.ini` for 0.278 set. Fortunately you can simply use the `mess.ini` from the 0.277 release as the changes might be minor and you will probably not missing anything.
+
+## System-Softlist YAML
+
+While you may use this tool as a lister to quickly filter out those systems/softlist that you like, or generate CSV then filter yourself, the most powerful power or the main motivation for this tool is to generate a YAML file, which I aptly called **System-Softlist YAML** that contains a list of systems, softlists, metadata, etc. that is later on used to readily import these as Platforms in Launcbhox using my [Launchbox MESS Curator Plugin] tool.
+
+### Structure
+
+An example of a System-Softlist YAML contains general common fields like:
 
 ```
-takara-popira:
+jakks-pacific-tv-game:  # <-- a unique human readable key that identify a platform. Named as <MANUFACTURER>-<SYSTEM_NAME>
   platform:
-    name: Takara Popira
+    name: JAKKS Pacific TV Game # <-- Human readable Platform Name. This is used to create Platform Name in Launchbox when importing using my [Launchbox MESS Curator Plugin] tool
+  platform_category:
+  - Consoles
+  - MESS (TV Games)
   media_type: cart
   enable_custom_command_line_param_per_software_id: true
   emulator:
     name: MAME (Cartridge)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
-  system:
-  - popira:
-      software_list: ekara_cart
-      software_id:
-      - dc0001
-      - dc0002
-      - dc0003
-      - dc0004
-      - dc0005
-      - dc0006
-      ...
+  system: # <-- a list of system only or system with softlist
+  - jak_batm # <-- a system without a `software_lists` simply means that it does not support software list.
+  - jak_bbh
+  - jak_bbsf
+    ...
+  - jak_disf: # <-- A system that support software list
+      software_lists:
+      - softlist_name: jakks_gamekey_dy
+        software_id:
+        - sbwlgoof
+        - stenfcha
+        - stenfchs
 ```
 
+Some systems such as Computers might contain several softlists in which you want to apply the same command line params for all titles in that softlists. E.g. Acorn Electron.
+
+These are defined in `software_configs` key which is optional, such as
+```
+      software_configs:  
+        <SOFTLIST_NAME>: # this must match with the softlist name that the system support
+          _default_config: # the default fixed key that is used to hint the cmd line that is applied to all titles within this softlist
+            command_line_parameters: <value here will be globally applied to all softlist titles within <SOFTLIST_NAME>>
+          <SOFTLIST_TITLE> # softlist title specific options that will take precedence/overwrite those that are defined in `_default_config`.
+            command_line_parameters: <value here will overwrite the cmd line param in `_default_config`
+```
+
+There are times when you might need to use `software_configs.<SOFTLIST_TITLE>` for specific games for a softlist instead of a global cmd line that get applied to all games for that softlist. A notable one is Acorn Atom systems where each game require different cmd line param where the game name cannot be simply determined from the rom filename itself.
+
+```
+acorn-atom:
+  platform:
+    name: Acorn Atom
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: floppy
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (Floppy)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput atom -autoboot_delay
+      "2" -autoboot_command "DOS\nCAT\n*RUN"" -flop1
+  system:
+  - atom:
+      software_lists:
+      - softlist_name: atom_flop
+        software_id:
+        - chuckie
+        - dosutils
+        - egghead
+        - f14
+        - gala
+        - galxians
+        - hardhath
+        - hypervpr
+        - jetsetmn
+        - joeblade
+        - jsw
+        - jsw2
+        - jungle
+        - manicmin
+        - repton
+      software_configs:
+        atom_flop:
+          joeblade: # <-- define a per game cmd line param
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"JOE"\n -autoboot_delay
+              1 -flop1
+          egghead:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"EHRUN"\n -autoboot_delay
+              1 -flop1
+          jsw:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"JSWRUN"\n -autoboot_delay
+              1 -flop1
+          gala:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"CGALA"\n -autoboot_delay
+              1 -flop1
+          hardhath:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"LOADER"\n -autoboot_delay
+              1 -flop1
+          jungle:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"JUNGLE"\n -autoboot_delay
+              1 -flop1
+          hypervpr:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"LOADER"\n -autoboot_delay
+              1 -flop1
+          f14:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"F14RUN"\n -autoboot_delay
+              1 -flop1
+          galxians:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"GALAXI"\n -autoboot_delay
+              1 -flop1
+          chuckie:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"CCHUCK"\n -autoboot_delay
+              1 -flop1
+          jsw2:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"JSW2RUN"\n -autoboot_delay
+              1 -flop1
+          repton:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"REPLOAD"\n -autoboot_delay
+              1 -flop1
+          manicmin:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"MMRUN"\n -autoboot_delay
+              1 -flop1
+          jetsetmn:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"LOADER"\n -autoboot_delay
+              1 -flop1
+```
+
+Here's another example of a system, Acorn Electron that use the same global cmd line param for each titles per softlist, and there is no need for specific cmd line per titles as that would be a LOT to cover and unnecessary.
+
+```
+acorn-electron:
+  platform:
+    name: Acorn Electron
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cass
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (Cassette)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput electron -skip_gameinfo
+      -autoboot_delay "2" -autoboot_command "*tape\nchain""""""\n" -cass
+  system:
+  - electron:
+      software_lists:
+      - softlist_name: bbc_cass
+        software_id:
+        - 9cardbd1
+        - 9cardbd2
+          ...
+      - softlist_name: electron_cart
+        software_id:
+        - abr
+        - abr104
+          ...
+      - softlist_name: electron_cass
+        software_id:
+        - 3dbombal
+        - 3ddotty
+          ...
+      - softlist_name: electron_flop
+        software_id:
+        - 9cardbd1
+        - 9cardbd2
+          ...
+      software_configs:
+        bbc_cass:
+          _default_config: # <-- use the same cmd line param for all titles in this softlist
+            command_line_parameters: electron -skip_gameinfo -autoboot_delay 2 -autoboot_command
+              *TAPE\nCHAIN""""""\n -cass
+          test:
+            command_line_parameters: electron -skip_gameinfo -autoboot_delay 2 -autoboot_command
+              *TAPE\nCHAIN""""""\n TEST -cass
+        electron_cart:
+          _default_config:
+            command_line_parameters: electron -cart
+        electron_cass:
+          _default_config:
+            command_line_parameters: electron -skip_gameinfo -autoboot_delay 2 -autoboot_command
+              *TAPE\nCHAIN""""""\n -cass
+        electron_flop:
+          _default_config:
+            command_line_parameters: electron -skip_gameinfo -autoboot_delay 2 -autoboot_command
+              "cat\n\n\n\n\n\nrun !boot\n" -flop
+```
+
+## Preset System-Softlist YAML
+
+In case you don't want to generate the system-softlist YAML yourself, I had meticulously curated a list of notable MESS systems that I personally like to have in my collections and you can use it as-is. The systems are chosen based on one of the following critieria:
+
+- Obscurity: Less known system or manufacturer are prioritize as I am interested to know more about it. 
+- Playable titles: The system must have at least one or few playable titles.
+- Well known manufacturer: This might contradict with the first criteria, but if it's from a well known Manufacturer you bet to see it in the list, especially those LCD Handhelds from well known manufacturers like Konami, Nintendo, and Tiger.com
+
+I do welcome contribution to these listings as time goes if you think more systems should be added. Since I used Launchbox as my front-end, I include all games (both broken and working) and then use my [Launchbox MESS Curator Plugin] tool to mark those games as Broken and add clones as additional apps. 
+
+You can extend or generate your own YAML Files.
 
 ## Installation
 
@@ -371,7 +556,7 @@ python src\mess_curator.py search by-filter "xavixport" `
     --output-format yaml
 ```
 
-### `copy-roms` Command: Curate Your ROMset
+### `copy-roms` Command: Construct Your ROMset
 
 Reads your `system_softlist.yml` and copies/creates dummy `.zip` if that is a system files in a structured output directory.
 
@@ -384,6 +569,12 @@ python src\mess_curator.py copy-roms --input-file system_softlist.yml
 
 **Options:**
 - `--input-file <path>`: Specify the input `system_softlist.yml` file. (Defaults to configured path)
+- `--platform-key PLATFORM_KEY`: (Optional) Copy ROMs only for a specific platform by its key.
+- `--create-placeholder-zip`: Always create empty placeholder (dummy) zips which is about 22KB instead of copying from the source directory.
+- `--dry-run`: Show what would be copied or created without modifying any files.
+
+Note:
+- I highly recommend using `--create-placeholder-zip` to create a dummy zip. Unlike most emulator that require taking the full ROM path as the input argument, MAME maintain its internal database of rom list and rom path, and the command line parameter only require the system or softlist name. 
 
 ### `table` Command: Display `system_softlist.yml` as Table
 
@@ -561,14 +752,38 @@ Options (Mutually Exclusive - choose one per command):
 
 ## GUI
 
-Run
+MESS Curator CLI also comes with CLI. However the GUI is not frequently updated as compared to the CLI version. 
 
+### How It Works
+
+To keep the GUI easier to sync with CLI, it calls the CLI functions and render the result on UI.
+
+### Run
 ```
 python src\mess_ui.py
 ```
 
+## FAQ
+
+Q: How does the tool determine if a system suport softlist?
+
+If the `<softwarelist>` entry is present under a `<machine>` entry in the `mame.xml` file, then it is determined to have such.
+
+```
+	<machine name="pegasus" sourcefile="ausnz/pegasus.cpp" isbios="no" isdevice="no" ismechanical="no" runnable="yes">
+		<description>Aamber Pegasus</description>
+		<year>1981</year>
+		<manufacturer>Technosys</manufacturer>
+		<biosset name="11r2674" description="Monitor 1.1 r2674" default="no" />
+		<biosset name="10r2569" description="Monitor 1.0 r2569" default="no" />
+		...
+		<slot name="exp0d">
+		</slot>
+		<softwarelist tag="cart_list" name="pegasus_cart" status="original" />
+```
+
 ## Contribution
 
-Feel free to open issues or pull requests on the GitHub repository if you have suggestions to the MESS systems that should be added as default, bug reports, or want to contribute to the project.
+Feel free to open issues or pull requests on the GitHub repository if you have suggestions to the MESS systems that should be added as default, bug reports, or want to contribute to the project and pay for a cup of my soy bean~
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/B0B8WK7DL)
