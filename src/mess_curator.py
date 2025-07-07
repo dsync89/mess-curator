@@ -558,7 +558,7 @@ def update_platform_metadata_only(platform_key, platform_name_full, platform_cat
 
 # === ROM Copying Functions ===
 
-def _copy_single_rom(softid, softlist_name_for_copy, system_name, platform_key):
+def _copy_single_rom(softid, softlist_name_for_copy, system_name, platform_key, create_dummy=False):
     """
     Copies a single software ROM or creates a dummy zip if not found.
     """
@@ -574,7 +574,19 @@ def _copy_single_rom(softid, softlist_name_for_copy, system_name, platform_key):
 
     os.makedirs(rom_dst_dir, exist_ok=True)
 
-    if os.path.exists(rom_src_path):
+    # If forced dummy creation is ON, OR if the source file doesn't exist, create a dummy.
+    if create_dummy or not os.path.exists(rom_src_path):
+        if create_dummy:
+            # New message for when dummy creation is forced by the user flag.
+            print(f"[○] Placeholder (Dummy) Zip requested: Creating placeholder for {softid}.zip at {rom_dst_path}")
+        else:
+            # This is the original "missing file" message.
+            print(f"[✗] Missing ROM: {softid}.zip from '{softlist_name_for_copy}'. Creating placeholder zip at {rom_dst_path}")
+        
+        _create_dummy_zip_for_rom(rom_dst_path, softid)
+        missing = 1 # We use the 'missing' counter to track all created dummies.
+    else:
+        # This block only runs if create_dummy is False AND the file exists.
         try:
             shutil.copy2(rom_src_path, rom_dst_path)
             print(f"[✓] Copied ROM: {softid}.zip → {rom_dst_path}")
@@ -583,10 +595,6 @@ def _copy_single_rom(softid, softlist_name_for_copy, system_name, platform_key):
             print(f"[ERROR] Failed to copy {softid}.zip from {rom_src_path} to {rom_dst_path}: {e}")
             _create_dummy_zip_for_rom(rom_dst_path, softid)
             missing = 1
-    else:
-        print(f"[✗] Missing ROM: {softid}.zip from '{softlist_name_for_copy}'. Creating dummy at {rom_dst_path}")
-        _create_dummy_zip_for_rom(rom_dst_path, softid)
-        missing = 1
     
     return copied, missing
 
@@ -696,7 +704,7 @@ def perform_rom_copy_operation(args):
                                 swid = software_entry['id']
                             
                             if swid:
-                                copied, missing = _copy_single_rom(swid, softlist_name_for_copy, system_name, platform_key)
+                                copied, missing = _copy_single_rom(swid, softlist_name_for_copy, system_name, platform_key, args.create_placeholder_zip)
                                 total_software_copied += copied
                                 total_software_missing += missing
                                 if missing > 0:
@@ -711,7 +719,7 @@ def perform_rom_copy_operation(args):
     print(f"  Total Platforms Processed: {len(platforms_to_process)}")
     print(f"  Total Systems Processed: {total_systems_processed}")
     print(f"  Total Software ROMs Copied: {total_software_copied}")
-    print(f"  Total Software ROMs Missing (Dummy Created): {total_software_missing}")
+    print(f"  Total Software ROMs Missing (Placeholder (Dummy) Zip Created): {total_software_missing}")
     print(f"  Total Empty System Zips Created: {total_empty_system_zips}")
     print(f"======================================")
     
@@ -1436,6 +1444,7 @@ def main():
     copy_parser = subparsers.add_parser("copy-roms", help="Copy/create ROM zips based on system_softlist.yml.")
     copy_parser.add_argument("--input-file", help="Path to the input YAML file. Defaults to config.")
     copy_parser.add_argument("--platform-key", help="Optional: Copy ROMs only for a specific platform by its key.")
+    copy_parser.add_argument("--create-placeholder-zip", action="store_true", help="Always create empty placeholder (dummy) zips instead of copying from the source directory.")
 
     list_good_parser = subparsers.add_parser("list-good-emulation", help="List MAME machines with 'good' emulation status.")
     list_good_parser.add_argument("--exclude-arcade", action="store_true", help="Excludes machines without a software list (typically arcade).")
