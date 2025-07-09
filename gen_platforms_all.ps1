@@ -1021,7 +1021,7 @@ python .\src\mess_curator.py search `
     --platform-name-full "Mattel Hyperscan" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
     --media-type cdrom `
-    --emu-name "MAME (CD)" `
+    --emu-name "MAME (MESS)" `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput hyprscan -cdrom' `
     --output-format yaml `
@@ -1429,7 +1429,7 @@ python .\src\mess_curator.py search `
     --platform-name-full "Tandy Memorex VIS" `
     --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
     --media-type cdrom `
-    --emu-name "MAME (CD)" `
+    --emu-name "MAME (MESS)" `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput vis -cdrom' `
     --output-format yaml `
