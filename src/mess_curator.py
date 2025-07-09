@@ -1536,23 +1536,29 @@ def main():
         # 1. Build the initial pool of systems to consider
         systems_pool = set()
         
-        # Start with explicit systems from the command line
-        if args.systems:
-            systems_pool.update(args.systems)
-            print(f"[INFO] Starting with {len(systems_pool)} system(s) provided directly.")
+        # Check if the user is providing an explicit set of systems to start with
+        user_provided_systems = bool(args.systems or args.fuzzy_name or (hasattr(args, 'include_systems') and args.include_systems))
         
-        # Add systems from fuzzy name search
-        if args.fuzzy_name:
-            fuzzy_matches = get_all_mame_systems_by_prefix_from_root(args.fuzzy_name, source_xml_root)
-            if fuzzy_matches:
-                print(f"[INFO] Adding {len(fuzzy_matches)} systems from fuzzy search for '{args.fuzzy_name}'.")
-                systems_pool.update(fuzzy_matches)
-            else:
-                print(f"[INFO] No systems found matching '--fuzzy-name {args.fuzzy_name}'.")
-
-        # If no systems were provided by name or fuzzy, the pool is ALL systems from the XML
-        if not systems_pool:
-            print(f"[INFO] No specific systems provided. Starting with all systems from '{os.path.basename(xml_source_path)}'.")
+        if user_provided_systems:
+            print("[INFO] User has provided an explicit list of systems to process.")
+            # Start with an empty set and only add what the user specifies.
+            if args.systems:
+                systems_pool.update(args.systems)
+                print(f"[INFO] Added {len(args.systems)} system(s) from positional arguments.")
+            
+            if args.fuzzy_name:
+                fuzzy_matches = get_all_mame_systems_by_prefix_from_root(args.fuzzy_name, source_xml_root)
+                if fuzzy_matches:
+                    print(f"[INFO] Added {len(fuzzy_matches)} systems from fuzzy search for '{args.fuzzy_name}'.")
+                    systems_pool.update(fuzzy_matches)
+            
+            if hasattr(args, 'include_systems') and args.include_systems:
+                include_systems_list = [item.strip() for item in args.include_systems.replace(',', ' ').split() if item.strip()]
+                systems_pool.update(include_systems_list)
+                print(f"[INFO] Added {len(include_systems_list)} system(s) from --include-systems.")
+        else:
+            # If no systems are specified, the pool is ALL systems from the XML, which will then be filtered.
+            print(f"[INFO] No specific systems provided. Starting with all systems from '{os.path.basename(xml_source_path)}' for filtering.")
             systems_pool.update(get_all_mame_systems_from_xml_file(xml_source_path))
 
         # 2. Sequentially apply filters to the pool
