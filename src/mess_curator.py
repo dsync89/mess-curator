@@ -469,7 +469,19 @@ def output_to_yaml_file(input_systems, all_software_entries, platform_key, platf
             
             # <--- CHANGE 5: If we found any configs, add the whole software_configs block.
             if configs_for_this_system:
-                system_details["software_configs"] = configs_for_this_system
+                # Create a new, sorted dictionary
+                sorted_configs = {}
+                # First, sort the softlist names (e.g., coco_cart, coco_flop)
+                for softlist_name in sorted(configs_for_this_system.keys()):
+                    sorted_configs[softlist_name] = {}
+                    softlist_content = configs_for_this_system[softlist_name]
+                    
+                    # Inside each softlist, sort the software IDs, ensuring '_default_config' is always first
+                    # The key function here sorts '_default_config' before any other string.
+                    for swid in sorted(softlist_content.keys(), key=lambda k: (k != '_default_config', k)):
+                        sorted_configs[softlist_name][swid] = softlist_content[swid]
+
+                system_details["software_configs"] = sorted_configs
         
         if system_details:
             system_list_for_yaml.append({sys_name: system_details})
