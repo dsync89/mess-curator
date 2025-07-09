@@ -8,7 +8,7 @@ acorn-electron:
   media_type: cass
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cassette)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput electron -skip_gameinfo
       -autoboot_delay "2" -autoboot_command "*tape\nchain""""""\n" -cass
@@ -1203,7 +1203,7 @@ amstrad-gx4000:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput gx4000 -cart
   system:
@@ -1243,6 +1243,10 @@ amstrad-gx4000:
         - tintin
         - wildstrt
         - worldspt
+      software_configs:
+        gx4000:
+          _default_config:
+            command_line_parameters: gx4000 -cart
 atari-xegs:
   platform:
     name: Atari XEGS
@@ -1864,7 +1868,7 @@ bally-astrocade:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput astrocde -cart
   system:
@@ -1999,6 +2003,10 @@ bally-astrocade:
         - yesterv
         - ziggyjx
         - ziggymo
+      software_configs:
+        astrocde:
+          _default_config:
+            command_line_parameters: astrocde -cart
 bambino-handhelds-lcd:
   platform:
     name: Bambino Handhelds (LCD)
@@ -2008,7 +2016,7 @@ bambino-handhelds-lcd:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -2030,7 +2038,7 @@ bandai-gundam-rx-78:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput rx78 -cart
   system:
@@ -2090,7 +2098,7 @@ bandai-handhelds-lcd:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -2124,7 +2132,7 @@ bandai-lets-tv-play:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -2208,7 +2216,7 @@ bandai-super-vision-8000:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput sv8000 -cart1
   system:
@@ -2236,7 +2244,7 @@ bandai-tamagotchi:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -2258,7 +2266,7 @@ bit-corp-gamate:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput gamate -cart
   system:
@@ -2338,7 +2346,7 @@ casio-loopy:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput casloopy -cart
   system:
@@ -2367,7 +2375,7 @@ casio-pv-1000:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput pv1000 -cart
   system:
@@ -2414,7 +2422,7 @@ casio-pv-2000:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput pv2000 -cart
   system:
@@ -2464,7 +2472,7 @@ coleco-handhelds-lcd:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -2487,7 +2495,7 @@ commodore-vic-10:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput vic10 -cart
   system:
@@ -2537,7 +2545,7 @@ commodore-vic-20:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput vic1001 -cart
   system:
@@ -2807,7 +2815,7 @@ conny-tv-games:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -2832,7 +2840,7 @@ creatronic-mega-duck:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput megaduck -cart
   system:
@@ -2876,7 +2884,7 @@ dragon:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput dragon64 -cart
   system:
@@ -3996,7 +4004,7 @@ emerson-arcadia-2001:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput arcadia -cart
   system:
@@ -4076,7 +4084,7 @@ entex-adventure-vision:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput advision -skip_gameinfo
       -cart
@@ -4099,7 +4107,7 @@ entex-handhelds-lcd:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -4132,7 +4140,7 @@ epoch-game-pocket-computer:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput gamepock -cart
   system:
@@ -4155,7 +4163,7 @@ epoch-handhelds-lcd:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -4176,7 +4184,7 @@ epoch-super-cassette-vision:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput scv -cart
   system:
@@ -4225,7 +4233,7 @@ epoch-tv-games:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -4277,7 +4285,7 @@ epoch-tv-pc:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -4295,7 +4303,7 @@ exelvision-exl-100:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput exl100 -cart
   system:
@@ -4333,7 +4341,7 @@ funtech-super-acan:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput supracan -cart
   system:
@@ -4362,7 +4370,7 @@ gakken-handhelds-lcd:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -4388,7 +4396,7 @@ gamepark-gp32:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput gp32
   system:
@@ -4444,7 +4452,7 @@ hartung-game-master:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput gmaster -cart
   system:
@@ -4479,7 +4487,7 @@ hasbro-tv-games:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -4502,7 +4510,7 @@ interton-vc-4000:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput vc4000 -cart
   system:
@@ -4557,7 +4565,7 @@ jakks-pacific-telestory:
   media_type: cartridge
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput telestry -cart
   system:
@@ -4585,7 +4593,7 @@ jakks-pacific-tv-game:
   media_type: cart
   enable_custom_command_line_param_per_software_id: true
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -4733,9 +4741,9 @@ jakks-pacific-tv-motion-game:
   - Consoles
   - MESS (TV Games)
   media_type: cart
-  enable_custom_command_line_param_per_software_id: false
+  enable_custom_command_line_param_per_software_id: true
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -4756,7 +4764,7 @@ joypalette-tv-games:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -4775,7 +4783,7 @@ jungletac-vii:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput vii -cart
   system:
@@ -4795,7 +4803,7 @@ koei-pasogo:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput pasogo -cart
   system:
@@ -4818,7 +4826,7 @@ konami-handhelds-lcd:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -4851,7 +4859,7 @@ lexibook-tv-games:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -4877,7 +4885,7 @@ mattel-electronics-handhelds-lcd:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -4916,7 +4924,7 @@ mattel-intellivision-ecs:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput intvecs -cart
   system:
@@ -5136,7 +5144,7 @@ milton-bradley-handhelds-lcd:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -5162,7 +5170,7 @@ nichibutsu-my-vision:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput myvision -cart
   system:
@@ -5184,9 +5192,9 @@ nintendo-famicombox:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
-    default_command_line_parameters: -keyboardprovider dinput famibox
+    default_command_line_parameters: -keyboardprovider dinput
   system:
   - famibox
 nintendo-game-and-watch:
@@ -5198,7 +5206,7 @@ nintendo-game-and-watch:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -5271,7 +5279,7 @@ nintendo-super-game-boy:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -12190,7 +12198,7 @@ parker-brothers-handhelds-lcd:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -12217,7 +12225,7 @@ philips-videopac-plus:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput videopac -cart
   system:
@@ -12434,7 +12442,7 @@ play-vision-tv-games:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -12451,7 +12459,7 @@ radica-play-tv:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -12524,7 +12532,7 @@ rca-studio-ii:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput studio2 -cart
   system:
@@ -12578,7 +12586,7 @@ sega-beena:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput beena -cart1
   system:
@@ -12590,6 +12598,7 @@ sega-beena:
         - 1nichi10
         - abcprk
         - advdrv
+        - advdrv_1
         - anpaabc
         - anpaeigo
         - anpasaga
@@ -12601,6 +12610,7 @@ sega-beena:
         - cars2
         - cinnamo
         - cookinbe
+        - denshaca
         - dorahika
         - doratsyh
         - dorawwgl
@@ -12656,7 +12666,7 @@ sega-sc-3000:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput sc3000 -cart
   system:
@@ -12741,7 +12751,7 @@ senario-tv-games:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -12778,7 +12788,7 @@ sord-m5:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput m5 -cart1
   system:
@@ -12879,7 +12889,7 @@ spectravision-svi-318:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput svi318 -cart
   system:
@@ -13116,7 +13126,7 @@ super-impulse-tv-games:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -13135,7 +13145,7 @@ takara-e-kara:
   media_type: cartridge
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput ekaraa -cart
   system:
@@ -13257,8 +13267,20 @@ takara-e-kara:
         - ekaraweb12a
         - ekaraweb12b
         - ekaraweb12c
+        - ekaraweb12d
+        - ekaraweb12e
+        - ekaraweb12f
+        - ekaraweb12g
+        - ekaraweb12h
+        - ekaraweb12i
+        - ekaraweb12j
+        - ekaraweb12k
         - ekaraweb28
+        - ekaraweb28a
         - ekaraweb8
+        - ekaraweb8a
+        - ekaraweb8b
+        - ekaraweb8c
         - en1
         - en2
         - en3
@@ -13290,6 +13312,7 @@ takara-e-kara:
         - kd1
         - kd2
         - kd3
+        - kd4
         - kr1
         - mc0001
         - mc0002
@@ -13373,7 +13396,7 @@ takara-jumping-popira:
   media_type: cartridge
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput jpopira -cart
   system:
@@ -13400,7 +13423,7 @@ takara-popira:
   media_type: cart
   enable_custom_command_line_param_per_software_id: true
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput popira -cart
   system:
@@ -13458,7 +13481,7 @@ takara-tomy-tv-game:
   media_type: cart
   enable_custom_command_line_param_per_software_id: true
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -13509,7 +13532,7 @@ tandy-trs-80-color-computer:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput coco3h -cart1
   system:
@@ -13733,17 +13756,20 @@ tandy-trs-80-color-computer:
         coco_flop:
           _default_config:
             command_line_parameters: coco3h -flop1
-          dkremix:
-            command_line_parameters: coco3h -autoboot_delay 2 -autoboot_command LOADM\"dkremix\":exec\n
-              -flop1
           dkong:
             command_line_parameters: coco3h -autoboot_delay 2 -autoboot_command RUN\"donkey\"\n
               -flop1
-          pitfall2:
-            command_line_parameters: coco3h -autoboot_delay 2 -autoboot_command RUN\"pitfall2\"\n
+          dkremix:
+            command_line_parameters: coco3h -autoboot_delay 2 -autoboot_command LOADM\"dkremix\":exec\n
+              -flop1
+          joust:
+            command_line_parameters: coco3h -autoboot_delay 2 -autoboot_command RUN\"joust\"\n
               -flop1
           pacman:
             command_line_parameters: coco3h -autoboot_delay 2 -autoboot_command RUN\"pacman\"\n
+              -flop1
+          pitfall2:
+            command_line_parameters: coco3h -autoboot_delay 2 -autoboot_command RUN\"pitfall2\"\n
               -flop1
 technosys-aamber-pegasus:
   platform:
@@ -13792,7 +13818,7 @@ tiger-electronics-handhelds-lcd:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -13878,7 +13904,7 @@ tiger-game-com:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput gamecom -cart1
   system:
@@ -13919,7 +13945,7 @@ timetop-game-king:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput gameking -cart
   system:
@@ -13982,7 +14008,7 @@ timetop-game-king-3:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput gamekin3 -cart
   system:
@@ -14010,7 +14036,7 @@ tomy-evio:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput evio -cart
   system:
@@ -14045,7 +14071,7 @@ tomy-handhelds-lcd:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -14072,7 +14098,7 @@ tomy-tutor:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput tutor -cart
   system:
@@ -14125,7 +14151,7 @@ tronica-handhelds-lcd:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -14148,7 +14174,7 @@ ultimate-products-tv-games:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -14169,7 +14195,7 @@ uzebox:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput uzebox -cart
   system:
@@ -14315,7 +14341,7 @@ videobrain-family-computer:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput vidbrain -cart1
   system:
@@ -14355,7 +14381,7 @@ videoton-tvc-64:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput tvc64p -cart1
   system:
@@ -14648,7 +14674,7 @@ vtech-creativision:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput crvision -cart
   system:
@@ -14726,13 +14752,13 @@ vtech-socrates:
   platform:
     name: VTech Socrates
   platform_category:
-  - Consoles
-  - MESS (Consoles)
+  - Computers
+  - MESS (Computers)
   - MESS (System w/ Softlist)
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput socrates -cart
   system:
@@ -14757,7 +14783,7 @@ vtech-tv-games:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
@@ -14781,7 +14807,7 @@ vtech-vsmile:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput vsmile -cart
   system:
@@ -15108,7 +15134,7 @@ vtech-vsmile-baby:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput vsmileb -cart
   system:
@@ -15149,7 +15175,7 @@ vtech-vsmile-motion:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput vsmilem -cart
   system:
@@ -15269,7 +15295,7 @@ watara-supervision:
   media_type: cart
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cartridge)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput svision -cart
   system:
@@ -15356,7 +15382,7 @@ mattel-hyperscan:
   - Consoles
   - MESS (Consoles)
   - MESS (System w/ Softlist)
-  media_type: cartridge
+  media_type: cdrom
   enable_custom_command_line_param_per_software_id: false
   emulator:
     name: MAME (CD)
@@ -15374,453 +15400,6 @@ mattel-hyperscan:
         - marvelh
         - spidrman
         - xmen
-      - softlist_name: hyperscan_card
-        software_id:
-        - ben001
-        - ben002
-        - ben003
-        - ben004
-        - ben005
-        - ben006
-        - ben007
-        - ben008
-        - ben009
-        - ben010
-        - ben011
-        - ben012
-        - ben013
-        - ben014
-        - ben015
-        - ben016
-        - ben017
-        - ben018
-        - ben019
-        - ben020
-        - ben021
-        - ben022
-        - ben023
-        - ben024
-        - ben025
-        - ben026
-        - ben027
-        - ben028
-        - ben029
-        - ben030
-        - ben031
-        - ben032
-        - ben033
-        - ben034
-        - ben035
-        - ben036
-        - ben037
-        - ben038
-        - ben039
-        - ben040
-        - ben041
-        - ben042
-        - ben043
-        - ben044
-        - ben045
-        - ben046
-        - ben047
-        - ben048
-        - ben049
-        - ben050
-        - ben051
-        - ben052
-        - ben053
-        - ben054
-        - ben055
-        - ben056
-        - ben057
-        - ben058
-        - ben059
-        - ben060
-        - ben061
-        - ben062
-        - ben063
-        - ben064
-        - ben065
-        - ben066
-        - ben067
-        - ben068
-        - ben069
-        - ben070
-        - ben071
-        - ben072
-        - ben073
-        - ben074
-        - ben075
-        - ben076
-        - ben077
-        - ben078
-        - ben079
-        - ben080
-        - ben081
-        - ben092
-        - ben093
-        - ben094
-        - ben095
-        - iwl001
-        - iwl002
-        - iwl003
-        - iwl004
-        - iwl005
-        - iwl006
-        - iwl007
-        - iwl008
-        - iwl009
-        - iwl010
-        - iwl011
-        - iwl012
-        - iwl013
-        - iwl014
-        - iwl015
-        - iwl016
-        - iwl017
-        - iwl018
-        - iwl019
-        - iwl020
-        - iwl021
-        - iwl022
-        - iwl023
-        - iwl024
-        - iwl025
-        - iwl026
-        - iwl027
-        - iwl028
-        - iwl029
-        - iwl030
-        - iwl031
-        - iwl032
-        - iwl033
-        - iwl034
-        - iwl035
-        - iwl036
-        - iwl037
-        - iwl038
-        - iwl039
-        - iwl040
-        - iwl041
-        - iwl042
-        - iwl043
-        - iwl044
-        - iwl045
-        - iwl046
-        - iwl047
-        - iwl048
-        - iwl049
-        - iwl050
-        - iwl051
-        - iwl052
-        - iwl053
-        - iwl054
-        - iwl055
-        - iwl056
-        - iwl057
-        - iwl058
-        - iwl059
-        - iwl060
-        - iwl061
-        - iwl062
-        - iwl063
-        - iwl064
-        - iwl065
-        - iwl066
-        - iwl067
-        - iwl068
-        - iwl069
-        - iwl070
-        - iwl071
-        - iwl072
-        - iwl073
-        - iwl074
-        - iwl075
-        - iwl076
-        - iwl077
-        - iwl078
-        - iwl079
-        - iwl080
-        - iwl081
-        - iwl082
-        - iwl083
-        - iwl084
-        - iwl085
-        - iwl086
-        - iwl087
-        - iwl088
-        - iwl089
-        - iwl090
-        - iwl091
-        - iwl092
-        - iwl093
-        - iwl094
-        - iwl095
-        - iwl096
-        - iwl097
-        - iwl098
-        - iwl099
-        - iwl100
-        - iwl101
-        - iwl102
-        - iwl103
-        - iwl104
-        - iwl105
-        - iwl106
-        - iwl107
-        - iwl108
-        - iwl109
-        - iwl110
-        - iwl111
-        - marvh001
-        - marvh002
-        - marvh003
-        - marvh004
-        - marvh005
-        - marvh006
-        - marvh007
-        - marvh008
-        - marvh009
-        - marvh010
-        - marvh011
-        - marvh012
-        - marvh013
-        - marvh014
-        - marvh015
-        - marvh016
-        - marvh017
-        - marvh018
-        - marvh019
-        - marvh020
-        - marvh021
-        - marvh022
-        - marvh023
-        - marvh024
-        - marvh025
-        - marvh026
-        - marvh027
-        - marvh028
-        - marvh029
-        - marvh030
-        - marvh031
-        - marvh032
-        - marvh033
-        - marvh034
-        - marvh035
-        - marvh036
-        - marvh037
-        - marvh038
-        - marvh039
-        - marvh040
-        - marvh041
-        - marvh042
-        - marvh043
-        - marvh044
-        - marvh045
-        - marvh046
-        - marvh047
-        - marvh048
-        - marvh049
-        - marvh050
-        - marvh051
-        - marvh052
-        - marvh053
-        - marvh054
-        - marvh055
-        - marvh056
-        - marvh057
-        - marvh058
-        - marvh059
-        - marvh060
-        - marvh061
-        - marvh062
-        - marvh063
-        - marvh064
-        - marvh065
-        - marvh066
-        - marvh067
-        - marvh068
-        - marvh069
-        - marvh070
-        - spdrm001
-        - spdrm002
-        - spdrm003
-        - spdrm004
-        - spdrm005
-        - spdrm006
-        - spdrm007
-        - spdrm008
-        - spdrm009
-        - spdrm010
-        - spdrm011
-        - spdrm012
-        - spdrm013
-        - spdrm014
-        - spdrm015
-        - spdrm016
-        - spdrm017
-        - spdrm018
-        - spdrm019
-        - spdrm020
-        - spdrm021
-        - spdrm022
-        - spdrm023
-        - spdrm024
-        - spdrm025
-        - spdrm026
-        - spdrm027
-        - spdrm028
-        - spdrm029
-        - spdrm030
-        - spdrm031
-        - spdrm032
-        - spdrm033
-        - spdrm034
-        - spdrm035
-        - spdrm036
-        - spdrm037
-        - spdrm038
-        - spdrm039
-        - spdrm040
-        - spdrm041
-        - spdrm042
-        - spdrm043
-        - spdrm044
-        - spdrm045
-        - spdrm046
-        - spdrm047
-        - spdrm048
-        - spdrm049
-        - spdrm050
-        - spdrm051
-        - spdrm052
-        - spdrm053
-        - spdrm054
-        - spdrm055
-        - spdrm056
-        - spdrm057
-        - spdrm058
-        - spdrm059
-        - spdrm060
-        - xmen001
-        - xmen002
-        - xmen003
-        - xmen004
-        - xmen005
-        - xmen006
-        - xmen007
-        - xmen008
-        - xmen009
-        - xmen010
-        - xmen011
-        - xmen012
-        - xmen013
-        - xmen014
-        - xmen015
-        - xmen016
-        - xmen017
-        - xmen018
-        - xmen019
-        - xmen020
-        - xmen021
-        - xmen022
-        - xmen023
-        - xmen024
-        - xmen025
-        - xmen026
-        - xmen027
-        - xmen028
-        - xmen029
-        - xmen030
-        - xmen031
-        - xmen032
-        - xmen033
-        - xmen034
-        - xmen035
-        - xmen036
-        - xmen037
-        - xmen038
-        - xmen039
-        - xmen040
-        - xmen041
-        - xmen042
-        - xmen043
-        - xmen044
-        - xmen045
-        - xmen046
-        - xmen047
-        - xmen048
-        - xmen049
-        - xmen050
-        - xmen051
-        - xmen052
-        - xmen053
-        - xmen054
-        - xmen055
-        - xmen056
-        - xmen057
-        - xmen058
-        - xmen059
-        - xmen060
-        - xmen061
-        - xmen062
-        - xmen063
-        - xmen064
-        - xmen065
-        - xmen066
-        - xmen067
-        - xmen068
-        - xmen069
-        - xmen070
-        - xmen071
-        - xmen072
-        - xmen073
-        - xmen074
-        - xmen075
-        - xmen076
-        - xmen077
-        - xmen078
-        - xmen079
-        - xmen080
-        - xmen081
-        - xmen082
-        - xmen083
-        - xmen084
-        - xmen085
-        - xmen086
-        - xmen087
-        - xmen088
-        - xmen089
-        - xmen090
-        - xmen091
-        - xmen092
-        - xmen093
-        - xmen094
-        - xmen095
-        - xmen096
-        - xmen097
-        - xmen098
-        - xmen099
-        - xmen100
-        - xmen101
-        - xmen102
-        - xmen103
-        - xmen104
-        - xmen105
-        - xmen106
-        - xmen107
-        - xmen108
-        - xmen109
-        - xmen110
-        - xmen111
-        - xmen112
-        - xmen113
-        - xmen114
-        - xmen115
-        - xmen116
-        - xmen117
-        - xmen118
-        - xmen119
 tandy-memorex-vis:
   platform:
     name: Tandy Memorex VIS
@@ -15828,7 +15407,7 @@ tandy-memorex-vis:
   - Consoles
   - MESS (Consoles)
   - MESS (System w/ Softlist)
-  media_type: cartridge
+  media_type: cdrom
   enable_custom_command_line_param_per_software_id: false
   emulator:
     name: MAME (CD)
@@ -15919,7 +15498,7 @@ eaca-eg2000-colour-genie:
   media_type: cartridge
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cassette)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput cgenie -autoboot_command
       \n\nCLOAD\n -autoboot_delay 1 -cass
@@ -16200,7 +15779,7 @@ exidy-sorcerer:
   media_type: cartridge
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cassette)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput sorcerer2 -autoboot_command
       "LOG\n" -autoboot_delay 3 -cass1
@@ -16348,208 +15927,208 @@ exidy-sorcerer:
           _default_config:
             command_line_parameters: sorcerer2 -autoboot_delay 3 -autoboot_command
               CLOAD\n -cart basicpac -cass1
-          dybug:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          debug:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          adv7:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          cadas:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          adv6:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          flip:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          mmind:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          biochart:
+          adv1:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
           adv2:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
-          kilopede:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          sword:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          minva:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          invaders:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          homerun:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          adv1:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          galax:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          hpad:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          spider:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          adv8:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          midas:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          chess2:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          munch:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          ast:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          arrow2:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          apatrol:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          arrow:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          blackj:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          grotnik:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          fgam:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          galx:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          atc:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          flite:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          crash:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          chomp:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          dterm:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          misil:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          starf:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          kalid:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          astro:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          killerg:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
           adv3:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          arith:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          adv9:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          chess1:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          robot:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          ldg:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          amaze:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          zetu:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          kilo:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
           adv4:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
-          disas2:
+          adv5:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
-          defcm:
+          adv6:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
-          wumpus:
+          adv7:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
-          biorhythm:
+          adv8:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
-          cosmc:
+          adv9:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
-          char:
+          amaze:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          apatrol:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          arith:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          arrow:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          arrow2:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          ast:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
           aster:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
-          magicmaze:
+          astro:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
-          l2x:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          dfndr:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          landarc:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          com48:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          ezy:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          interceptor:
-            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
-              BYE\nLOG\n -cart basicpac -cass1
-          nike2:
+          atc:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
           atc1:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
+          biochart:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          biorhythm:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          blackj:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          cadas:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          char:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          chess1:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          chess2:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          chomp:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          com48:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          cosmc:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          crash:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          debug:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          defcm:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          dfndr:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          disas2:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          dterm:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          dybug:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          ezy:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          fgam:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          flip:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          flite:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          galax:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          galx:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          grotnik:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          homerun:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          hpad:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          interceptor:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
           invad2:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
-          adv5:
+          invaders:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          kalid:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          killerg:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          kilo:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          kilopede:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          l2x:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          landarc:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          ldg:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          magicmaze:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          midas:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          minva:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          misil:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          mmind:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          munch:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          nike2:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          robot:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          spider:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          starf:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          sword:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          wumpus:
+            command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
+              BYE\nLOG\n -cart basicpac -cass1
+          zetu:
             command_line_parameters: sorcerer2 -autoboot_delay 4 -autoboot_command
               BYE\nLOG\n -cart basicpac -cass1
 memotech-mtx:
@@ -16639,7 +16218,7 @@ philips-vg-5000:
   media_type: cartridge
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cassette)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput vg5k -skip_gameinfo
       -autoboot_command cload\n -autoboot_delay 3 -cass
@@ -16785,152 +16364,152 @@ tandy-trs-80:
         - zchess
       software_configs:
         trs80_cass:
-          taipan:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
-              -cass
-          qwatson:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
-              -cass
-          trollcru:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
-              -cass
-          startrek:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
-              -cass
-          galaxy2:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nGALAXY\n
-              -cass
-          zchess:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nZCHESS\n
-              -cass
-          scarfman:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSCARFM\n
+          adv03:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nMISSIO\n
               -cass
           adv10:
             command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSAVAGE\n
               -cass
-          pyrmd:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nPYRMD\n
-              -cass
-          starfi:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSTARFI\n
-              -cass
-          eliza:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nELIZA\n
-              -cass
-          headon:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nHEADON\n
-              -cass
           android:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
-              -cass
-          robot:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nROBOT\n
-              -cass
-          heliko:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nHELIKO\n
-              -cass
-          scripsit:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSCRIPS\n
-              -cass
-          hoppy:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nHG\n
-              -cass
-          penetr:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nPENETR\n
-              -cass
-          starwar:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
-              -cass
-          meteor2:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nMETEOR\n
-              -cass
-          spaceinv:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nINVADE\n
-              -cass
-          defense:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nDEFENS\n
-              -cass
-          blakjack:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
-              -cass
-          craps:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
-              -cass
-          invaders:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nINVADE\n
-              -cass
-          spcinv:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSPCINV\n
-              -cass
-          dddd:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command \n\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nDANDEM\n
-              -cass
-          chess:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSARGON\n
-              -cass
-          cosmic:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nCOSMIC\n
-              -cass
-          starsm:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSTARSM\n
-              -cass
-          wheel:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
-              -cass
-          backgamm:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
-              -cass
-          microply:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
-              -cass
-          escape:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nESCAPE\n
-              -cass
-          slot:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
-              -cass
-          invasion:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nINVADE\n
-              -cass
-          galaxy1:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nGALAXY\n
-              -cass
-          spcwarp:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSPWAR\n
-              -cass
-          swamp:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSWAMP\n
-              -cass
-          keno:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
-              -cass
-          seadragon:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSEADRA\n
-              -cass
-          adv03:
-            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nMISSIO\n
-              -cass
-          colliss:
             command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
               -cass
           baccarat:
             command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
               -cass
-          roulette:
+          backgamm:
             command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
               -cass
-          pinball:
+          blakjack:
             command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
+              -cass
+          chess:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSARGON\n
+              -cass
+          colliss:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
+              -cass
+          cosmic:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nCOSMIC\n
+              -cass
+          craps:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
+              -cass
+          dddd:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command \n\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nDANDEM\n
+              -cass
+          defense:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nDEFENS\n
               -cass
           dtrap:
             command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"32640\nCLOAD\nRUN\n
               -cass
+          eliza:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nELIZA\n
+              -cass
           env:
             command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nENV\n
               -cass
+          escape:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nESCAPE\n
+              -cass
+          galaxy1:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nGALAXY\n
+              -cass
+          galaxy2:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nGALAXY\n
+              -cass
+          headon:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nHEADON\n
+              -cass
+          heliko:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nHELIKO\n
+              -cass
+          hoppy:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nHG\n
+              -cass
+          invaders:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nINVADE\n
+              -cass
+          invasion:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nINVADE\n
+              -cass
+          keno:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
+              -cass
           kinghill:
             command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nR\n
+              -cass
+          meteor2:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nMETEOR\n
+              -cass
+          microply:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
+              -cass
+          penetr:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nPENETR\n
+              -cass
+          pinball:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
+              -cass
+          pyrmd:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nPYRMD\n
+              -cass
+          qwatson:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
+              -cass
+          robot:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nROBOT\n
+              -cass
+          roulette:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
+              -cass
+          scarfman:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSCARFM\n
+              -cass
+          scripsit:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSCRIPS\n
+              -cass
+          seadragon:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSEADRA\n
+              -cass
+          slot:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
+              -cass
+          spaceinv:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nINVADE\n
+              -cass
+          spcinv:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSPCINV\n
+              -cass
+          spcwarp:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSPWAR\n
+              -cass
+          starfi:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSTARFI\n
+              -cass
+          starsm:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSTARSM\n
+              -cass
+          startrek:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
+              -cass
+          starwar:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
+              -cass
+          swamp:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nSWAMP\n
+              -cass
+          taipan:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
+              -cass
+          trollcru:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
+              -cass
+          wheel:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"CLOAD\nRUN\n
+              -cass
+          zchess:
+            command_line_parameters: trs80m4 -autoboot_delay 2 -autoboot_command L\n\"\"\"\"\"\"\"\"\"\"SYSTEM\nZCHESS\n
               -cass
 tangerine-oric-1:
   platform:
@@ -16942,7 +16521,7 @@ tangerine-oric-1:
   media_type: cartridge
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Cassette)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput oric1 -autoboot_delay
       4 -autoboot_command cload\"\"\n -cass
@@ -21167,7 +20746,7 @@ bbc-microcomputer-system:
   media_type: floppy
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Floppy)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput bbcb -skip_gameinfo
       -flop1
@@ -21821,7 +21400,7 @@ coleco-adam:
   media_type: floppy
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Floppy)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput adam -skip_gameinfo
       -flop1
@@ -23412,7 +22991,7 @@ sharp-mz-2500:
   media_type: floppy
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Floppy)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput mz2500 -flop1
   system:
@@ -23645,204 +23224,204 @@ camputers-lynx:
           _default_config:
             command_line_parameters: lynx128k -skip_gameinfo -autoboot_delay 1 -autoboot_command
               "mload""""""\n" -cass
-          labyrinth:
+          3dmoncrz:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"LABYRINTHE\"\n" -cass
+              "MLOAD \"3D MONSTER\"\n" -cass
+          6845p:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"6845P\"\n" -cass
+          aide:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"AIDE\"\n" -cass
+          asterix:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"ASTERIX\"\n" -cass
+          backgmmn:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"BACKGAMMON\"\n" -cass
+          battlbrk:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"BATTLEBRICK\"\n" -cass
+          cardindx:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"CARD INDEX\"\n" -cass
+          centiped:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "MLOAD \"CENTIPEDE\"\n" -cass
+          chopin:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"CHOPIN\"\n" -cass
           cinema:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "LOAD \"CINEMA\"\n" -cass
-          maximots:
+          colossal:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"MAXI-MOTS\"\n" -cass
+              "LOAD \"COLOSSAL\"\n" -cass
+          composer:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"COMPOSER\"\n" -cass
+          dambustr:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"DAM BUSTER\"\n" -cass
+          deathball:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"DEATHBALL\"\n" -cass
+          diggerman:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "MLOAD \"DIGGERMAN\"\n" -cass
+          disassmb:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"DESASS\"\n" -cass
+          disassmbf:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"DES.IMP\"\n" -cass
+          dungeon:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"DUNGEON\"\n" -cass
+          floydbank:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "MLOAD \"FLOYDS BANK\"\n" -cass
+          forest:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"THE FOREST\"\n" -cass
+          gamepak4:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "MLOAD \"GEMPACK 4\"\n" -cass
+          genbasic:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"GENEBASIC\"\n" -cass
+          gencarac:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"GENECAR\"\n" -cass
+          gobblspk:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "MLOAD \"SPOOK\"\n" -cass
+          gridtrap:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"GRIDTRAP\"\n" -cass
+          hangman:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"HANGMAN\"\n" -cass
           hilo:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "LOAD \"CARDS\"\n" -cass
-          sairraid:
+          inteltab:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"SUPER AIR RAID\"\n" -cass
+              "LOAD \"INTELTABLYNX\"\n" -cass
+          invaders:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "MLOAD \"INVADERS\"\n" -cass
+          labyrinth:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"LABYRINTHE\"\n" -cass
+          logichess:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "MLOAD \"ECHECS\"\n" -cass
+          mastermnd:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"MASTERMIND\"\n" -cass
+          maximots:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"MAXI-MOTS\"\n" -cass
+          mazeman:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "MLOAD \"MAZEMAN\"\n" -cass
+          minedout:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"MINEDOUTGOOD\"\n" -cass
           moder80:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "MLOAD \"CODE\"\n" -cass
           moonfall:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "LOAD \"MOONFALL\"\n" -cass
-          triangle:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"BRUMBELOW\"\n" -cass
-          deathball:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"DEATHBALL\"\n" -cass
-          zombie:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"ZombiePanic\"\n" -cass
-          disassmb:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"DESASS\"\n" -cass
-          spactrek:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"TREK\"\n" -cass
-          pengo:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"PENGO\"\n" -cass
-          diggerman:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"DIGGERMAN\"\n" -cass
-          dambustr:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"DAM BUSTER\"\n" -cass
-          twinkle:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"TWINKLE\"\n" -cass
-          muncher:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"MUNCHER\"\n" -cass
-          spellbnd:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"SPELLBOUND\"\n" -cass
-          numerons:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"NUMERONS\"\n" -cass
-          logichess:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"ECHECS\"\n" -cass
-          composer:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"COMPOSER\"\n" -cass
-          aide:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"AIDE\"\n" -cass
-          6845p:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"6845P\"\n" -cass
-          asterix:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"ASTERIX\"\n" -cass
-          genbasic:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"GENEBASIC\"\n" -cass
-          wordproc:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"LIONTEXT\"\n" -cass
-          planets:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"PLANETS\"\n" -cass
-          nuclear:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"NUCLEAR\"\n" -cass
-          battlbrk:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"BATTLEBRICK\"\n" -cass
-          gamepak4:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"GEMPACK 4\"\n" -cass
-          backgmmn:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"BACKGAMMON\"\n" -cass
-          centiped:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"CENTIPEDE\"\n" -cass
-          scrablynx:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"SCRABLYNX\"\n" -cass
-          wormf:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"THE WORM\"\n" -cass
-          gencarac:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"GENECAR\"\n" -cass
-          panik:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"PANIK\"\n" -cass
           moonfallf:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "LOAD \"Moonfall2\"\n" -cass
-          mazeman:
+          muncher:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"MAZEMAN\"\n" -cass
-          dungeon:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"DUNGEON\"\n" -cass
-          risingmn:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"CP FP\"\n" -cass
-          tronblkr:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"TRON BLOCKER\"\n" -cass
-          inteltab:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"INTELTABLYNX\"\n" -cass
-          floydbank:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"FLOYDS BANK\"\n" -cass
-          invaders:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"INVADERS\"\n" -cass
-          worm:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"THE WORM\"\n" -cass
+              "LOAD \"MUNCHER\"\n" -cass
           musicmstr:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "LOAD \"MUSIC MASTER\"\n" -cass
-          colossal:
+          nuclear:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"COLOSSAL\"\n" -cass
-          racer:
+              "LOAD \"NUCLEAR\"\n" -cass
+          numerons:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"RACER\"\n" -cass
-          hangman:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"HANGMAN\"\n" -cass
-          gobblspk:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"SPOOK\"\n" -cass
-          mastermnd:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"MASTERMIND\"\n" -cass
-          rocketman:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"ROCKETMAN\"\n" -cass
-          pwrblastr:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"POWER BLASTER\"\n" -cass
-          ynxvader:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"YNXVADERS\"\n" -cass
-          disassmbf:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"DES.IMP\"\n" -cass
-          forest:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"THE FOREST\"\n" -cass
-          starover:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"SR\"\n" -cass
-          cardindx:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"CARD INDEX\"\n" -cass
-          3dmoncrz:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"3D MONSTER\"\n" -cass
-          minedout:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"MINEDOUTGOOD\"\n" -cass
-          scrndmp:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"RPENROSE\"\n" -cass
-          chopin:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"CHOPIN\"\n" -cass
-          treasisld:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"TREASURE\"\n" -cass
-          gridtrap:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "LOAD \"GRIDTRAP\"\n" -cass
-          siege:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "MLOAD \"SIEGE ATTACK\"\n" -cass
+              "LOAD \"NUMERONS\"\n" -cass
           ohmummy:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "MLOAD \"OH MUMMY\"\n" -cass
+          panik:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"PANIK\"\n" -cass
+          pengo:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "MLOAD \"PENGO\"\n" -cass
+          planets:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"PLANETS\"\n" -cass
+          pwrblastr:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "MLOAD \"POWER BLASTER\"\n" -cass
+          racer:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"RACER\"\n" -cass
+          risingmn:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"CP FP\"\n" -cass
+          rocketman:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"ROCKETMAN\"\n" -cass
+          sairraid:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"SUPER AIR RAID\"\n" -cass
+          scrablynx:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"SCRABLYNX\"\n" -cass
+          scrndmp:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"RPENROSE\"\n" -cass
+          siege:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "MLOAD \"SIEGE ATTACK\"\n" -cass
+          spactrek:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"TREK\"\n" -cass
+          spellbnd:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"SPELLBOUND\"\n" -cass
+          starover:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"SR\"\n" -cass
+          treasisld:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"TREASURE\"\n" -cass
+          triangle:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"BRUMBELOW\"\n" -cass
+          tronblkr:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"TRON BLOCKER\"\n" -cass
+          twinkle:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "MLOAD \"TWINKLE\"\n" -cass
+          wordproc:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "MLOAD \"LIONTEXT\"\n" -cass
+          worm:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"THE WORM\"\n" -cass
+          wormf:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"THE WORM\"\n" -cass
+          ynxvader:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "MLOAD \"YNXVADERS\"\n" -cass
+          zombie:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "LOAD \"ZombiePanic\"\n" -cass
         camplynx_flop:
           _default_config:
             command_line_parameters: lynx128k -skip_gameinfo -autoboot_delay 1 -autoboot_command
@@ -23850,63 +23429,63 @@ camputers-lynx:
           bttlships:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "EXT LOAD \"BATTLESHIPS\"\n" -flop1
-          peachcalc:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "EXT BOOT\n" -flop1
-          datastar:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "EXT BOOT\n" -flop1
-          fortran:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "EXT BOOT\n" -flop1
-          wordmstr:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "EXT BOOT\n" -flop1
-          intro128:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "EXT LOAD \"INTRO128\"\n" -flop1
-          cobol:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "EXT BOOT\n" -flop1
-          ebasic:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "EXT BOOT\n" -flop1
-          mbasic:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "EXT BOOT\n" -flop1
-          cpm22b10:
+          calcstar:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "EXT BOOT\n" -flop1
           ccomp:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "EXT BOOT\n" -flop1
-          gomoku:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "EXT LOAD \"GOMOKU\"\n" -flop1
-          dbase2:
+          cobol:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "EXT BOOT\n" -flop1
-          tpascal:
+          cpm22b10:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "EXT BOOT\n" -flop1
           cpm22b12:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "EXT BOOT\n" -flop1
-          lrg1:
-            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
-              "EXT LOAD \"MENU\"\n" -flop1
-          rptstar:
+          datastar:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "EXT BOOT\n" -flop1
-          calcstar:
+          dbase2:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "EXT BOOT\n" -flop1
-          wordstar:
+          ebasic:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "EXT BOOT\n" -flop1
           forth:
             command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
               "EXT MLOAD \"FORTH\"\n" -flop1
+          fortran:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "EXT BOOT\n" -flop1
+          gomoku:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "EXT LOAD \"GOMOKU\"\n" -flop1
+          intro128:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "EXT LOAD \"INTRO128\"\n" -flop1
+          lrg1:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "EXT LOAD \"MENU\"\n" -flop1
+          mbasic:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "EXT BOOT\n" -flop1
+          peachcalc:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "EXT BOOT\n" -flop1
+          rptstar:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "EXT BOOT\n" -flop1
+          tpascal:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "EXT BOOT\n" -flop1
+          wordmstr:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "EXT BOOT\n" -flop1
+          wordstar:
+            command_line_parameters: lynx128k -autoboot_delay 2 -autoboot_command
+              "EXT BOOT\n" -flop1
 acorn-atom:
   platform:
     name: Acorn Atom
@@ -23917,7 +23496,7 @@ acorn-atom:
   media_type: floppy
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (Floppy)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput atom -autoboot_delay
       "2" -autoboot_command "DOS\nCAT\n*RUN"" -flop1
@@ -23943,47 +23522,47 @@ acorn-atom:
         - repton
       software_configs:
         atom_flop:
-          joeblade:
-            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"JOE"\n -autoboot_delay
+          chuckie:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"CCHUCK"\n -autoboot_delay
               1 -flop1
           egghead:
             command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"EHRUN"\n -autoboot_delay
               1 -flop1
-          jsw:
-            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"JSWRUN"\n -autoboot_delay
+          f14:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"F14RUN"\n -autoboot_delay
               1 -flop1
           gala:
             command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"CGALA"\n -autoboot_delay
               1 -flop1
+          galxians:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"GALAXI"\n -autoboot_delay
+              1 -flop1
           hardhath:
             command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"LOADER"\n -autoboot_delay
-              1 -flop1
-          jungle:
-            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"JUNGLE"\n -autoboot_delay
               1 -flop1
           hypervpr:
             command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"LOADER"\n -autoboot_delay
               1 -flop1
-          f14:
-            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"F14RUN"\n -autoboot_delay
+          jetsetmn:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"LOADER"\n -autoboot_delay
               1 -flop1
-          galxians:
-            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"GALAXI"\n -autoboot_delay
+          joeblade:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"JOE"\n -autoboot_delay
               1 -flop1
-          chuckie:
-            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"CCHUCK"\n -autoboot_delay
+          jsw:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"JSWRUN"\n -autoboot_delay
               1 -flop1
           jsw2:
             command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"JSW2RUN"\n -autoboot_delay
               1 -flop1
-          repton:
-            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"REPLOAD"\n -autoboot_delay
+          jungle:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"JUNGLE"\n -autoboot_delay
               1 -flop1
           manicmin:
             command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"MMRUN"\n -autoboot_delay
               1 -flop1
-          jetsetmn:
-            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"LOADER"\n -autoboot_delay
+          repton:
+            command_line_parameters: atom -ab *DOS\n*CAT\n*RUN"REPLOAD"\n -autoboot_delay
               1 -flop1
 matra-hachette-alice-90:
   platform:
