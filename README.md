@@ -4,7 +4,7 @@
 
 This tool is a powerful command-line utility designed for the meticulous curation of MAME's non-arcade "MESS" platforms and their associated software lists. It is the only tool of its kind that provides the flexibility to parse, filter, and group any MAME systems into custom platforms, which can then be used to build perfectly organized ROM sets.
 
-If you've ever wanted to separate your TV Games, Handhelds, or obscure Consoles from your main MAME set, this is the tool you need.
+If you've ever wanted to separate Plug & Play TV Games, Handhelds LCDs, or obscure Consoles from your main MAME set, this is the tool you need.
 
 This tool allows you to:
 
@@ -17,6 +17,12 @@ This tool allows you to:
 *   **List "good" emulation drivers** for easy discovery of well-supported systems.
 *   **Provide detailed table outputs** for various data views directly from your YAML or MAME's XML.
 *   **Manage program configurations** easily via a `config.yaml` file or command-line arguments.
+
+<p align="center">
+  <a href="https://ko-fi.com/B0B8WK7DL" target="_blank">
+    <img src="https://storage.ko-fi.com/cdn/brandasset/v2/support_me_on_kofi_blue.png" alt="Buy Me a Coffee at ko-fi.com" width="250">
+  </a>
+</p>
 
 ## Companion Tool to my Launchbox Plugin - MESS Curated Softlist Importer
 
@@ -60,11 +66,14 @@ Many existing tools focus on full ROMset validation or arcade-only management. M
 
 ## Dependencies
 
-MESS Curator requires the `mess.ini` maintained by the good Italian community at https://github.com/AntoPISA/MAME_SupportFiles that you put into `MAME\folders`. This `mess.ini` file is critical as it contains a list of machine/system names that is non-Arcade that would otherwise impossible to determined using the `mame.xml` that you generated using `mame -listxml` itself, as it does not contain any fields that indicate whether a system is Arcade or Non-Arcade.
+MESS Curator requires the `mess.xml` that matches the MAME romset version you download. This XML is actively maintained by the good Italian community at https://www.progettosnaps.net/mess/repository. This `mess.xml` file is critical as it contains a list of machine/system names that is non-Arcade that would otherwise impossible to determined using the `mame.xml` that you generated using `mame -listxml` itself, as it does not contain any fields that indicate whether a system is Arcade or Non-Arcade.
 
-Note that the repo might not be updated as quickly as the MAME release. 
+### Backstory
 
-Take MAME 0.278 for example, it was released a week before 2025-07-07, but as of 2025-07-07 that repo still is yet to be updated with the `mess.ini` for 0.278 set. Fortunately you can simply use the `mess.ini` from the 0.277 release as the changes might be minor and you will probably not missing anything.
+Previously mess-curator requires several intermediate steps to generate a `mess.xml`. These are now obsolete and the program will simply download the xml from https://www.progettosnaps.net/mess/repository based on the mame version you specified.
+1. Download `mess.ini` maintained by the good Italian community at https://github.com/AntoPISA/MAME_SupportFiles that you put into `MAME\folders`. 
+2. Compare each entries in `mess.ini` against the full `mame.xml` generated using `mame -listxml`
+3. Output into `mess.xml`.
 
 ## The System-Softlist YAML
 
@@ -257,17 +266,29 @@ acorn-electron:
               "cat\n\n\n\n\n\nrun !boot\n" -flop
 ```
 
+See [Advanced Usage](#advanced-usage) for the command line examples that can be used to generate these advanced overridable configs.
+
 ## Preset System-Softlist YAML
 
-In case you don't want to generate the system-softlist YAML yourself, I had meticulously curated a list of notable MESS systems that I personally like to have in my collections and you can use it as-is. The systems are chosen based on one of the following critieria:
+In case you don't want to generate the system-softlist YAML yourself, I had meticulously curated a list of notable MESS systems on the recent MAME sets (0.277, 0.278) that I personally like to have in my collections and you can use it as-is. You can find them in the `data\<mame_version>\system_softlist.yml` folder. 
 
-- Obscurity: Less known system or manufacturer are prioritize as I am interested to know more about it. 
-- Playable titles: The system must have at least one or few playable titles.
-- Well known manufacturer: This might contradict with the first criteria, but if it's from a well known Manufacturer you bet to see it in the list, especially those LCD Handhelds from well known manufacturers like Konami, Nintendo, and Tiger.com
+These preset system-softlist YAML is created using a Windows PowerShell script in `gen_platforms_all.ps1`. In case you updated a MAME set and I still haven't update the template, you can simply run that script to update the YAML file based on the newer MAME mess.xml file.
+
+The systems are chosen based on one of the following critieria:
+
+- **Obscurity**: Less known system or manufacturer are prioritize as I am interested to know more about it. 
+- **Playable titles**: The system must have at least one or few playable titles.
+- **Well known manufacturer**: This might contradict with the first criteria, but if it's from a well known Manufacturer you bet to see it in the list, especially those LCD Handhelds from well known manufacturers like Konami, Nintendo, and Tiger.com
 
 I do welcome contribution to these listings as time goes if you think more systems should be added. Since I used Launchbox as my front-end, I include all games (both broken and working) and then use my [Launchbox MESS Curator Plugin] tool to mark those games as Broken and add clones as additional apps. 
 
 You can extend or generate your own YAML Files.
+
+### How to Use
+
+Be sure to configure `config.yaml` and point `system_softlist_yaml_file` to `data\<mame_version>\system_softlist.yml` for the program to read those. 
+
+Or simply copy the said yml file into the root of this project repo, and then set `system_softlist_yaml_file` to `system_softlist.yml` which is relative to the project folder instead.
 
 ## Installation
 
@@ -288,7 +309,7 @@ You can extend or generate your own YAML Files.
 
 Before running most commands, the tool needs to know where your MAME executable, ROMs, and output files are located.
 
-### 1. Initial Configuration
+### Initial Configuration
 
 The very first time you run `mess_curator.py` (and `config.yaml` doesn't exist), it will automatically launch a guided setup process:
 
@@ -296,7 +317,70 @@ The very first time you run `mess_curator.py` (and `config.yaml` doesn't exist),
 python src\mess_curator.py
 ```
 
+or on Windows
+
+```
+mess_curator.bat
+```
+
 Follow the prompts to set your paths. It will attempt to auto-detect sensible defaults.
+
+```
+python .\src\mess_curator.py search --filter-machine-description Nintendo --filter-software-description Mario
+[ERROR] Config file not found: C:\Users\dsync89\Documents\Github-dsync89\mess-curator\config.yaml
+============================================================
+ MAME MESS Curator Tool - Initial Setup Wizard
+============================================================
+
+Configuration file 'C:\Users\dsync89\Documents\Github-dsync89\mess-curator\config.yaml' not found.
+Let's set up the necessary paths to get started.
+
+[1/5] Please enter the full path to your MAME executable (e.g., C:\MAME\mame.exe):
+> c:\Programs\LaunchBox\Emulators\MAME 0.278\mame.exe
+
+[INFO] Attempting to auto-detect MAME version by running the executable...
+
+[2/5] Auto-detected MAME version: 0.278
+
+[3/5] Please enter the path to your MAME 'softlist' ROMs directory:
+      (This is where subfolders like 'nes', 'ekara_cart', etc., are located)
+> c:\Programs\LaunchBox\Emulators\MAME 0.278\roms\softlist
+
+[4/5] Please enter the path for the curated output ROMsets:
+      (This directory will be created if it doesn't exist)
+> r:\roms\other\mame-mess
+
+[5/5] The generated platform metadata will be saved as 'system_softlist.yml' in the current directory.
+
+==================== Configuration Summary ====================
+mame_executable:               c:\Programs\LaunchBox\Emulators\MAME 0.278\mame.exe
+mess_version:                  0.278
+softlist_rom_sources_dir:      c:\Programs\LaunchBox\Emulators\MAME 0.278\roms\softlist
+out_romset_dir:                r:\roms\other\mame-mess
+system_softlist_yaml_file:     system_softlist.yml
+mess_xml_file:                 mess.xml
+============================================================
+
+Save this configuration? [Y/n]: y
+
+[SUCCESS] Configuration saved to 'C:\Users\dsync89\Documents\Github-dsync89\mess-curator\config.yaml'. You can now run the tool.
+```
+
+Once that is setup, it will then check if there's any `mess.xml` for the MAME version. If none, then it will automatically download from https://www.progettosnaps.net/mess/repository/. The next time you run it and if the `mess.xml` file exist in `data\<mame_version>\mess.xml`, then it will simply use it instead.
+
+```
+[WARNING] MESS XML for version 0.278 not found.
+          Would you like to download it from progetto-snaps.net? [Y/n]: y
+[INFO] Attempting to download from: https://www.progettosnaps.net/download/?tipo=mess_xml&file=/mess/packs/xml/mess278.zip
+[INFO] Downloading... 100%
+[INFO] Download complete.
+[INFO] Extracting 'C:\Users\dsync89\Documents\Github-dsync89\mess-curator\data\mess0.278_temp.zip' to 'C:\Users\dsync89\Documents\Github-dsync89\mess-curator\data\0.278'...
+[SUCCESS] MESS XML for version 0.278 is now available at 'C:\Users\dsync89\Documents\Github-dsync89\mess-curator\data\0.278\mess.xml'.
+```
+
+You can then proceed to use the rest of the subcommands. 
+
+See [Usage](#usage) for a list of subcommands that you can use with mess-curator.
 
 **Viewing Current Configuration:**
 
@@ -306,31 +390,17 @@ python src\mess_curator.py config
 
 **Setting Specific Paths (Command Line):**
 
+You can also modify the `config.yaml` to set each individual config, or using the `--set-<field_name>` arg.
+
 ```
 python src\mess_curator.py config --set-mame-exe-path "C:\Programs\LaunchBox\Emulators\MAME 0.277\mame.exe"
 python src\mess_curator.py config --set-softlist-rom-dir "C:\Programs\LaunchBox\Emulators\MAME 0.277\roms"
-python src\mess_curator.py config --set-output-rom-dir "C:\Users\Gary\Documents\Github-dsync89\mess-curator\out\mame_curated_romset"
+python src\mess_curator.py config --set-output-rom-dir "C:\Users\dsync89\Documents\Github-dsync89\mess-curator\out\mame_curated_romset"
 python src\mess_curator.py config --set-mess-ini-path "C:\Programs\LaunchBox\Emulators\MAME 0.277\folders\mess.ini"
-python src\mess_curator.py config --set-system-softlist-yaml-file "C:\Users\Gary\Documents\Github-dsync89\mess-curator\data\my_platforms.yml"
+python src\mess_curator.py config --set-system-softlist-yaml-file "C:\Users\dsync89\Documents\Github-dsync89\mess-curator\data\my_platforms.yml"
 ```
 
 *(Paths shown are examples, adjust to your system. Note: `MAME_EXECUTABLE's` parent directory is used to guess mess.ini default path)*
-
-### 2. Pre-processing MAME Data (Recommended)
-
-For the best performance, the tool relies on filtered XML files for MESS (non-Arcade) instead of the full systems `mame.xml`. After the initial setup, you will be prompted to generate them. You can also do this manually at any time:
-
-```
-python src\mess_curator.py split
-```
-
-This command will:
-
-1. Generate `mame.xml` (a full machine list, which can take a few minutes).
-2. Read your `mess.ini` to create a filtered `mess.xml` containing all non-Arcade systems.
-3. Split `mess.xml` into `mess-softlist.xml` (systems with software lists) and `mess-nosoftlist.xml`.
-
-Note: this requires a `mess.ini` file (typically placed in MAME's `folders` directory) that distinguish non-arcade systems wher you can obtain from communities like [AntoPISA's MAME Support Files](https://github.com/AntoPISA/MAME_SupportFiles).
 
 ## Usage
 
@@ -342,231 +412,116 @@ If your paths or arguments contain spaces, enclose them in double quotes "like t
 
 When breaking a long command across multiple lines, use the backtick (`) at the end of each line (except the last one):
 
-```
-python src\mess_curator.py search by-xml `
+```powershell
+python src\mess_curator.py search `
     --output-format yaml `
     --platform-key my-platform `
-    "../data/mess-softlist.xml"
+    --filter-machine-name-fuzzy "jak_"
 ```
 
 ---
 
-### `split` Command: Generate Filtered MAME XMLs
-This command is crucial for optimizing later search operations. It filters your entire `mame.xml` based on the systems in `mess.ini` and then splits the result.
+### `search` Command: Find Systems and Generate YAML/Table/CSV
 
-```
-python src\mess_curator.py split
-```
+The `search` command is the core of the tool, allowing you to find systems based on various criteria and generate structured output.
 
-Output Files (generated in the script's directory):
-- `mame.xml`: (Full MAME machines list, cached for later use)
-- `mess.xml`: (Machines listed in your mess.ini from mame.xml)
-- `mess-softlist.xml`: (Machines from mess.xml that support software lists)
-- `mess-nosoftlist.xml`: (Machines from mess.xml that do NOT support software lists)
-
-Options:
-- `--mess-ini <path>`: Specify a custom mess.ini file. (Defaults to configured path)
-
-### `search` Command: Find Systems and Generate YAML/Table
-
-The search command has nested subcommands (`by-name`, `by-xml`, `by-filter`) to specify how systems are chosen.
-
-```
-usage: mess_curator.py search [-h] {by-name,by-xml,by-filter,by-sourcefile} ...
-
-positional arguments:
-  {by-name,by-xml,by-filter,by-sourcefile}
-                        How to specify systems for search.
-    by-name             Search systems by explicit names or fuzzy prefix.
-    by-xml              Search systems from a generated XML file (e.g., mess-softlist.xml).
-    by-filter           Search MAME machines by their XML attributes (e.g., description).
-    by-sourcefile       Search MAME machines by their driver source file (e.g., 'xavix.cpp').
-
-options:
-  -h, --help            show this help message and exit
+```bash
+usage: mess_curator.py search [-h] [--show-systems-only] [--show-extra-info] [--sort-by {system_name,system_desc,manufacturer,year,software_id,title,publisher,driver_status,emulation_status,sourcefile}]
+                              [--platform-key PLATFORM_KEY] [--platform-name-full PLATFORM_NAME_FULL] [--platform-category PLATFORM_CATEGORY [PLATFORM_CATEGORY ...]] [--media-type MEDIA_TYPE] [-ect] [-en EMU_NAME] [-de]
+                              [-dec DEFAULT_EMU_CMD_PARAMS] [--add-software-config SOFTLIST:SWID:"PARAMETERS"] [--add-softlist-config SOFTLIST:"PARAMETERS"] [--include-systems INCLUDE_SYSTEMS]
+                              [--exclude-systems EXCLUDE_SYSTEMS] [--include-softlist INCLUDE_SOFTLIST]
+                              [--exclude-softlist EXCLUDE_SOFTLIST] [--filter-machine-name-fuzzy FILTER_MACHINE_NAME_FUZZY]
+                              [--filter-machine-description FILTER_MACHINE_DESCRIPTION [FILTER_MACHINE_DESCRIPTION ...]] [--filter-machine-sourcefile FILTER_MACHINE_SOURCEFILE]
+                              [--filter-software-description FILTER_SOFTWARE_DESCRIPTION] [--input-xml INPUT_XML] [--limit LIMIT]
+                              [--output-format {table,yaml,csv}] [--output-file OUTPUT_FILE] [--driver-status {good,imperfect,preliminary,unsupported}]
+                              [--emulation-status {good,imperfect,preliminary,unsupported}]
+                              [systems ...]
 ```
 
-**Common Options for `search` sub-subcommands:**
+**Key Search and Filtering Arguments:**
 
-- `--output-format {table,yaml}`: Choose between a human-readable table (default for by-name/by-filter) or YAML (default for by-xml).
+- `systems`: (Positional) One or more MAME system short names (e.g., `nes`, `snes`).
+- `--filter-machine-name-fuzzy <prefix>`: Find all systems starting with a specific prefix (e.g., `jak_`).
+- `--filter-machine-description <text>`: Filter systems where the description contains the given text.
+- `--filter-machine-sourcefile <file.cpp>`: Filter systems by their driver source file (e.g., `xavix.cpp`).
+- `--filter-software-description <text>`: Filter by a term in the software's ID or description.
+- `--driver-status`: Filter by driver status (e.g., `good`).
+- `--emulation-status`: Filter by emulation status (e.g., `good`).
+- `--include-systems` / `--exclude-systems`: Explicitly include or exclude systems.
+- `--include-softlist` / `--exclude-softlist`: Explicitly include or exclude software lists.
+- `--input-xml <path>`: Specify the source XML file (e.g., `mess-softlist.xml`). Defaults to the one for your configured MAME version.
 
-- `--output-file <path>`: Specify the output system_softlist.yml file path. (Defaults to configured path).
+**Common Output Arguments:**
 
-- `--limit <number>`: Limit the number of systems processed (useful for testing).
+- `--output-format {table,yaml,csv}`: Choose the output format. Defaults to `table`.
+- `--output-file <path>`: Specify the output file path (required for `csv`, optional for `yaml`).
+- `--show-extra-info`: (For table) Show additional columns like Manufacturer, Year, etc.
+- `--show-systems-only`: (For table) Show only one row per system.
 
-- `--driver-status {good,imperfect,preliminary,unsupported}`: Filter machines by their driver status.
+**YAML Output Specific Arguments:**
 
-- `--emulation-status {good,imperfect,preliminary,unsupported}`: Filter machines by their emulation status.
-
-- `--show-systems-only`: (For table output) Show only one row per system (N/A for softlist/software ID, machine description for Title).
-
-- `--show-extra-info`: (For table output) Add "Manufacturer" and "Publisher" columns.
-
-**YAML Output Specific Options for `search` sub-subcommands:**
-
-- `--platform-key <key>`: (Required) Top-level key for the platform in YAML.
-
-- `--platform-name-full <name>`: (Required) Full descriptive name of the platform.
-
-- `--media-type {cart,disk,cdrom,...}`: (Required) Media type for the platform.
-
-- `-ect, --enable-custom-cmd-per-title`: Set enable_custom_command_line_param_per_software_id: true.
-
-- `-en <name>, --emu-name <name>`: Set emulator.name.
-
-- `-de, --default-emu`: Set emulator.default_emulator: true. (Requires -en)
-
-- `-dec <params>, --default-emu-cmd-params <params>`: Set emulator.default_command_line_parameters. (Requires -en)
-
-The most common way to search for systems.
-
-Options Specific to search `by-name`:
-
-- `systems`: Positional argument for explicit system names (e.g., `ekara`, `jak_batm`).
-
-- `search_term`: Positional optional argument for software ID or description.
-
-- `--fuzzy <prefix>`: Find all systems starting with this prefix (e.g., `jak_`).
-
-- `--exclude-systems <names>`: Exclude specific systems from the list.
-
-- `--input-xml <path>`: Source XML file to read machine definitions from. (Defaults to `mame.xml`) 
+- `--platform-key <key>`: (Required) A unique key for the platform (e.g., `jakks-pacific-tv-games`).
+- `--platform-name-full <name>`: (Required) The full, human-readable name of the platform.
+- `--media-type <type>`: (Required) The media type (e.g., `cart`, `floppy`).
+- `--add-software-config 'softlist:swid:"params"'`: Add a custom command for a specific game.
+- `--add-softlist-config 'softlist:"params"'`: Add a default command for all games in a softlist.
 
 **Examples:**
 
 - **Table output for a single system and its software:**
 
-```
-python src\mess_curator.py search by-name ekara --output-format table
-```
-
-- **YAML output for a specific platform:**
-
-```
-python src\mess_curator.py search by-name jpopira --output-format yaml `
-    --platform-key jpopira-platform `
-    --platform-name-full "Takara J-Popira Karaoke Systems" `
-    --media-type cart
+```bash
+python src\mess_curator.py search nes --output-format table
 ```
 
 - **YAML output for multiple JAKKS systems (fuzzy search + exclude) with emulator details:**
 
-```
-python src\mess_curator.py search by-name `
-    --platform-key jakks-pacific-tv-game `
+```powershell
+python src\mess_curator.py search `
+    --platform-key "jakks-pacific-tv-game" `
     --platform-name-full "JAKKS Pacific TV Game" `
-    --media-type cart `
+    --media-type "cart" `
     --enable-custom-cmd-per-title `
-    --emu-name "MAME (Cartridge)"  `
+    --emu-name "MAME (Cartridge)" `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --fuzzy jak_ `
-    --exclude-systems jak_pf jak_prft jak_s500 jak_smwm jak_ths jak_tink jak_totm jak_umdf `
-    --input-xml ..\data\mame.xml # Use full mame.xml for fuzzy search
+    --filter-machine-name-fuzzy "jak_" `
+    --exclude-systems "jak_pf jak_prft jak_s500 jak_smwm jak_ths jak_tink jak_totm jak_umdf"
 ```
-
----
-
-**Options Specific to `search by-xml`:**
-
-- `xml_filepath`: Required positional argument for the XML file path.
-
-- `search_term`: Positional optional argument for software ID or description.
-
-- `--limit <number>`: Limit the number of systems processed.
-
-**Examples:**
-
-**Generate YAML for MESS systems with no softlist, limited to 5, with auto-defaults:**
-
-```
-python src\mess_curator.py search by-xml `
-    --output-format yaml `
-    --limit 5 `
-    ..\data\mess-nosoftlist.xml # Assumes this file exists from 'split' command
-```
-
-*(This will automatically set platform-key, platform-name-full, enable-custom-cmd-per-title: false, etc.)*
-
-- **Generate YAML for XaviXPort systems from mess.xml, with custom platform/emulator names:**
-
-```
-python src\mess_curator.py search by-xml `
-    --output-format yaml `
-    --platform-key xavixport `
-    --platform-name-full "XaviXPORT Systems" `
-    --media-type cart `
-    --emu-name "MAME (Integrated)" `
-    --default-emu `
-    --default-emu-cmd-params "-joystickprovider dinput" `
-    ..\data\mess.xml # Search within all MESS systems
-    xavixport # This acts as a search_term to filter for XaviXPort systems
-```
-
-- **Table output for good emulation systems from mess-softlist.xml:**
-
-```
-python src\mess_curator.py search by-xml `
-    --output-format table `
-    --show-extra-info `
-    --emulation-status good `
-    ..\data\mess-softlist.xml
-```
-
-*(This will display softlist-capable systems from mess-softlist.xml that have "good" emulation status.)*
-
----
-
-A powerful way to find specific types of machines based on their description or properties.
-
-Options Specific to `search by-filter`:
-
-- `description_term`: Required positional argument for text to search in machine descriptions.
-
-- `--softlist-capable`: Only include machines that have a `<softwarelist>` tag.
-
-- `--input-xml <path>`: Source XML file to read machine definitions from. (Defaults to `mame.xml`)
-
-**Examples:**
 
 - **Find "in-1" multigame systems from `mess.xml`, output to YAML:**
 
-```
-python src\mess_curator.py search by-filter "in-1" `
-    --input-xml ..\data\mess.xml `
-    --platform-key mess-filtered-all-in-one-systems `
+```powershell
+python src\mess_curator.py search `
+    --filter-machine-description "in-1" `
+    --platform-key "mess-filtered-all-in-one-systems" `
     --platform-name-full "MESS (All-In-One Systems)" `
-    --media-type cart `
-    --enable-custom-cmd-per-title ` # Typically true for multi-games
-    --emu-name "MAME (Cartridge)"  `
-    --default-emu `
-    --default-emu-cmd-params "-keyboardprovider dinput" `
-    --output-format yaml `
-    --output-file system_softlist.yml
-```
-
-*(Note: if searching for "X-in-1", use "in-1" or "in 1" as search terms. You can run by-filter multiple times and append to the same YAML file for different filters.)*
-
-- **Find "XavixPort" systems (by description) from `mess.xml`:**
-
-```
-python src\mess_curator.py search by-filter "xavixport" `
-    --input-xml ..\data\mess.xml `
-    --platform-key xavixport `
-    --platform-name-full "XaviXPORT" `
-    --media-type cart `
-    --emu-name "MAME (Cartridge)"  `
-    --default-emu `
-    --default-emu-cmd-params "-keyboardprovider dinput" `
+    --media-type "cart" `
     --output-format yaml
+```
+
+- **Table output for good emulation systems from `mess-softlist.xml`, with full infos:**
+
+```powershell
+python src\mess_curator.py search `
+    --emulation-status good `
+    --show-extra-info
+```
+
+- **Search for Mario softlist titles in Nintendo Machines**
+
+```
+python .\src\mess_curator.py search `
+    --filter-machine-description Nintendo`
+    --filter-software-description Mario
 ```
 
 ### `copy-roms` Command: Construct Your ROMset
 
-Reads your `system_softlist.yml` and copies/creates dummy `.zip` if that is a system files in a structured output directory.
+Reads your `system_softlist.yml` and copies/creates dummy `.zip` files in a structured output directory.
 
-```
+```bash
 python src\mess_curator.py copy-roms --input-file system_softlist.yml
 ```
 
@@ -575,45 +530,40 @@ python src\mess_curator.py copy-roms --input-file system_softlist.yml
 
 **Options:**
 - `--input-file <path>`: Specify the input `system_softlist.yml` file. (Defaults to configured path)
-- `--platform-key PLATFORM_KEY`: (Optional) Copy ROMs only for a specific platform by its key.
-- `--create-placeholder-zip`: Always create empty placeholder (dummy) zips which is about 22KB instead of copying from the source directory.
+- `--platform-key <key>`: (Optional) Copy ROMs only for a specific platform by its key.
+- `--create-placeholder-zip`: Always create empty placeholder (dummy) zips instead of copying from the source directory.
 - `--dry-run`: Show what would be copied or created without modifying any files.
 
 Note:
-- I highly recommend using `--create-placeholder-zip` to create a dummy zip. Unlike most emulator that require taking the full ROM path as the input argument, MAME maintain its internal database of rom list and rom path, and the command line parameter only require the system or softlist name. 
+- I highly recommend using `--create-placeholder-zip` to create a dummy zip. Unlike most emulators that require taking the full ROM path as the input argument, MAME maintains its internal database of ROM lists and paths, and the command-line parameter only requires the system or softlist name.
 
 ### `table` Command: Display `system_softlist.yml` as Table
 
 Parses and displays the contents of your `system_softlist.yml` in a detailed table.
 
-```
-python src\mess_curator.py table --platform-key nintendo-game-and-watch --mame-xml-source ..\data\mess.xml --show-extra-info
+```bash
+python src\mess_curator.py table --platform-key nintendo-game-and-watch --show-extra-info
 ```
 
 **Options:**
 
 - `--platform-key <key>`: Display only a specific platform.
-
 - `--input-file <path>`: Specify the input `system_softlist.yml`. (Defaults to configured path)
-
-- `--mame-xml-source <path>`: MAME XML file to fetch system descriptions/statuses. (Defaults to `mame.xml`)
-
+- `--mame-xml-source <path>`: MAME XML file to fetch system descriptions/statuses. (Defaults to the one for your configured MAME version)
 - `--show-systems-only`: Show only one row per system.
-
 - `--show-extra-info`: Show Manufacturer and Publisher columns.
 
 ### `platform-info` Command: Display High-Level Platform Summary
 
 Provides a high-level overview of platforms defined in your `system_softlist.yml`, including counts of systems, softlists, and software IDs.
 
-```
+```bash
 python src\mess_curator.py platform-info
 ```
 
 **Options:**
 
 - `--platform-key <key>`: Display info for a specific platform only.
-
 - `--input-file <path>`: Specify the input `system_softlist.yml`. (Defaults to configured path)
 
 **Output Example:**
@@ -736,6 +686,29 @@ python.exe .\mess_curator.py platform-info --sort-by-col-num 2
 Total platforms displayed: 105
 ```
 
+### `split` Command: Generate Filtered MAME XMLs
+This command is crucial for optimizing later search operations. It filters a given `mame.xml` based on the systems in `mess.ini` and then splits the result.
+
+> Note: This is no longer necessary and only kept if you still wish to do so. Now the tool simply refers to the `mess.xml` downloadable from https://www.progettosnaps.net/mess/repository/
+
+```bash
+# Generate a fresh mame.xml from your configured mame.exe
+python src\mess_curator.py split --from-mame-exe
+
+# Or use an existing mame.xml file
+python src\mess_curator.py split --input-xml "C:\path\to\your\mame.xml"
+```
+
+Output Files (generated in the `data/<version>` directory):
+- `mess.xml`: (Machines listed in your mess.ini from mame.xml)
+- `mess-softlist.xml`: (Machines from mess.xml that support software lists)
+- `mess-nosoftlist.xml`: (Machines from mess.xml that do NOT support software lists)
+
+Options:
+- `--mess-ini <path>`: Specify a custom mess.ini file. (Defaults to configured path)
+- `--input-xml <path>`: Path to an existing full `mame.xml` to use as the source.
+- `--from-mame-exe`: Generate a fresh `mame.xml` from the `mame.exe` defined in your config.
+
 ### `config` Command: Manage Program Settings
 
 Allows you to view or change the program's configuration paths.
@@ -758,68 +731,239 @@ Options (Mutually Exclusive - choose one per command):
 
 ### All Commands
 
-For detailed help on any command, use the `-h` flag (e.g., `python src/mess_curator.py search by-name -h`).
+For detailed help on any command, use the `-h` flag (e.g., `python src/mess_curator.py search -h`).
 
 *   **`config`**: View or update tool configuration.
 *   **`split`**: Generate filtered `mess.xml`, `mess-softlist.xml`, and `mess-nosoftlist.xml`.
-*   **`search`**: The main command for finding systems and generating output.
-    *   `by-name`: Search for systems by explicit name or fuzzy prefix.
-    *   `by-xml`: Use a pre-existing XML file as the source for systems.
-    *   `by-filter`: Find systems by searching their description text.
-    *   `by-sourcefile`: Find systems by their driver source file (e.g., `nes.cpp`).
+*   **`search`**: The main command for finding systems and generating `table`, `yaml`, or `csv` output.
 *   **`copy-roms`**: Copy ROMs based on your YAML file.
 *   **`table`**: Display the contents of a YAML file in a detailed table.
 *   **`platform-info`**: Show a high-level summary of the platforms in your YAML file.
 
-## Examples
+## Advanced Usage
 
-### **Example 1: Create a Platform for Acorn Archimedes with a Custom Game Command**
+### **Example 1: Create a Platform for Acorn Electron that with a Common Custom Game Command per Softlist Media Format**
 
-This example generates a YAML entry for the `aa4401` system, but adds a specific `autoboot` command just for the game `elite`.
+This example generates a YAML entry for the `electron` system, and uses a common custom `autoboot` command for all the titles in `bbc_cass`, `electron_cass`, `electron_cart` and `electron_flop` softlist respectively. 
 
-```powershell
-python .\src\mess_curator.py search by-name `
-    --platform-key acorn-archimedes `
-    --platform-name-full "Acorn Archimedes" `
-    --platform-category "Computers" `
-    --media-type floppy `
-    --emu-name "MAME (Floppy)" `
+```
+# ----------------------
+# Acorn Electron
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key acorn-electron `
+    --platform-name-full "Acorn Electron" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cass `
+    --emu-name "MAME (MESS)" `
     --default-emu `
-    --default-emu-cmd-params '-keyboardprovider dinput aa4401 -flop' `
+    --default-emu-cmd-params '-keyboardprovider dinput electron -skip_gameinfo -autoboot_delay \"2\" -autoboot_command \"*tape\nchain\"\"\"\"\"\"\n\" -cass' `
     --output-format yaml `
-    --add-software-config 'arch_flop:elite:"-autoboot_delay 2 -autoboot_command \"*BASIC\nCHAIN \"ELITE\"\""' `
-    aa4401
+    --output-file system_softlist.yml `
+    --exclude-softlist "electron_rom" `
+    --add-softlist-config 'bbc_cass:electron -skip_gameinfo -autoboot_delay "2" -autoboot_command "*TAPE\nCHAIN\"\"\"\"\"\"\n" -cass' `
+    --add-softlist-config 'electron_cass:electron -skip_gameinfo -autoboot_delay "2" -autoboot_command "*TAPE\nCHAIN\"\"\"\"\"\"\n" -cass' `
+    --add-softlist-config 'electron_cart:electron -cart' `
+    --add-softlist-config 'electron_flop:electron -skip_gameinfo -autoboot_delay "2" -autoboot_command \"cat\n\n\n\n\n\nrun !boot\n\" -flop' `
+    electron
 ```
 
-### **Example 2: Create a Platform for Handhelds, Including Only Specific Softlists**
+Output example
+
+```
+acorn-electron:
+  platform:
+    name: Acorn Electron
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cass
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput electron -skip_gameinfo
+      -autoboot_delay "2" -autoboot_command "*tape\nchain""""""\n" -cass
+  system:
+  - electron:
+      software_lists:
+      - softlist_name: bbc_cass
+        software_id:
+        - 9cardbd1
+        - 9cardbd2
+        ...
+      - softlist_name: electron_cart
+        software_id:
+        - abr
+        - abr104
+        ...
+      - softlist_name: electron_cass
+        software_id:
+        - 3dbombal
+        - 3ddotty
+        ...
+      - softlist_name: electron_flop
+        software_id:
+        - 9cardbd1
+        - 9cardbd2 
+        ...
+      software_configs:
+        bbc_cass:
+          _default_config:
+            command_line_parameters: electron -skip_gameinfo -autoboot_delay 2 -autoboot_command
+              *TAPE\nCHAIN""""""\n -cass
+        electron_cart:
+          _default_config:
+            command_line_parameters: electron -cart
+        electron_cass:
+          _default_config:
+            command_line_parameters: electron -skip_gameinfo -autoboot_delay 2 -autoboot_command
+              *TAPE\nCHAIN""""""\n -cass
+        electron_flop:
+          _default_config:
+            command_line_parameters: electron -skip_gameinfo -autoboot_delay 2 -autoboot_command
+              "cat\n\n\n\n\n\nrun !boot\n" -flop                              
+```
+
+### **Example 2: Create a Platform for Bandai Gundam RX-78 with both Common Softlist and Custom Game Command**
+
+This example generates a YAML entry for the `rx78` system, and uses the common custom `autoboot` command for `rx78_cart` and `rx78_cass` softlist. But adds a specific per-title `autoboot` command for the game `graphmaths` and `yellowcab`, since those two titles require specific `autoboot` command.
+
+```powershell
+# ----------------------
+# Bandai Gundam RX-78
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key bandai-gundam-rx-78 `
+    --platform-name-full "Bandai Gundam RX-78" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cart `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput rx78 -cart" `
+    --output-format yaml `
+    --output-file system_softlist.yml `
+    --add-softlist-config 'rx78_cart:rx78 -cart' `
+    --add-softlist-config 'rx78_cass:rx78 -cass1' `
+    --add-software-config 'rx78_cass:graphmaths:rx78 -autoboot_delay 2 -autoboot_command MON\nL\nGRM\n -cart basic -cass1' `
+    --add-software-config 'rx78_cass:yellowcab:rx78 -autoboot_delay 2 -autoboot_command MON\nL\nCAB\n -cart basic -cass1' `
+    rx78
+```
+
+Output example
+
+```
+bandai-gundam-rx-78:
+  platform:
+    name: Bandai Gundam RX-78
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cart
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput rx78 -cart
+  system:
+  - rx78:
+      software_lists:
+      - softlist_name: rx78_cart
+        software_id:
+        - abcword
+        - aerial
+...
+      - softlist_name: rx78_cass
+        software_id:
+        - graphmaths
+        - yellowcab
+      software_configs:
+        rx78_cart:
+          _default_config:
+            command_line_parameters: rx78 -cart
+        rx78_cass:
+          _default_config:
+            command_line_parameters: rx78 -cass1
+          graphmaths:
+            command_line_parameters: rx78 -autoboot_delay 2 -autoboot_command MON\nL\nGRM\n
+              -cart basic -cass1
+          yellowcab:
+            command_line_parameters: rx78 -autoboot_delay 2 -autoboot_command MON\nL\nCAB\n
+              -cart basic -cass1
+```
+
+### **Example 3: Exclude a compatible softlist that is not unique for a system**
+
+The TimeTop GameKing handhelds support both `gameking` and `gameking3` softlist`, but since I created a separate Platform name for TimeTop GameKing 3, I excluded it from the GameKing platform.
+
+```
+# ----------------------
+# TimeTop GameKing
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key timetop-game-king `
+    --platform-name-full "TimeTop GameKing" `
+    --platform-category "Handhelds" "MESS (Handhelds)" "MESS (System w/ Softlist)" `
+    --media-type cart `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput gameking -cart" `
+    --output-format yaml `
+    --output-file system_softlist.yml `
+    --exclude-softlist "gameking3" `
+    gameking
+```
+
+Likewise, the TimeTop GameKing 3 will exlude every softlist titles meant for Game King 1.
+
+```
+# ----------------------
+# TimeTop GameKing 3
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key timetop-game-king-3 `
+    --platform-name-full "TimeTop GameKing 3" `
+    --platform-category "Handhelds" "MESS (Handhelds)" "MESS (System w/ Softlist)" `
+    --media-type cart `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput gamekin3 -cart" `
+    --output-format yaml `
+    --output-file system_softlist.yml `
+    --exclude-softlist "gameking" `
+    gamekin3
+```
+
+### **Example 4: Create a Platform for Handhelds, Including Only Specific Softlists**
 
 This example finds all systems with "Entex" in their description, but **only includes** software from the `advision` and `svis_cart` softlists.
 
 ```powershell
-python .\src\mess_curator.py search by-filter "Entex" `
-    --input-xml mess.xml `
-    --platform-key entex-handhelds `
+python .\src\mess_curator.py search `
+    --filter-description "Entex" `
+    --platform-key "entex-handhelds" `
     --platform-name-full "Entex Handhelds" `
-    --media-type cart `
+    --media-type "cart" `
     --emu-name "MAME (Cartridge)" `
     --default-emu `
     --output-format yaml `
     --include-softlist "advision svis_cart"
 ```
 
-### **Example 3: Find All "Good" TV Games and Output to a Table**
+### **Example 5: Find All "Good" TV Games and Output to a Table**
 
 This is useful for discovery. It searches all MESS systems for "TV Game" in the description, filters for "good" emulation, and displays the results in a clean table.
 
 ```powershell
-python .\src\mess_curator.py search by-filter "TV Game" `
-    --input-xml mess.xml `
+python .\src\mess_curator.py search `
+    --filter-description "TV Game" `
     --emulation-status good `
-    --show-extra-info `
-    --output-format table
+    --show-extra-info
 ```
 
-### **Example 4: Build Your Curated ROM Set**
+### **Example 6: Build Your Curated ROM Set**
 
 Once your `system_softlist.yml` is configured, this command will create a clean, organized folder structure with all the required ROMs.
 
@@ -827,7 +971,11 @@ Once your `system_softlist.yml` is configured, this command will create a clean,
 python src/mess_curator.py copy-roms
 ```
 
-This will read your YAML and copy the files into the configured output directory, ready for your frontend.
+### **More Examples**
+
+For more examples, see the `gen_platforms_all.ps1` powershell script that is used to generate the `system_softlist.yml` template file for a mame version.
+
+This will read your system softlist YAML and copy the files into the configured output directory, ready for ingesting by my [MESS Curated Softlist ROM Importer plugin for LaunchBox](https://github.com/dsync89/lb-mess-curated-platform-softlist-importer).
 
 ## GUI
 
@@ -844,7 +992,7 @@ python src\mess_ui.py
 
 ## FAQ
 
-Q: How does the tool determine if a system suport softlist?
+**Q: How does the tool determine if a system suport softlist?**
 
 If the `<softwarelist>` entry is present under a `<machine>` entry in the `mame.xml` file, then it is determined to have such.
 
@@ -861,7 +1009,7 @@ If the `<softwarelist>` entry is present under a `<machine>` entry in the `mame.
 		<softwarelist tag="cart_list" name="pegasus_cart" status="original" />
 ```
 
-Q: How are softlist titles assigned to a system, especially when it's part of a system family with variants?
+**Q: How are softlist titles assigned to a system, especially when it's part of a system family with variants?**
 
 A Softlist XML which contains a list of titles in a softlist might include a <compatibility> element that indicates which systems a title is compatible with. When this element is present, MESS Curator will respect it and assign only the titles that match the compatibility value of the target machine. This ensures that each title runs only on systems it's designed for.
 
@@ -875,14 +1023,18 @@ For example, consider the Tandy TRS-80 computer family, which includes five mode
 
 If you're running the `trs80` machine, only titles marked with compatibility value `0` will be available, since that's the value associated with that specific model.
 
-Q: Is all the softlist supported by a system get added?
+**Q: Is all the softlist supported by a system get added?**
 
 No, only the softlist that is unique or specific to the system will get added.
 
-Take `Sega SC-3000` Computer system for example, it supported 3 softlists: `sc3000_cart`, `sc3000_cass`, and `sg1000`. But since SG1000 is already supported by another `Sega SC-1000` computer, it is not added to the `SC-3000` system.
+Take `Sega SC-3000` Computer system for example, it supports 3 softlists: `sc3000_cart`, `sc3000_cass`, and `sg1000`. But since SG1000 is already supported by another `Sega SC-1000` computer, it is not added to the `SC-3000` system.
 
 ## Contribution
 
 Feel free to open issues or pull requests on the GitHub repository if you have suggestions to the MESS systems that should be added as default, bug reports, or want to contribute to the project and pay for a cup of my soy bean~
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/B0B8WK7DL)
+<p align="center">
+  <a href="https://ko-fi.com/B0B8WK7DL" target="_blank">
+    <img src="https://storage.ko-fi.com/cdn/brandasset/v2/support_me_on_kofi_blue.png" alt="Buy Me a Coffee at ko-fi.com" width="250">
+  </a>
+</p>
