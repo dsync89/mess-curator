@@ -93,7 +93,7 @@ class MameRomManagerApp(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        app_version = "dev"
+        app_version = "1.0.0"
         if (app_version == "dev"):
             self.setWindowTitle(f"MAME MESS Curator UI (Dev)")
         else:
