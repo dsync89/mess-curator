@@ -1,0 +1,7 @@
+mame_executable: c:\Programs\LaunchBox\Emulators\MAME 0.278\mame.exe
+softlist_rom_sources_dir: c:\Programs\LaunchBox\Emulators\MAME 0.278\roms\softlist
+out_romset_dir: r:\roms\other\mame-mess
+mess_ini_path: c:\Programs\LaunchBox\Emulators\MAME 0.278\folders\mess.ini
+system_softlist_yaml_file: data\0.278\system_softlist.yml
+mess_version: '0.278'
+mess_xml_file: ''
