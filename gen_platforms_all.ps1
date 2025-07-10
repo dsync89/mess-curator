@@ -887,7 +887,7 @@ python .\src\mess_curator.py search `
     --output-format yaml `
     --output-file system_softlist.yml `
     --fuzzy jak `
-    --exclude-systems "jak_pf jak_prft jak_s500 jak_smwm jak_ths jak_tink jak_totm jak_umdf"
+    --exclude-systems "jak_pf jak_prft jak_s500 jak_smwm jak_ths jak_tink jak_totm jak_umdf jakks_gamekey_rom_i2c_24lc04 jakks_gamekey_rom_i2c_base jakks_gamekey_rom_plain jakks_gamekey_slot"
 
 # ----------------------
 # JAKKS Pacific TV Motion Game
