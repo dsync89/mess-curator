@@ -1025,6 +1025,7 @@ class RomCopyTab(QWidget):
 
 
 # === Settings Tab ===
+# --- REPLACE THE ENTIRE SettingsTab CLASS WITH THIS ---
 class SettingsTab(QWidget):
     def __init__(self, log_func, main_app_ref):
         super().__init__()
@@ -1047,10 +1048,16 @@ class SettingsTab(QWidget):
             else:
                 browse_button_obj.clicked.connect(lambda: self.browse_directory(line_edit_obj, f"Select {label_text}"))
 
+        # --- REVISED UI ELEMENTS ---
         self.mame_executable_le = QLineEdit()
         self.browse_mame_btn = QPushButton("...")
         create_path_widget(self.mame_executable_le, self.browse_mame_btn, "MAME Executable Path:", True, "MAME Executable (mame.exe)")
 
+        # Add the MAME Version field
+        self.mess_version_le = QLineEdit()
+        self.mess_version_le.setPlaceholderText("e.g., 0.278 (auto-detected if blank)")
+        form_layout.addRow("MAME Version:", self.mess_version_le)
+        
         self.softlist_rom_sources_dir_le = QLineEdit()
         self.browse_softlist_btn = QPushButton("...")
         create_path_widget(self.softlist_rom_sources_dir_le, self.browse_softlist_btn, "Softlist ROMs Source Dir:", False)
@@ -1063,9 +1070,11 @@ class SettingsTab(QWidget):
         self.browse_yaml_btn = QPushButton("...")
         create_path_widget(self.system_softlist_yaml_file_le, self.browse_yaml_btn, "System Softlist YAML:", True, "YAML Files (*.yaml *.yml)")
 
+        # Make mess.ini optional and less prominent
         self.mess_ini_path_le = QLineEdit()
         self.browse_mess_ini_btn = QPushButton("...")
-        create_path_widget(self.mess_ini_path_le, self.browse_mess_ini_btn, "MESS.ini Path:", True, "INI Files (*.ini)")
+        create_path_widget(self.mess_ini_path_le, self.browse_mess_ini_btn, "MESS.ini Path (for split):", True, "INI Files (*.ini)")
+        # --- END REVISED UI ---
 
         main_layout.addLayout(form_layout)
         
@@ -1090,6 +1099,7 @@ class SettingsTab(QWidget):
     def load_settings_from_core_config(self):
         """Loads settings from the global APP_CONFIG dictionary."""
         self.mame_executable_le.setText(core_logic.APP_CONFIG.get("mame_executable", ""))
+        self.mess_version_le.setText(core_logic.APP_CONFIG.get("mess_version", ""))
         self.softlist_rom_sources_dir_le.setText(core_logic.APP_CONFIG.get("softlist_rom_sources_dir", ""))
         self.out_romset_dir_le.setText(core_logic.APP_CONFIG.get("out_romset_dir", ""))
         self.system_softlist_yaml_file_le.setText(core_logic.APP_CONFIG.get("system_softlist_yaml_file", "system_softlist.yml"))
@@ -1098,11 +1108,27 @@ class SettingsTab(QWidget):
 
     def save_settings(self):
         """Saves settings from the UI to the global APP_CONFIG and then to file."""
+        # --- REVISED SAVE LOGIC ---
         core_logic.APP_CONFIG["mame_executable"] = self.mame_executable_le.text()
+        
+        # Auto-detect version if the field is empty
+        mess_version = self.mess_version_le.text().strip()
+        if not mess_version and self.mame_executable_le.text():
+            self.log("[INFO] MAME Version field is empty, attempting to auto-detect from executable...")
+            detected_version = core_logic.get_mame_version_from_exe(self.mame_executable_le.text())
+            if detected_version:
+                mess_version = detected_version
+                self.mess_version_le.setText(mess_version) # Update UI
+                self.log(f"[INFO] Auto-detected version: {mess_version}")
+            else:
+                self.log("[WARNING] Could not auto-detect version. Please enter it manually.")
+        core_logic.APP_CONFIG["mess_version"] = mess_version
+
         core_logic.APP_CONFIG["softlist_rom_sources_dir"] = self.softlist_rom_sources_dir_le.text()
         core_logic.APP_CONFIG["out_romset_dir"] = self.out_romset_dir_le.text()
         core_logic.APP_CONFIG["system_softlist_yaml_file"] = self.system_softlist_yaml_file_le.text()
         core_logic.APP_CONFIG["mess_ini_path"] = self.mess_ini_path_le.text()
+        # No need to save mess_xml_file, as it's dynamic
         
         if core_logic.save_configuration():
             self.log("[SUCCESS] Settings saved to config.yaml.")
