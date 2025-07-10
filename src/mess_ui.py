@@ -217,8 +217,8 @@ class InclusionOptionsWidget(QGroupBox):
         layout = QFormLayout(self)
         self.include_systems_le = QLineEdit()
         self.exclude_systems_le = QLineEdit()
-        self.include_systems_le.setPlaceholderText("Space-separated list")
-        self.exclude_systems_le.setPlaceholderText("Space-separated list")
+        self.include_systems_le.setPlaceholderText("Space-separated list (e.g. "nes snes")")
+        self.exclude_systems_le.setPlaceholderText("Space-separated list (e.g. "nes snes")")
 
         layout.addRow("Include Systems:", self.include_systems_le)
         layout.addRow("Exclude Systems:", self.exclude_systems_le)
@@ -258,16 +258,19 @@ class PlatformConfigDialog(QDialog):
         self.search_term_le = QLineEdit()
         self.include_systems_le = QLineEdit()
         self.exclude_systems_le = QLineEdit()
+        self.exclude_softlist_le = QLineEdit()
         
         self.systems_te.setPlaceholderText("One per line, or space/comma separated")
-        self.include_systems_le.setPlaceholderText("Space separated")
-        self.exclude_systems_le.setPlaceholderText("Space separated")
+        self.include_systems_le.setPlaceholderText("Space separated (e.g. \"nes snes\")")
+        self.exclude_systems_le.setPlaceholderText("Space separated (e.g. \"nes snes\")")
+        self.exclude_softlist_le.setPlaceholderText("Space separated (e.g. \"nes_ade\")")
 
         sourcing_layout.addRow("Systems:", self.systems_te)
         sourcing_layout.addRow("Fuzzy Prefix:", self.fuzzy_le)
+        sourcing_layout.addRow("Software Search Term:", self.search_term_le)
         sourcing_layout.addRow("Include Systems:", self.include_systems_le)
         sourcing_layout.addRow("Exclude Systems:", self.exclude_systems_le)
-        sourcing_layout.addRow("Software Search Term:", self.search_term_le)
+        sourcing_layout.addRow("Exclude Softlists:", self.exclude_softlist_le)
         layout.addWidget(sourcing_group)
 
         self.button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -318,10 +321,11 @@ class PlatformConfigDialog(QDialog):
             'media_type': self.yaml_options.media_type_cb.currentText(),
             'systems': systems,
             'fuzzy': fuzzy,
-            'include_systems': include_systems,
-            'exclude_systems': [s.strip() for s in self.exclude_systems_le.text().split() if s.strip()],
+            'include_systems': [item.strip() for item in self.include_systems_le.text().replace(',', ' ').split() if item.strip()],
+            'exclude_systems': [item.strip() for item in self.exclude_systems_le.text().replace(',', ' ').split() if item.strip()],
+            'exclude_softlist': [item.strip() for item in self.exclude_softlist_le.text().replace(',', ' ').split() if item.strip()],
             'search_term': self.search_term_le.text().strip(),
-            'enable_custom_cmd_per_title': self.emu_options.enable_custom_cmd_cb.isChecked(),
+            'enable_custom_command_line_param_per_software_id': self.emu_options.enable_custom_cmd_cb.isChecked(),
             'emu_name': self.emu_options.emu_name_cb.currentText().strip(),
             'default_emu': self.emu_options.default_emu_cb.isChecked(),
             'default_emu_cmd_params': self.emu_options.default_emu_cmd_params_le.text().strip(),
@@ -729,6 +733,7 @@ class SearchTab(QWidget):
             inclusion_opts = components['inclusion_options']
             include_systems = [s.strip() for s in inclusion_opts.include_systems_le.text().split() if s.strip()]
             exclude_systems = [s.strip() for s in inclusion_opts.exclude_systems_le.text().split() if s.strip()]
+            exclude_softlist = [s.strip() for s in inclusion_opts.exclude_softlist_le.text().split() if s.strip()]
             if include_systems: processed_systems_set.update(include_systems)
             if exclude_systems: processed_systems_set.difference_update(exclude_systems)
             
@@ -773,7 +778,8 @@ class SearchTab(QWidget):
                 'emu_name': emu_opts.emu_name_cb.currentText().strip(),
                 'default_emu': emu_opts.default_emu_cb.isChecked(),
                 'default_emu_cmd_params': emu_opts.default_emu_cmd_params_le.text(),
-                'source_xml_root': source_xml_root
+                'source_xml_root': source_xml_root,
+                'exclude_softlist': exclude_softlist
             }
 
             self.log(f"[INFO] Starting search with mode '{kwargs['search_mode']}'...")
