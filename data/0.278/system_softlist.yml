@@ -2140,13 +2140,16 @@ bandai-lets-tv-play:
   - ban_bkgj
   - ban_db2j
   - ban_dn1j
+  - ban_gkrj
   - ban_kksj
   - ban_krkk
   - ban_krrj
   - ban_omt
   - ban_onep
   - ban_ordj
+  - ban_tam2
   - ban_ult
+  - ban_um2j
   - ban_utmj
   - dmbtjunc
   - dmnslayg
@@ -4267,6 +4270,7 @@ epoch-tv-games:
   - epo_quiz
   - epo_rgfj
   - epo_sdb
+  - epo_sskj
   - epo_stad
   - epo_strk
   - epo_strkp
@@ -4597,15 +4601,23 @@ jakks-pacific-tv-game:
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput
   system:
+  - jak_1vs
+  - jak_5thg
+  - jak_avtr
   - jak_batm
   - jak_bbh
   - jak_bbsf
+  - jak_bj
+  - jak_blue
   - jak_bobb
+  - jak_bobbo
   - jak_camp
   - jak_capb
   - jak_capc
   - jak_car2
   - jak_care
+  - jak_cind
+  - jak_ctah
   - jak_dbz
   - jak_dchp
   - jak_ddhp
@@ -4623,6 +4635,9 @@ jakks-pacific-tv-game:
         - sbwlgoof
         - stenfcha
         - stenfchs
+  - jak_diso
+  - jak_dond
+  - jak_dood
   - jak_dora:
       software_lists:
       - softlist_name: jakks_gamekey_nk
@@ -4637,6 +4652,7 @@ jakks-pacific-tv-game:
         - dora
         - popsnow
         - volbird
+  - jak_dpma
   - jak_dpr:
       software_lists:
       - softlist_name: jakks_gamekey_dp
@@ -4648,15 +4664,22 @@ jakks-pacific-tv-game:
         software_id:
         - snowwhit
   - jak_duck
+  - jak_dwa
   - jak_dwmn
   - jak_dwmno
   - jak_fan4
+  - jak_gdg
   - jak_gtg
+  - jak_hm1m
+  - jak_hmbb
   - jak_hmg2
   - jak_hmhsm
   - jak_hmpt
+  - jak_hsm
   - jak_hsmg2
+  - jak_jpdy
   - jak_just
+  - jak_marv
   - jak_mk
   - jak_mpac:
       software_lists:
@@ -4665,6 +4688,8 @@ jakks-pacific-tv-game:
         - nrxdig
         - pacbos
         - pacbosrx
+  - jak_mpaco
+  - jak_mpacq
   - jak_mpacw
   - jak_nick:
       software_lists:
@@ -4673,12 +4698,16 @@ jakks-pacific-tv-game:
         - dora
         - popsnow
         - volbird
+  - jak_ntsc
+  - jak_pacg
   - jak_pix
   - jak_pooh
   - jak_potc
   - jak_powr
   - jak_prhp
   - jak_prr
+  - jak_rapm
+  - jak_sbdd
   - jak_sbfc:
       software_lists:
       - softlist_name: jakks_gamekey_nk
@@ -4688,6 +4717,9 @@ jakks-pacific-tv-game:
         - volbird
   - jak_sbjd
   - jak_sdoo
+  - jak_sesa
+  - jak_shrk
+  - jak_sinv
   - jak_sith:
       software_lists:
       - softlist_name: jakks_gamekey_sw
@@ -4704,6 +4736,8 @@ jakks-pacific-tv-game:
         - igefcc
         - tdyoda
         - tdyodap
+  - jak_slpb
+  - jak_spac
   - jak_spd3
   - jak_spdm:
       software_lists:
@@ -4712,11 +4746,14 @@ jakks-pacific-tv-game:
         - bcatdoc
   - jak_spdmo
   - jak_spdmoa
+  - jak_spdv
   - jak_spmm
+  - jak_ssmo
   - jak_sspop
   - jak_supm
   - jak_swbstrik
   - jak_swc
+  - jak_swcl
   - jak_swot:
       software_lists:
       - softlist_name: jakks_gamekey_sw
@@ -4725,13 +4762,19 @@ jakks-pacific-tv-game:
         - igefcc
         - tdyoda
         - tdyodap
+  - jak_thom
+  - jak_thomp
   - jak_tmnthp
+  - jak_tpir
   - jak_tsm
   - jak_wall
   - jak_wdbg
   - jak_wdzh
   - jak_wof
+  - jak_wof2
+  - jak_wpt
   - jak_wwe
+  - jak_xmen
   - jak_xmenp
   - jakms41
 jakks-pacific-tv-motion-game:
@@ -12489,6 +12532,7 @@ radica-play-tv:
   - rad_hnt3
   - rad_hnt3p
   - rad_jcon
+  - rad_jib
   - rad_madf
   - rad_md1
   - rad_md1uk
@@ -15385,7 +15429,7 @@ mattel-hyperscan:
   media_type: cdrom
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (CD)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput hyprscan -cdrom
   system:
@@ -15410,7 +15454,7 @@ tandy-memorex-vis:
   media_type: cdrom
   enable_custom_command_line_param_per_software_id: false
   emulator:
-    name: MAME (CD)
+    name: MAME (MESS)
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput vis -cdrom
   system:
