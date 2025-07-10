@@ -861,6 +861,26 @@ If the `<softwarelist>` entry is present under a `<machine>` entry in the `mame.
 		<softwarelist tag="cart_list" name="pegasus_cart" status="original" />
 ```
 
+Q: How are softlist titles assigned to a system, especially when it's part of a system family with variants?
+
+A Softlist XML which contains a list of titles in a softlist might include a <compatibility> element that indicates which systems a title is compatible with. When this element is present, MESS Curator will respect it and assign only the titles that match the compatibility value of the target machine. This ensures that each title runs only on systems it's designed for.
+
+For example, consider the Tandy TRS-80 computer family, which includes five models:
+
+- 0 = trs80
+- 1 = trs80l2 and its clones
+- 3 = trs80m3
+- 4 = trs80m4
+- H = HT series
+
+If you're running the `trs80` machine, only titles marked with compatibility value `0` will be available, since that's the value associated with that specific model.
+
+Q: Is all the softlist supported by a system get added?
+
+No, only the softlist that is unique or specific to the system will get added.
+
+Take `Sega SC-3000` Computer system for example, it supported 3 softlists: `sc3000_cart`, `sc3000_cass`, and `sg1000`. But since SG1000 is already supported by another `Sega SC-1000` computer, it is not added to the `SC-3000` system.
+
 ## Contribution
 
 Feel free to open issues or pull requests on the GitHub repository if you have suggestions to the MESS systems that should be added as default, bug reports, or want to contribute to the project and pay for a cup of my soy bean~
