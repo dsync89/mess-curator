@@ -942,56 +942,6 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
         print(f"[i] No systems found for output after initial filtering or no matching software items found across any specified systems "
               f"with search term '{search_term}'." if search_term else "[i] No systems or matching software items found.")
 
-
-def parse_good_emulation_drivers(exclude_arcade=False, machines_to_filter=None, source_xml_root=None):
-    """
-    Filters for emulation='good' drivers from a given XML root.
-    """
-    if source_xml_root is None:
-        print("[ERROR] No XML root provided. Cannot list good emulation drivers.")
-        return
-
-    good_drivers_data = []
-    try:
-        for machine_element in source_xml_root.findall("machine"):
-            machine_name = machine_element.get("name")
-
-            if machines_to_filter is not None and machine_name not in machines_to_filter:
-                continue
-
-            driver_element = machine_element.find("driver")
-            if driver_element is not None and driver_element.get("emulation") == "good":
-                if exclude_arcade:
-                    if machine_element.find("softwarelist") is None:
-                        continue
-
-                name = machine_element.get("name", "N/A")
-                description = machine_element.findtext("description", "N/A").strip()
-                year = machine_element.findtext("year", "N/A").strip()
-                manufacturer = machine_element.findtext("manufacturer", "N/A").strip()
-                
-                good_drivers_data.append([name, description, year, manufacturer])
-
-    except Exception as e:
-        print(f"[!] Unexpected error parsing XML for good emulation drivers: {e}")
-    
-    if good_drivers_data:
-        good_drivers_data.sort(key=lambda x: x[3])
-        
-        info_string = ""
-        if machines_to_filter is not None:
-            info_string += " (Filtered by external list)"
-        if exclude_arcade:
-            info_string += " (Softlist Capable Only)"
-
-        print(f"\n===== MAME Machines with 'Good' Emulation Status{info_string} =====")
-        headers = ["Machine Name", "Description", "Year", "Manufacturer"]
-        print(tabulate(good_drivers_data, headers=headers, tablefmt="github"))
-        print(f"\nTotal 'Good' emulation drivers found: {len(good_drivers_data)}")
-    else:
-        print(f"[i] No MAME machines with 'good' emulation status found matching the criteria.")
-
-
 def parse_mess_ini_machines(ini_path):
     """
     Parses the MESS.ini file and extracts machine names from the [ROOT_FOLDER] section.
@@ -1604,16 +1554,6 @@ def main():
     copy_parser.add_argument("--platform-key", help="Optional: Copy ROMs only for a specific platform by its key.")
     copy_parser.add_argument("--create-placeholder-zip", action="store_true", help="Always create empty placeholder (dummy) zips instead of copying from the source directory.")
     copy_parser.add_argument("--dry-run", action="store_true", help="Show what would be copied or created without modifying any files.")
-
-    list_good_parser = subparsers.add_parser("list-good-emulation", help="List MAME machines with 'good' emulation status.")
-    list_good_parser.add_argument("--exclude-arcade", action="store_true", help="Excludes machines without a software list (typically arcade).")
-    list_good_parser.add_argument("--input-xml", help=f"Path to source XML. Defaults to '{MAME_ALL_MACHINES_XML_CACHE}'.")
-
-    mess_parser = subparsers.add_parser("mess", help="Commands specific to MESS (softlist-capable systems).")
-    mess_subparsers = mess_parser.add_subparsers(dest="mess_command", required=True, help="MESS specific actions.")
-    mess_list_good_parser = mess_subparsers.add_parser("list-good-emulation", help="List MESS machines from mess.ini with 'good' emulation status.")
-    mess_list_good_parser.add_argument("--exclude-arcade", action="store_true", help="Excludes machines without a software list.")
-    mess_list_good_parser.add_argument("--mess-ini", help="Path to MESS.ini. Defaults to config.")
     
     split_parser = subparsers.add_parser("split", help="Generate filtered MAME XMLs based on MESS.ini.")
     split_parser.add_argument("--mess-ini", help="Path to MESS.ini. Defaults to config.")
@@ -1812,14 +1752,6 @@ def main():
 
     elif args.command == "copy-roms":
         perform_rom_copy_operation(args)
-    elif args.command == "list-good-emulation":
-        parse_good_emulation_drivers(args.exclude_arcade, source_xml_root=source_xml_root)
-    elif args.command == "mess":
-        if args.mess_command == "list-good-emulation":
-            mess_ini_path = args.mess_ini or APP_CONFIG['mess_ini_path']
-            mess_machines = parse_mess_ini_machines(mess_ini_path)
-            if mess_machines:
-                parse_good_emulation_drivers(args.exclude_arcade, mess_machines, source_xml_root)
     elif args.command == "split":
         run_split_command(args)
     elif args.command == "table":
