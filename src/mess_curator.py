@@ -1584,12 +1584,12 @@ def main():
 
     search_parser = subparsers.add_parser("search", help="Search MAME systems and generate YAML/table/CSV output.", parents=[table_args_parser, yaml_args_parser, inclusion_args_parser])
     search_parser.add_argument("systems", nargs='*', default=[], help="[Optional] One or more MAME system short names (e.g., 'nes', 'snes'). If omitted, all systems from the input XML will be considered for filtering.")
-    search_parser.add_argument("search_term", nargs='?', default="", help="[Optional] Search term for software ID or description within the found systems.")
     
     # --- New Filter Arguments ---
-    search_parser.add_argument("--fuzzy-name", help="Filter systems by a name prefix (e.g., 'jak_').")
-    search_parser.add_argument("--filter-description", nargs='+', help="Filter systems where the description contains one or more of these terms.")
-    search_parser.add_argument("--filter-sourcefile", help="Filter systems by the driver source file (e.g., 'xavix.cpp').")
+    search_parser.add_argument("--filter-machine-name-fuzzy", help="Filter machines by a name prefix (e.g., 'jak_').")
+    search_parser.add_argument("--filter-machine-description", nargs='+', help="Filter machines where the description contains one or more of these terms.")
+    search_parser.add_argument("--filter-machine-sourcefile", help="Filter machines by the driver source file (e.g., 'xavix.cpp').")
+    search_parser.add_argument("--filter-software-description", help="Filter software by a term in its ID or description.")
     
     # --- Universal Arguments ---
     search_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' or '{MAME_ALL_MACHINES_XML_CACHE}'.")
@@ -1705,7 +1705,7 @@ def main():
         systems_pool = set()
         
         # Check if the user is providing an explicit set of systems to start with
-        user_provided_systems = bool(args.systems or args.fuzzy_name or (hasattr(args, 'include_systems') and args.include_systems))
+        user_provided_systems = bool(args.systems or args.filter_machine_name_fuzzy or (hasattr(args, 'include_systems') and args.include_systems))
         
         if user_provided_systems:
             print("[INFO] User has provided an explicit list of systems to process.")
@@ -1714,11 +1714,13 @@ def main():
                 systems_pool.update(args.systems)
                 print(f"[INFO] Added {len(args.systems)} system(s) from positional arguments.")
             
-            if args.fuzzy_name:
-                fuzzy_matches = get_all_mame_systems_by_prefix_from_root(args.fuzzy_name, source_xml_root)
+            if args.filter_machine_name_fuzzy:
+                fuzzy_matches = get_all_mame_systems_by_prefix_from_root(args.filter_machine_name_fuzzy, source_xml_root)
                 if fuzzy_matches:
-                    print(f"[INFO] Added {len(fuzzy_matches)} systems from fuzzy search for '{args.fuzzy_name}'.")
+                    print(f"[INFO] Adding {len(fuzzy_matches)} systems from fuzzy search for '{args.filter_machine_name_fuzzy}'.")
                     systems_pool.update(fuzzy_matches)
+                else:
+                    print(f"[INFO] No systems found matching '--filter-machine-name-fuzzy {args.filter_machine_name_fuzzy}'.")
             
             if hasattr(args, 'include_systems') and args.include_systems:
                 include_systems_list = [item.strip() for item in args.include_systems.replace(',', ' ').split() if item.strip()]
@@ -1732,29 +1734,29 @@ def main():
         # 2. Sequentially apply filters to the pool
         print(f"[INFO] Initial system pool size: {len(systems_pool)}")
 
-        if args.filter_description:
+        if args.filter_machine_description:
             initial_count = len(systems_pool)
             filtered_set = set()
             for machine_element in source_xml_root.findall("machine"):
                 machine_name = machine_element.get("name")
                 if machine_name in systems_pool: # Only check machines already in our pool
                     description = machine_element.findtext("description", "")
-                    if all(term.lower() in description.lower() for term in args.filter_description):
+                    if all(term.lower() in description.lower() for term in args.filter_machine_description):
                         filtered_set.add(machine_name)
             systems_pool = filtered_set
-            print(f"[INFO] After --filter-description: {initial_count} -> {len(systems_pool)} systems.")
+            print(f"[INFO] After --filter-machine-description: {initial_count} -> {len(systems_pool)} systems.")
 
-        if args.filter_sourcefile:
+        if args.filter_machine_sourcefile:
             initial_count = len(systems_pool)
             filtered_set = set()
             for machine_element in source_xml_root.findall("machine"):
                 machine_name = machine_element.get("name")
                 if machine_name in systems_pool:
                     sourcefile = machine_element.get("sourcefile", "")
-                    if args.filter_sourcefile.lower() in sourcefile.lower():
+                    if args.filter_machine_sourcefile.lower() in sourcefile.lower():
                         filtered_set.add(machine_name)
             systems_pool = filtered_set
-            print(f"[INFO] After --filter-sourcefile: {initial_count} -> {len(systems_pool)} systems.")
+            print(f"[INFO] After --filter-machine-sourcefile: {initial_count} -> {len(systems_pool)} systems.")
 
         # 3. Apply manual includes and excludes
         if hasattr(args, 'include_systems') and args.include_systems:
@@ -1795,7 +1797,7 @@ def main():
         # Call the core function with the final, curated list of systems
         perform_mame_search_and_output(
             systems_to_process,
-            args.search_term,
+            args.filter_software_description or "",
             args.output_format,
             # Pass all the other args as before
             platform_key, platform_name_full, args.platform_category, args.media_type,
