@@ -37,31 +37,44 @@ to automatically add platforms, emulators, metadata, clones, mark broken games, 
 
 ## Key Features
 
-- **Flexible System Searching**:
-  - By Name: Specify systems directly or use fuzzy prefixes (e.g., `jak_` to find all JAKKS Pacific systems).
-  - By XML File: Use pre-filtered XMLs (like `mess-softlist.xml`) as a starting point.
-  - By Filter: Discover systems by searching their descriptions (e.g., find all systems with "handheld" in their description).
+MESS Curator provides a comprehensive suite of tools to discover, filter, and organize MAME's non-arcade systems and software into custom-tailored collections.
 
-- **Detailed Filtering**: Narrow down results by driver status (good, imperfect) and emulation status.
+- **Intuitive System Discovery & Filtering**:
+  - **Machine Filters**: Precisely target systems using clear and explicit flags. Filter by name (`--filter-machine-name-fuzzy`), description (`--filter-machine-description`), or even the driver source file (`--filter-machine-sourcefile`). You can even chain them together!
+  - **Status Filtering**: Narrow your search to include only machines with a specific driver or emulation status (e.g., `--emulation-status good`).
 
-- **Custom Platform Generation**: Group any combination of systems into a single, cohesive platform entry in your YAML file.
+- **Custom Platform Generation**:
+  - **YAML Blueprints**: Automatically generate structured YAML files (`system_softlist.yml`) that act as a blueprint for your curated platforms.
+  - **Flexible Grouping**: Group any combination of MAME systems into a single, logical platform—perfect for creating collections like "All JAKKS Pacific TV Games" or "All Handhelds with Good Emulation."
 
-- **Curated ROM Set Creation**: Automatically copy the required ROMs (or create dummy files for missing ones) into an organized folder structure that mirrors your YAML.
+- **Advanced Customization & Automation**:
+  - **Per-Title Commands**: Define custom command-line parameters for individual software titles (`--add-software-config`), essential for computer systems or games needing special setup.
+  - **Per-Softlist Commands**: Apply default command-line parameters to all titles within a specific software list (`--add-softlist-config`) for broad configuration.
+  - **Selective Inclusion/Exclusion**: Fine-tune your platforms by explicitly including or excluding specific systems or entire software lists.
 
-- **GUI**: A GUI for those that prefer graphics.
+- **Curated ROM Set Construction**:
+  - **Automated Copying**: Use the `copy-roms` command to read your YAML blueprint and automatically build a clean, organized ROM set in your output directory.
+  - **Placeholder Creation**: The tool can create dummy `.zip` files for any missing software, ensuring your frontend sees a complete set, even if you don't have all the ROMs.
 
-- **Initial Setup Wizard***: A guided, interactive setup to configure all necessary paths, making first-time use easy.
-
+- **Streamlined Workflow & Utilities**:
+  - **Automated XML Handling**: The tool automatically downloads the correct `mess.xml` for your MAME version on first run, eliminating manual steps.
+  - **Setup Wizard**: An interactive, first-run wizard guides you through setting up all necessary paths.
+  - **Data Views**: Inspect your YAML files or MAME's XML data in clean, readable tables using the `table` and `platform-info` commands.
+  - **GUI**: A graphical user interface is available for users who prefer a visual approach.
 
 ## Why This Tool is Unique
 
-Many existing tools focus on full ROMset validation or arcade-only management. MESS Curator specifically targets:
+Many existing tools focus on full ROMset validation or arcade-only management. MESS Curator specifically targets the unique challenges of curating non-arcade "MESS" systems with a focus on flexibility and automation.
 
-*   **MESS Systems Integration:** Explicitly handles and filters non-arcade MAME systems.
-*   **Softlist Granularity:** Generates YAML that correctly distinguishes between multiple softlists per system, and individual software IDs/titles within each.
-*   **Frontend-Friendly Output:** The YAML output (`system_softlist.yml`) is designed to be easily parseable by external tools (like my LaunchBox plugin) for automated import of platform and game metadata into Launchbox front-end.
-*   **Smart Caching:** Avoids repeatedly running slow `mame -listxml` commands by caching generated XMLs (`mame.xml`, `mess.xml`), making subsequent operations much faster.
-*   **Flexible Filtering:** Allows highly specific filtering by description, driver status, emulation status, and softlist capability, enabling users to build niche collections (e.g., "all good emulation handhelds," "all x-in-1 systems").
+*   **Unmatched Filtering Granularity**: MESS Curator stands alone in its ability to distinguish between filtering **machines** and filtering the **software** within them. Using explicit flags like `--filter-machine-description` and `--filter-software-description` removes ambiguity and gives you precise control over your collection at both the system and title level.
+
+*   **MESS-Centric by Design**: The tool is built from the ground up to understand and handle the nuances of MAME's non-arcade systems. It correctly interprets software lists, compatibility flags, and the complex relationships between systems.
+
+*   **Intelligent Platform Curation**: Go beyond MAME's rigid structure. You can group any arbitrary set of systems—even from different driver files or manufacturers—into a single, cohesive platform in your YAML file. This allows you to organize your collection based on themes, genres, or any other criteria you choose.
+
+*   **Automation-Ready Output**: The generated `system_softlist.yml` is a well-structured, machine-readable blueprint. It's designed to be consumed by external scripts and frontend plugins, most notably the [MESS Curated Softlist ROM Importer for LaunchBox](https://github.com/dsync89/lb-mess-curated-platform-softlist-importer), for fully automated setup.
+
+*   **Performance and Simplicity**: By automatically downloading and caching the necessary `mess.xml`, the tool avoids forcing users to perform slow, manual `mame -listxml` generations and simplifies the entire setup process.
 
 
 ## Dependencies
