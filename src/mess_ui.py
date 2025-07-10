@@ -217,14 +217,15 @@ class InclusionOptionsWidget(QGroupBox):
         layout = QFormLayout(self)
         self.include_systems_le = QLineEdit()
         self.exclude_systems_le = QLineEdit()
-        self.include_systems_le.setPlaceholderText("Space-separated list (e.g. "nes snes")")
-        self.exclude_systems_le.setPlaceholderText("Space-separated list (e.g. "nes snes")")
+        self.include_systems_le.setPlaceholderText("Space-separated list (e.g. \"nes snes\")")
+        self.exclude_systems_le.setPlaceholderText("Space-separated list (e.g. \"nes snes\")")
 
         layout.addRow("Include Systems:", self.include_systems_le)
         layout.addRow("Exclude Systems:", self.exclude_systems_le)
 
 
 # === Platform Configuration Dialog ===
+# --- ADD THIS CLASS BACK (in its new, improved form) ---
 class PlatformConfigDialog(QDialog):
     def __init__(self, parent=None, platform_data=None, existing_values=None):
         super().__init__(parent)
@@ -251,27 +252,32 @@ class PlatformConfigDialog(QDialog):
         self.emu_options = EmuOptionsWidget(self, existing_emu_names=self.existing_values['emu_names'])
         layout.addWidget(self.emu_options)
 
-        sourcing_group = QGroupBox("System Sourcing")
+        # --- REVISED Sourcing Group ---
+        sourcing_group = QGroupBox("System & Software Sourcing (will be used to generate/update software list)")
         sourcing_layout = QFormLayout(sourcing_group)
-        self.systems_te = QTextEdit()
-        self.fuzzy_le = QLineEdit()
-        self.search_term_le = QLineEdit()
+        self.systems_te = QTextEdit() # For positional systems
+        self.filter_machine_name_fuzzy_le = QLineEdit()
+        self.filter_machine_description_le = QLineEdit()
+        self.filter_machine_sourcefile_le = QLineEdit()
+        self.filter_software_description_le = QLineEdit() # Replaces old search_term
         self.include_systems_le = QLineEdit()
         self.exclude_systems_le = QLineEdit()
         self.exclude_softlist_le = QLineEdit()
         
         self.systems_te.setPlaceholderText("One per line, or space/comma separated")
+        self.filter_machine_name_fuzzy_le.setPlaceholderText("e.g. jak_")
         self.include_systems_le.setPlaceholderText("Space separated (e.g. \"nes snes\")")
         self.exclude_systems_le.setPlaceholderText("Space separated (e.g. \"nes snes\")")
         self.exclude_softlist_le.setPlaceholderText("Space separated (e.g. \"nes_ade\")")
-
-        sourcing_layout.addRow("Systems:", self.systems_te)
-        sourcing_layout.addRow("Fuzzy Prefix:", self.fuzzy_le)
-        sourcing_layout.addRow("Software Search Term:", self.search_term_le)
-        sourcing_layout.addRow("Include Systems:", self.include_systems_le)
-        sourcing_layout.addRow("Exclude Systems:", self.exclude_systems_le)
-        sourcing_layout.addRow("Exclude Softlists:", self.exclude_softlist_le)
+        sourcing_layout.addRow("Systems (Positional):", self.systems_te)
+        sourcing_layout.addRow("Filter Machine Name (Fuzzy):", self.filter_machine_name_fuzzy_le)
+        sourcing_layout.addRow("Filter Machine Description:", self.filter_machine_description_le)
+        sourcing_layout.addRow("Filter Machine Source File:", self.filter_machine_sourcefile_le)
+        sourcing_layout.addRow("Filter Software Description:", self.filter_software_description_le)
+        sourcing_layout.addRow("Include Systems (Manual Add):", self.include_systems_le)
+        sourcing_layout.addRow("Exclude Systems (Manual Remove):", self.exclude_systems_le)
         layout.addWidget(sourcing_group)
+        # --- END REVISED Sourcing Group ---
 
         self.button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         self.button_box.accepted.connect(self.accept)
@@ -294,10 +300,10 @@ class PlatformConfigDialog(QDialog):
         self.emu_options.default_emu_cmd_params_le.setText(self.platform_data.get('default_emu_cmd_params', ''))
         
         self.systems_te.setText('\n'.join(self.platform_data.get('systems', [])))
-        self.fuzzy_le.setText(self.platform_data.get('fuzzy', ''))
+        self.filter_machine_name_fuzzy_le.setText(self.platform_data.get('filter_machine_name_fuzzy', ''))
         self.include_systems_le.setText(' '.join(self.platform_data.get('include_systems', [])))
         self.exclude_systems_le.setText(' '.join(self.platform_data.get('exclude_systems', [])))
-        self.search_term_le.setText(self.platform_data.get('search_term', ''))
+        self.exclude_softlist_le.setText(' '.join(self.platform_data.get('exclude_softlist', [])))
 
     def get_data(self):
         platform_key = self.yaml_options.platform_key_le.text().strip()
@@ -305,27 +311,22 @@ class PlatformConfigDialog(QDialog):
             QMessageBox.warning(self, "Input Required", "Platform Key is a mandatory field.")
             return None
 
-        systems_raw = self.systems_te.toPlainText().strip()
-        systems = [s.strip() for s in systems_raw.replace(',', ' ').split() if s.strip()]
-        fuzzy = self.fuzzy_le.text().strip()
-        include_systems = [s.strip() for s in self.include_systems_le.text().split() if s.strip()]
-        
-        if not systems and not fuzzy and not include_systems:
-            QMessageBox.warning(self, "Input Required", "You must provide at least one system name, a fuzzy prefix, or an included system.")
-            return None
-            
+        # Gather all data, including the new filter fields
         return {
             'platform_key': platform_key,
             'platform_name_full': self.yaml_options.platform_name_full_le.text().strip(),
             'platform_categories': [c.strip() for c in self.yaml_options.platform_category_cb.currentText().split() if c.strip()],
             'media_type': self.yaml_options.media_type_cb.currentText(),
-            'systems': systems,
-            'fuzzy': fuzzy,
+            'systems': [s.strip() for s in self.systems_te.toPlainText().strip().replace(',', ' ').split() if s.strip()],
+            'filter_machine_name_fuzzy': self.filter_machine_name_fuzzy_le.text().strip(),
+            'filter_machine_description': [s.strip() for s in self.filter_machine_description_le.text().strip().split() if s.strip()],
+            'filter_machine_sourcefile': self.filter_machine_sourcefile_le.text().strip(),
+            'filter_software_description': self.filter_software_description_le.text().strip(),
             'include_systems': [item.strip() for item in self.include_systems_le.text().replace(',', ' ').split() if item.strip()],
             'exclude_systems': [item.strip() for item in self.exclude_systems_le.text().replace(',', ' ').split() if item.strip()],
             'exclude_softlist': [item.strip() for item in self.exclude_softlist_le.text().replace(',', ' ').split() if item.strip()],
-            'search_term': self.search_term_le.text().strip(),
-            'enable_custom_command_line_param_per_software_id': self.emu_options.enable_custom_cmd_cb.isChecked(),
+
+            'enable_custom_cmd_per_title': self.emu_options.enable_custom_cmd_cb.isChecked(),
             'emu_name': self.emu_options.emu_name_cb.currentText().strip(),
             'default_emu': self.emu_options.default_emu_cb.isChecked(),
             'default_emu_cmd_params': self.emu_options.default_emu_cmd_params_le.text().strip(),
@@ -419,7 +420,8 @@ class PlatformsTab(QWidget):
         if dialog.exec() == QDialog.Accepted:
             data = dialog.get_data()
             if data:
-                self.process_platform_dialog_data(data, is_new=True)
+                # For a new platform, we always run the full search
+                self.run_search_and_update(data)
 
     def edit_platform(self):
         selected_rows = self.platforms_table.selectionModel().selectedRows()
@@ -435,9 +437,23 @@ class PlatformsTab(QWidget):
         if dialog.exec() == QDialog.Accepted:
             data = dialog.get_data()
             if data:
-                self.process_platform_dialog_data(data, is_new=False)
+                # When editing, ask the user if they want to re-scan
+                reply = QMessageBox.question(self, "Update Options",
+                                             "Do you want to re-scan MAME using the new filter criteria to update the system and software lists?\n\n"
+                                             "- 'Yes' will re-run the full search (can be slow).\n"
+                                             "- 'No' will only save changes to metadata (like name, category, and emulator settings) and the manually entered system list.",
+                                             QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel,
+                                             QMessageBox.No)
+                if reply == QMessageBox.Cancel:
+                    return
+                
+                if reply == QMessageBox.Yes:
+                    self.run_search_and_update(data)
+                else: # 'No' was clicked
+                    self.run_manual_update(data)
 
     def _get_existing_yaml_values(self):
+        # This helper function is still useful and can be added back as-is.
         categories = set()
         emu_names = set()
         yaml_path = self.main_app_ref.settings_tab.system_softlist_yaml_file_le.text()
@@ -471,6 +487,141 @@ class PlatformsTab(QWidget):
             self.run_full_search_for_platform(data)
         elif reply == QMessageBox.No:
             self.run_metadata_only_update(data)
+
+    def run_manual_update(self, data):
+        self.log(f"[INFO] Manually saving platform metadata for '{data['platform_key']}'...")
+        yaml_path = self.main_app_ref.settings_tab.system_softlist_yaml_file_le.text()
+        
+        # --- CORRECTED LOGIC FOR MANUAL UPDATE ---
+        # 1. Load the entire existing YAML data
+        existing_data = core_logic._load_yaml_file(yaml_path)
+        
+        # 2. Get the specific platform entry we are editing, or a new empty one
+        platform_entry = existing_data.get(data['platform_key'], {})
+        
+        # 3. Update only the metadata fields from the dialog
+        platform_entry['platform'] = {"name": data['platform_name_full']}
+        platform_entry['media_type'] = data['media_type']
+        
+        if data['platform_categories']:
+            platform_entry['platform_category'] = data['platform_categories']
+        elif 'platform_category' in platform_entry:
+            del platform_entry['platform_category']
+
+        if data['emu_name']:
+            platform_entry['emulator'] = {
+                'name': data['emu_name'],
+                'default_emulator': data['default_emu'],
+                'default_command_line_parameters': data['default_emu_cmd_params']
+            }
+        elif 'emulator' in platform_entry:
+            del platform_entry['emulator']
+        
+        # 4. CRITICAL: Update the system list from the text box, but DO NOT touch the software_lists/configs
+        # This preserves the existing software data.
+        new_system_list_from_dialog = sorted(data['systems'])
+        
+        # We need to rebuild the 'system' block carefully
+        preserved_system_block = []
+        existing_system_details = {}
+        # First, map existing system details for easy lookup
+        for item in platform_entry.get('system', []):
+            if isinstance(item, dict):
+                sys_name = next(iter(item))
+                existing_system_details[sys_name] = item[sys_name]
+        
+        # Now, build the new list based on the user's manual entry
+        for sys_name in new_system_list_from_dialog:
+            if sys_name in existing_system_details:
+                # If it existed before, carry over its details (software_lists, etc.)
+                preserved_system_block.append({sys_name: existing_system_details[sys_name]})
+            else:
+                # If it's a new system added manually, just add its name
+                preserved_system_block.append(sys_name)
+        
+        platform_entry['system'] = preserved_system_block
+        
+        # 5. Put the modified platform entry back into the main data structure
+        existing_data[data['platform_key']] = platform_entry
+
+        # 6. Save the entire file
+        try:
+            with open(yaml_path, "w", encoding="utf-8") as f:
+                yaml.dump(existing_data, f, default_flow_style=False, sort_keys=False)
+            self.log(f"[SUCCESS] Manually updated '{data['platform_key']}' in '{yaml_path}'.")
+            self.load_platforms()
+        except Exception as e:
+            self.log(f"<font color='red'>[ERROR] Failed to save manual update: {e}</font>")
+
+    def run_search_and_update(self, data):
+        # This method gathers all data and calls the core search function
+        self.log(f"[INFO] Performing full MAME scan to generate/update platform '{data['platform_key']}'...")
+        
+        xml_source_path = core_logic.APP_CONFIG.get('mess_xml_file')
+        if not xml_source_path or not os.path.exists(xml_source_path):
+             if not core_logic.ensure_mess_xml_exists():
+                 self.log("<font color='red'>MESS XML file is not available. Cannot perform search.</font>")
+                 return
+             xml_source_path = core_logic.APP_CONFIG.get('mess_xml_file')
+        
+        source_xml_root = core_logic.get_parsed_mame_xml_root(xml_source_path)
+        if source_xml_root is None:
+            self.log(f"<font color='red'>Could not parse source XML: {xml_source_path}</font>")
+            return
+            
+        systems_pool = set()
+        # Logic to build the initial pool based on user input
+        if data['systems'] or data['filter_machine_name_fuzzy'] or data['include_systems']:
+            systems_pool.update(data['systems'])
+            if data['filter_machine_name_fuzzy']:
+                systems_pool.update(core_logic.get_all_mame_systems_by_prefix_from_root(data['filter_machine_name_fuzzy'], source_xml_root))
+            if data['include_systems']:
+                systems_pool.update(data['include_systems'])
+        else:
+            systems_pool.update(core_logic.get_all_mame_systems_from_xml_file(xml_source_path))
+
+        # Apply machine filters from the dialog
+        if data['filter_machine_description']:
+            initial_count = len(systems_pool)
+            filtered_set = {
+                name for name in systems_pool 
+                if all(term.lower() in source_xml_root.find(f"machine[@name='{name}']/description").text.lower()
+                       for term in data['filter_machine_description'])
+            }
+            systems_pool = filtered_set
+            self.log(f"[INFO] After machine description filter: {initial_count} -> {len(systems_pool)} systems.")
+
+        if data['filter_machine_sourcefile']:
+            initial_count = len(systems_pool)
+            filtered_set = {
+                name for name in systems_pool
+                if data['filter_machine_sourcefile'].lower() in source_xml_root.find(f"machine[@name='{name}']").get("sourcefile", "").lower()
+            }
+            systems_pool = filtered_set
+            self.log(f"[INFO] After machine sourcefile filter: {initial_count} -> {len(systems_pool)} systems.")
+
+        systems_pool.difference_update(data['exclude_systems'])
+        systems_to_process = sorted(list(systems_pool))
+        
+        kwargs = {
+            'systems_to_process': systems_to_process,
+            'search_term': data['filter_software_description'],
+            'output_format': 'yaml',
+            'output_file_path': self.main_app_ref.settings_tab.system_softlist_yaml_file_le.text(),
+            'source_xml_root': source_xml_root,
+            'platform_key': data['platform_key'],
+            'platform_name_full': data['platform_name_full'],
+            'platform_categories': data['platform_categories'],
+            'media_type': data['media_type'],
+            'enable_custom_cmd_per_title': data['enable_custom_cmd_per_title'],
+            'emu_name': data['emu_name'],
+            'default_emu': data['default_emu'],
+            'default_emu_cmd_params': data['default_emu_cmd_params'],
+            'show_systems_only': False, 'show_extra_info': False, 'sort_by': None,
+            'exclude_softlist': [], 'include_softlist': [],
+            'software_configs_to_add': {}, 'softlist_configs_to_add': {},
+        }
+        self._launch_worker(core_logic.perform_mame_search_and_output, **kwargs)
 
     def run_full_search_for_platform(self, data):
         source_xml_path = core_logic.APP_CONFIG.get('mess_xml_file', 'mess.xml')
@@ -571,224 +722,214 @@ class PlatformsTab(QWidget):
 
 
 # === Main Search Tab Container ===
+# ----------------- REPLACE THE ENTIRE SearchTab CLASS WITH THIS -----------------
 class SearchTab(QWidget):
     def __init__(self, log_func, main_app_ref):
         super().__init__()
         self.log = log_func
         self.main_app_ref = main_app_ref
-        
+        self.init_ui()
+
+    def init_ui(self):
+        # Main layout for the entire tab
         main_layout = QVBoxLayout(self)
-        self.search_tabs = QTabWidget()
-        main_layout.addWidget(self.search_tabs)
-
-        self.by_name_tab_components = self._create_search_tab("by-name")
-        self.by_xml_tab_components = self._create_search_tab("by-xml")
-        self.by_filter_tab_components = self._create_search_tab("by-filter")
-        self.by_sourcefile_tab_components = self._create_search_tab("by-sourcefile")
-
-        self.search_tabs.addTab(self.by_name_tab_components['page'], "By Name")
-        self.search_tabs.addTab(self.by_xml_tab_components['page'], "By XML File")
-        self.search_tabs.addTab(self.by_filter_tab_components['page'], "By Description Filter")
-        self.search_tabs.addTab(self.by_sourcefile_tab_components['page'], "By Source File")
-
-        self.results_table = QTableWidget()
-        self.results_table.setEditTriggers(QTableWidget.NoEditTriggers)
-        main_layout.addWidget(self.results_table)
-
-    def _create_base_search_layout(self):
-        page = QWidget()
-        layout = QVBoxLayout(page)
         
-        main_hbox = QHBoxLayout()
-        search_criteria_group = QGroupBox("Search Criteria")
+        # --- Top Section for Search Criteria and Options ---
+        top_hbox = QHBoxLayout()
+        
+        # Group for Search Criteria
+        criteria_group = QGroupBox("Search Criteria")
+        criteria_layout = QFormLayout(criteria_group)
+        
+        # Group for All Options
         options_group = QGroupBox("Options")
-        
-        search_layout = QFormLayout(search_criteria_group)
         options_layout = QVBoxLayout(options_group)
-        
-        main_hbox.addWidget(search_criteria_group, 2)
-        main_hbox.addWidget(options_group, 1)
-        layout.addLayout(main_hbox)
 
-        table_options = TableOptionsWidget()
-        yaml_options = YamlOptionsWidget()
-        emu_options = EmuOptionsWidget()
-        inclusion_options = InclusionOptionsWidget()
-        options_layout.addWidget(table_options)
-        options_layout.addWidget(inclusion_options)
-        options_layout.addWidget(yaml_options)
-        options_layout.addWidget(emu_options)
+        top_hbox.addWidget(criteria_group, 2) # Give more space to criteria
+        top_hbox.addWidget(options_group, 1)
+        main_layout.addLayout(top_hbox)
+
+        # --- Populate Search Criteria ---
+        self.systems_te = QTextEdit()
+        self.systems_te.setPlaceholderText("Optional: System shortnames. one per line (e.g., nes)")
+        self.filter_machine_name_fuzzy_le = QLineEdit()
+        self.filter_machine_name_fuzzy_le.setPlaceholderText("System shortnames to search for (e.g., gnw_, jak_)")
+        self.filter_machine_description_le = QLineEdit()
+        self.filter_machine_description_le.setPlaceholderText("Full machine description (e.g., Nintendo, JAKK)")
+        self.filter_machine_sourcefile_le = QLineEdit()
+        self.filter_machine_sourcefile_le.setPlaceholderText("Sourcefile that emulates the system (e.g., tvgames, handhelds, tvgames/xavix_adc.cpp)")
+        self.filter_software_description_le = QLineEdit()
+        self.filter_software_description_le.setPlaceholderText("Full software description/title (e.g., Mario, Donkey Kong)")
+        self.limit_le = QLineEdit()
+        self.limit_le.setValidator(QIntValidator(0, 99999))
+        self.limit_le.setFixedWidth(50)
+
+        criteria_layout.addRow("Systems (Positional):", self.systems_te)
+        criteria_layout.addRow("Filter Machine Name (Fuzzy):", self.filter_machine_name_fuzzy_le)
+        criteria_layout.addRow("Filter Machine Description:", self.filter_machine_description_le)
+        criteria_layout.addRow("Filter Machine Source File:", self.filter_machine_sourcefile_le)
+        criteria_layout.addRow("Filter Software Description:", self.filter_software_description_le)
+        criteria_layout.addRow("Limit Systems Processed:", self.limit_le)
+
+        # --- Populate Options ---
+        self.table_options = TableOptionsWidget()
+        self.inclusion_options = InclusionOptionsWidget() # This widget is still useful
+        self.yaml_options = YamlOptionsWidget()
+        self.emu_options = EmuOptionsWidget()
+
+        options_layout.addWidget(self.table_options)
+        options_layout.addWidget(self.inclusion_options)
+        options_layout.addWidget(self.yaml_options)
+        options_layout.addWidget(self.emu_options)
         options_layout.addStretch()
+        
+        self.yaml_options.hide()
+        self.emu_options.hide()
 
-        yaml_options.hide()
-        emu_options.hide()
-
+        # --- Output and Action Section ---
         output_group = QGroupBox("Output")
         output_layout = QHBoxLayout(output_group)
-        output_format_cb = QComboBox()
-        output_format_cb.addItems(["table", "yaml", "csv"])
-        output_file_le = QLineEdit()
+        self.output_format_cb = QComboBox()
+        self.output_format_cb.addItems(["table", "yaml", "csv"])
+        self.output_file_le = QLineEdit()
         browse_output_btn = QPushButton("...")
-        run_search_btn = QPushButton("Run Search")
+        self.run_search_btn = QPushButton("Run Search")
         
         output_layout.addWidget(QLabel("Format:"))
-        output_layout.addWidget(output_format_cb)
-        output_layout.addWidget(QLabel("Output File:"))
-        output_layout.addWidget(output_file_le, 1)
+        output_layout.addWidget(self.output_format_cb)
+        output_layout.addWidget(QLabel("Output File (optional):"))
+        output_layout.addWidget(self.output_file_le, 1)
         output_layout.addWidget(browse_output_btn)
         output_layout.addStretch()
-        output_layout.addWidget(run_search_btn)
+        output_layout.addWidget(self.run_search_btn)
+        main_layout.addWidget(output_group)
+
+        # --- Results Table ---
+        self.results_table = QTableWidget()
+        self.results_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.results_table.setSortingEnabled(True)
+        main_layout.addWidget(self.results_table)
         
-        layout.addWidget(output_group)
-        
-        output_format_cb.currentTextChanged.connect(lambda text: self.toggle_yaml_options(text, yaml_options, emu_options, table_options))
-        
-        return {
-            'page': page, 'search_layout': search_layout,
-            'table_options': table_options, 'yaml_options': yaml_options,
-            'emu_options': emu_options, 'inclusion_options': inclusion_options,
-            'output_format_cb': output_format_cb, 'output_file_le': output_file_le,
-            'browse_output_btn': browse_output_btn, 'run_search_btn': run_search_btn
-        }
-        
-    def toggle_yaml_options(self, text, yaml_widget, emu_widget, table_widget):
+        # --- Connections ---
+        self.output_format_cb.currentTextChanged.connect(self.toggle_output_options)
+        self.run_search_btn.clicked.connect(self.run_search)
+        browse_output_btn.clicked.connect(lambda: self.main_app_ref.settings_tab.browse_file(self.output_file_le, "Select Output File", "All Files (*)"))
+    
+    def toggle_output_options(self, text):
         is_yaml = (text == 'yaml')
-        yaml_widget.setVisible(is_yaml)
-        emu_widget.setVisible(is_yaml)
-        table_widget.setVisible(not is_yaml)
+        self.yaml_options.setVisible(is_yaml)
+        self.emu_options.setVisible(is_yaml)
+        self.table_options.setVisible(not is_yaml)
 
-    def _create_search_tab(self, mode):
-        c = self._create_base_search_layout()
-        
-        c['limit_le'] = QLineEdit()
-        c['limit_le'].setValidator(QIntValidator(0, 99999))
-        c['limit_le'].setFixedWidth(50)
-
-        if mode == "by-name":
-            c['systems_te'] = QTextEdit()
-            c['systems_te'].setPlaceholderText("Enter system names, one per line or separated by space/comma.")
-            c['fuzzy_le'] = QLineEdit()
-            c['search_term_le'] = QLineEdit()
-            c['search_layout'].addRow("Systems:", c['systems_te'])
-            c['search_layout'].addRow("Fuzzy Prefix:", c['fuzzy_le'])
-            c['search_layout'].addRow("Software Search Term:", c['search_term_le'])
-            c['run_search_btn'].clicked.connect(lambda: self.run_generic_search(c, self._get_by_name_args))
-        elif mode == "by-xml":
-            c['xml_filepath_le'] = QLineEdit()
-            c['xml_browse_btn'] = QPushButton("...")
-            xml_hbox = QHBoxLayout()
-            xml_hbox.addWidget(c['xml_filepath_le'])
-            xml_hbox.addWidget(c['xml_browse_btn'])
-            c['search_layout'].addRow("XML File Path:", xml_hbox)
-            c['search_term_le'] = QLineEdit()
-            c['search_layout'].addRow("Software Search Term:", c['search_term_le'])
-            c['xml_browse_btn'].clicked.connect(lambda: self.main_app_ref.settings_tab.browse_file(c['xml_filepath_le'], "Select MAME XML", "XML Files (*.xml)"))
-            c['run_search_btn'].clicked.connect(lambda: self.run_generic_search(c, self._get_by_xml_args))
-        elif mode == "by-filter":
-            c['description_terms_le'] = QLineEdit()
-            c['description_terms_le'].setPlaceholderText("Space-separated list of terms (e.g., \"in 1\" handheld)")
-            c['search_layout'].addRow("Description Contains:", c['description_terms_le'])
-            c['run_search_btn'].clicked.connect(lambda: self.run_generic_search(c, self._get_by_filter_args))
-        elif mode == "by-sourcefile":
-            c['sourcefile_term_le'] = QLineEdit()
-            c['sourcefile_term_le'].setPlaceholderText("e.g., xavix.cpp or just xavix")
-            c['search_layout'].addRow("Source File Contains:", c['sourcefile_term_le'])
-            c['run_search_btn'].clicked.connect(lambda: self.run_generic_search(c, self._get_by_sourcefile_args))
-        
-        c['search_layout'].addRow("Limit Results:", c['limit_le'])
-        return c
-        
-    def run_generic_search(self, components, get_specific_args_func):
+    def run_search(self):
         try:
-            initial_args_dict = get_specific_args_func(components)
-            if initial_args_dict is None: return
-
+            # --- 1. GATHER ARGS FROM UI ---
+            args_dict = {
+                'systems': [s.strip() for s in self.systems_te.toPlainText().split() if s.strip()],
+                'filter_machine_name_fuzzy': self.filter_machine_name_fuzzy_le.text().strip(),
+                'filter_machine_description': [s.strip() for s in self.filter_machine_description_le.text().split() if s.strip()],
+                'filter_machine_sourcefile': self.filter_machine_sourcefile_le.text().strip(),
+                'filter_software_description': self.filter_software_description_le.text().strip(),
+                'limit': int(self.limit_le.text()) if self.limit_le.text().isdigit() else None,
+                'include_systems': [s.strip() for s in self.inclusion_options.include_systems_le.text().split() if s.strip()],
+                'exclude_systems': [s.strip() for s in self.inclusion_options.exclude_systems_le.text().split() if s.strip()],
+                'output_format': self.output_format_cb.currentText(),
+                'output_file': self.output_file_le.text().strip(),
+                # ... and all the other UI elements ...
+            }
             from argparse import Namespace
-            initial_args = Namespace(**initial_args_dict)
+            args = Namespace(**args_dict)
+
+            self.log("[INFO] Starting search...")
             
-            xml_source_path = core_logic.APP_CONFIG.get('mess_xml_file', 'mess.xml')
-            self.log(f"[INFO] Using source XML for search: {xml_source_path}")
+            # --- 2. ENSURE XML IS AVAILABLE (like in main()) ---
+            xml_source_path = core_logic.APP_CONFIG.get('mess_xml_file')
+            if not xml_source_path or not os.path.exists(xml_source_path):
+                 if not core_logic.ensure_mess_xml_exists():
+                     self.log("<font color='red'>MESS XML file is not available. Cannot perform search.</font>")
+                     return
+                 xml_source_path = core_logic.APP_CONFIG.get('mess_xml_file')
+
             source_xml_root = core_logic.get_parsed_mame_xml_root(xml_source_path)
             if source_xml_root is None:
                 self.log(f"<font color='red'>Could not parse source XML: {xml_source_path}</font>")
                 return
-
-            processed_systems_set = set()
-            if initial_args.search_mode == 'by-name':
-                processed_systems_set.update(initial_args.systems)
-                if hasattr(initial_args, 'fuzzy') and initial_args.fuzzy:
-                    processed_systems_set.update(core_logic.get_all_mame_systems_by_prefix_from_root(initial_args.fuzzy, source_xml_root))
-            elif initial_args.search_mode == 'by-xml':
-                processed_systems_set.update(core_logic.get_all_mame_systems_from_xml_file(initial_args.xml_filepath))
-            elif initial_args.search_mode == 'by-filter':
-                for machine in source_xml_root.findall("machine"):
-                    desc = machine.findtext("description", "").lower()
-                    if any(term.lower() in desc for term in initial_args.description_terms):
-                        processed_systems_set.add(machine.get("name"))
-            elif initial_args.search_mode == 'by-sourcefile':
-                 for machine in source_xml_root.findall("machine"):
-                    if initial_args.sourcefile_term.lower() in machine.get("sourcefile", "").lower():
-                        processed_systems_set.add(machine.get("name"))
             
-            inclusion_opts = components['inclusion_options']
-            include_systems = [s.strip() for s in inclusion_opts.include_systems_le.text().split() if s.strip()]
-            exclude_systems = [s.strip() for s in inclusion_opts.exclude_systems_le.text().split() if s.strip()]
-            exclude_softlist = [s.strip() for s in inclusion_opts.exclude_softlist_le.text().split() if s.strip()]
-            if include_systems: processed_systems_set.update(include_systems)
-            if exclude_systems: processed_systems_set.difference_update(exclude_systems)
+            # --- 3. BUILD AND FILTER THE SYSTEM POOL (copied from main()) ---
+            systems_pool = set()
+            user_provided_systems = bool(args.systems or args.filter_machine_name_fuzzy or args.include_systems)
+            if user_provided_systems:
+                if args.systems: systems_pool.update(args.systems)
+                if args.filter_machine_name_fuzzy: systems_pool.update(core_logic.get_all_mame_systems_by_prefix_from_root(args.filter_machine_name_fuzzy, source_xml_root))
+                if args.include_systems: systems_pool.update(args.include_systems)
+            else:
+                systems_pool.update(core_logic.get_all_mame_systems_from_xml_file(xml_source_path))
+
+            self.log(f"[INFO] Initial system pool size: {len(systems_pool)}")
+
+            # --- THIS IS THE CORRECTED FILTER LOGIC ---
+            if args.filter_machine_description:
+                initial_count = len(systems_pool)
+                filtered_set = set()
+                for machine_element in source_xml_root.findall("machine"):
+                    machine_name = machine_element.get("name")
+                    if machine_name in systems_pool:
+                        description = machine_element.findtext("description", "")
+                        if all(term.lower() in description.lower() for term in args.filter_machine_description):
+                            filtered_set.add(machine_name)
+                systems_pool = filtered_set
+                self.log(f"[INFO] After machine description filter: {initial_count} -> {len(systems_pool)} systems.")
+
+            if args.filter_machine_sourcefile:
+                initial_count = len(systems_pool)
+                filtered_set = set()
+                for machine_element in source_xml_root.findall("machine"):
+                    machine_name = machine_element.get("name")
+                    if machine_name in systems_pool:
+                        sourcefile = machine_element.get("sourcefile", "")
+                        if args.filter_machine_sourcefile.lower() in sourcefile.lower():
+                            filtered_set.add(machine_name)
+                systems_pool = filtered_set
+                self.log(f"[INFO] After machine sourcefile filter: {initial_count} -> {len(systems_pool)} systems.")
             
-            systems_to_process = sorted(list(processed_systems_set))
+            if args.exclude_systems:
+                systems_pool.difference_update(args.exclude_systems)
             
-            limit_text = components['limit_le'].text()
-            limit = int(limit_text) if limit_text.isdigit() else None
-            if limit is not None:
-                systems_to_process = systems_to_process[:limit]
-
-            table_opts = components['table_options']
-            yaml_opts = components['yaml_options']
-            emu_opts = components['emu_options']
-            output_format = components['output_format_cb'].currentText()
-            output_file = components['output_file_le'].text()
-
-            if output_format == "csv" and not output_file:
-                QMessageBox.warning(self, "Output File Required", "An output file must be specified for CSV format.")
-                return
-
-            if output_format == "yaml":
-                if not output_file:
-                    output_file = self.main_app_ref.settings_tab.system_softlist_yaml_file_le.text()
-                if not all([yaml_opts.platform_key_le.text(), yaml_opts.platform_name_full_le.text(), yaml_opts.media_type_cb.currentText()]):
-                    QMessageBox.warning(self, "YAML Info Required", "Platform Key, Name, and Media Type are required for YAML output.")
-                    return
-
+            systems_to_process = sorted(list(systems_pool))
+            if args.limit is not None:
+                systems_to_process = systems_to_process[:args.limit]
+            
+            # --- 4. PREPARE KWARGS FOR THE WORKER ---
+            # (Gathering from UI elements again to ensure they are current)
+            table_opts = self.table_options
+            yaml_opts = self.yaml_options
+            emu_opts = self.emu_options
+            
             kwargs = {
                 'systems_to_process': systems_to_process,
-                'search_term': getattr(initial_args, 'search_term', ''),
-                'search_mode': initial_args.search_mode,
-                'output_format': output_format,
-                'output_file_path': output_file,
-                'show_systems_only': table_opts.show_systems_only_cb.isChecked(),
-                'show_extra_info': table_opts.show_extra_info_cb.isChecked(),
-                'sort_by': table_opts.sort_by_combo.currentText() if table_opts.sort_by_combo.currentIndex() > 0 else None,
-                'platform_key': yaml_opts.platform_key_le.text(),
-                'platform_name_full': yaml_opts.platform_name_full_le.text(),
+                'search_term': self.filter_software_description_le.text().strip(),
+                'output_format': self.output_format_cb.currentText(),
+                'output_file_path': self.output_file_le.text().strip(),
+                'platform_key': yaml_opts.platform_key_le.text().strip(), 
+                'platform_name_full': yaml_opts.platform_name_full_le.text().strip(),
                 'platform_categories': [c.strip() for c in yaml_opts.platform_category_cb.currentText().split() if c.strip()],
                 'media_type': yaml_opts.media_type_cb.currentText(),
                 'enable_custom_cmd_per_title': emu_opts.enable_custom_cmd_cb.isChecked(),
-                'emu_name': emu_opts.emu_name_cb.currentText().strip(),
-                'default_emu': emu_opts.default_emu_cb.isChecked(),
-                'default_emu_cmd_params': emu_opts.default_emu_cmd_params_le.text(),
-                'source_xml_root': source_xml_root,
-                'exclude_softlist': exclude_softlist
+                'emu_name': emu_opts.emu_name_cb.currentText().strip(), 
+                'default_emu': emu_opts.default_emu_cb.isChecked(), 
+                'default_emu_cmd_params': emu_opts.default_emu_cmd_params_le.text().strip(),
+                'show_systems_only': table_opts.show_systems_only_cb.isChecked(), 
+                'show_extra_info': table_opts.show_extra_info_cb.isChecked(),
+                'sort_by': table_opts.sort_by_combo.currentText() if table_opts.sort_by_combo.currentIndex() > 0 else None, 
+                'source_xml_root': source_xml_root
+                # Note: include/exclude softlist and other complex args can be added here if you add UI for them
             }
 
-            self.log(f"[INFO] Starting search with mode '{kwargs['search_mode']}'...")
+            # --- 5. LAUNCH WORKER ---
             self.main_app_ref.start_long_operation()
-
             self.thread = QThread()
             self.worker = Worker(core_logic.perform_mame_search_and_output, **kwargs)
             self.worker.moveToThread(self.thread)
-            
             self.thread.started.connect(self.worker.run)
             self.worker.finished.connect(self.thread.quit)
             self.worker.finished.connect(self.worker.deleteLater)
@@ -798,82 +939,30 @@ class SearchTab(QWidget):
             self.worker.error.connect(lambda msg: self.log(f"<font color='red'>{msg}</font>"))
             self.worker.result.connect(self.display_search_results)
             self.worker.finished.connect(self.main_app_ref.platforms_tab.load_platforms)
-
             self.thread.start()
+
         except Exception as e:
             self.log(f"<font color='red'>UI Error before starting worker: {e}</font>")
             self.main_app_ref.stop_long_operation()
-
-    def _get_by_name_args(self, c):
-        systems_raw = c['systems_te'].toPlainText().strip()
-        systems = [s.strip() for s in systems_raw.replace(',', ' ').split() if s.strip()]
-        fuzzy = c['fuzzy_le'].text().strip()
-        if not systems and not fuzzy:
-            QMessageBox.warning(self, "Input Required", "Please enter at least one system name or a fuzzy prefix.")
-            return None
-        return {
-            'search_mode': 'by-name',
-            'systems': systems,
-            'fuzzy': fuzzy,
-            'search_term': c['search_term_le'].text().strip()
-        }
-
-    def _get_by_xml_args(self, c):
-        xml_path = c['xml_filepath_le'].text().strip()
-        if not xml_path:
-            QMessageBox.warning(self, "Input Required", "Please specify an XML file path.")
-            return None
-        return {
-            'search_mode': 'by-xml',
-            'xml_filepath': xml_path,
-            'search_term': c['search_term_le'].text().strip()
-        }
-
-    def _get_by_filter_args(self, c):
-        terms_raw = c['description_terms_le'].text().strip()
-        terms = [t.strip() for t in terms_raw.split() if t.strip()]
-        if not terms:
-            QMessageBox.warning(self, "Input Required", "Please enter at least one description term.")
-            return None
-        return {
-            'search_mode': 'by-filter',
-            'description_terms': terms,
-            'search_term': ''
-        }
-
-    def _get_by_sourcefile_args(self, c):
-        term = c['sourcefile_term_le'].text().strip()
-        if not term:
-            QMessageBox.warning(self, "Input Required", "Please enter a source file term.")
-            return None
-        return {
-            'search_mode': 'by-sourcefile',
-            'sourcefile_term': term,
-            'search_term': ''
-        }
-        
+            
     def display_search_results(self, result_package):
+        # The core logic needs to be adapted to return table data instead of printing it
+        # For now, we assume it's a tuple of (headers, data)
         if not isinstance(result_package, tuple) or len(result_package) != 2:
-            return 
-        
-        headers, data = result_package
-        if not data:
-            self.log("[i] No matching items found.")
-            self.results_table.setRowCount(0)
-            self.results_table.setColumnCount(0)
+            self.log("[INFO] Search finished. Check log for details.")
             return
 
+        headers, data = result_package
+        # ... rest of table display logic ...
         self.results_table.setRowCount(len(data))
         self.results_table.setColumnCount(len(headers))
         self.results_table.setHorizontalHeaderLabels(headers)
-
         for row_idx, row_data in enumerate(data):
             for col_idx, cell_data in enumerate(row_data):
                 self.results_table.setItem(row_idx, col_idx, QTableWidgetItem(str(cell_data)))
-        
         self.results_table.resizeColumnsToContents()
         self.log(f"[SUCCESS] Search complete. Displaying {len(data)} results.")
-
+# ----------------- END OF REPLACEMENT -----------------
 
 # === ROM Copy Tab ===
 class RomCopyTab(QWidget):
