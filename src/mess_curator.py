@@ -99,7 +99,7 @@ def run_initial_setup_wizard():
     temp_config = {}
 
     while True:
-        prompt = "\n[1/5] Please enter the full path to your MAME executable (e.g., C:\\MAME\\mame.exe):\n> "
+        prompt = "\n[1/4] Please enter the full path to your MAME executable (e.g., C:\\MAME\\mame.exe):\n> "
         path = input(prompt).strip().replace('"', '')
         if os.path.isfile(path) and path.lower().endswith("mame.exe"):
             temp_config["mame_executable"] = path
@@ -121,7 +121,7 @@ def run_initial_setup_wizard():
             print("[!] Invalid input. Please enter only the version number.")        
 
     while True:
-        prompt = "\n[2/5] Please enter the path to your MAME 'softlist' ROMs directory:\n      (This is where subfolders like 'nes', 'ekara_cart', etc., are located)\n> "
+        prompt = "\n[2/4] Please enter the path to your MAME 'softlist' ROMs directory:\n      (This is where subfolders like 'nes', 'ekara_cart', etc., are located)\n> "
         path = input(prompt).strip().replace('"', '')
         if os.path.isdir(path):
             temp_config["softlist_rom_sources_dir"] = path
@@ -129,29 +129,15 @@ def run_initial_setup_wizard():
         print("[!] Invalid path. Please ensure the directory exists.")
 
     while True:
-        prompt = "\n[3/5] Please enter the path for the curated output ROMsets:\n      (This directory will be created if it doesn't exist)\n> "
+        prompt = "\n[3/4] Please enter the path for the curated output ROMsets:\n      (This directory will be created if it doesn't exist)\n> "
         path = input(prompt).strip().replace('"', '')
         if path:
             temp_config["out_romset_dir"] = path
             break
         print("[!] Path cannot be empty.")
-    
-    potential_mess_ini = os.path.join(os.path.dirname(os.path.dirname(temp_config["mame_executable"])), "folders", "mess.ini")
-    if os.path.isfile(potential_mess_ini):
-        print(f"\n[4/5] Auto-detected 'mess.ini' at: {potential_mess_ini}")
-        temp_config["mess_ini_path"] = potential_mess_ini
-    else:
-        print(f"\n[4/5] Could not auto-detect 'mess.ini'.")
-        while True:
-            prompt = "      Please enter the full path to your 'mess.ini' file:\n> "
-            path = input(prompt).strip().replace('"', '')
-            if os.path.isfile(path):
-                temp_config["mess_ini_path"] = path
-                break
-            print("[!] Invalid path. Please ensure the file exists.")
 
     temp_config["system_softlist_yaml_file"] = "system_softlist.yml"
-    print(f"\n[5/5] The generated platform metadata will be saved as '{temp_config['system_softlist_yaml_file']}' in the current directory.")
+    print(f"\n[4/4] The generated platform metadata will be saved as '{temp_config['system_softlist_yaml_file']}' in the current directory.")
     
     temp_config["mess_xml_file"] = "mess.xml"
 
