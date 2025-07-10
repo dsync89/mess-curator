@@ -1019,7 +1019,7 @@ def parse_mess_ini_machines(ini_path):
         print(f"[ERROR] Error parsing MESS.ini file '{ini_path}': {e}")
     return machines
 
-def split_mame_xml_by_ini(mess_ini_path, output_mess_xml_file):
+def split_mame_xml_by_ini(mess_ini_path, full_mame_xml_path, output_mess_xml_file):
     """
     Filters the full mame -listxml output by machines listed in MESS.ini.
     """
@@ -1029,8 +1029,8 @@ def split_mame_xml_by_ini(mess_ini_path, output_mess_xml_file):
     if not mess_machines_from_ini:
         return False
 
-    print(f"[INFO] Fetching full MAME machine list ('{MAME_ALL_MACHINES_XML_CACHE}')... This may take a moment.")
-    full_mame_root = get_parsed_mame_xml_root(MAME_ALL_MACHINES_XML_CACHE)
+    print(f"[INFO] Fetching full MAME machine list ('{full_mame_xml_path}')... This may take a moment.")
+    full_mame_root = get_parsed_mame_xml_root(full_mame_xml_path)
     if full_mame_root is None:
         return False
 
@@ -1101,21 +1101,71 @@ def split_mess_xml_by_softwarelist(input_mess_xml_file, softlist_output_file, no
 
 def run_split_command(args):
     """Orchestrates the splitting of mame.xml based on mess.ini."""
-    mess_ini_path = args.mess_ini or APP_CONFIG['mess_ini_path']
-    mess_xml_output_file = APP_CONFIG['mess_xml_file']
-
-    if not split_mame_xml_by_ini(mess_ini_path, mess_xml_output_file):
-        print("[ERROR] Phase 1 failed. Aborting splitting process.")
+    if not APP_CONFIG.get("mess_version"):
+        print("[ERROR] MAME version is not set. Please run 'config --set-mess-version <num>' first.")
         return
 
-    if not split_mess_xml_by_softwarelist(mess_xml_output_file, MESS_SOFTLIST_XML_FILE, MESS_NOSOFTLIST_XML_FILE):
+    version = APP_CONFIG["mess_version"]
+    version_folder_name = f"0.{version}"
+    version_dir = DATA_DIR / version_folder_name
+    os.makedirs(version_dir, exist_ok=True)
+    
+    mess_xml_output_file = version_dir / "mess.xml"
+    mess_softlist_xml_file = version_dir / "mess-softlist.xml"
+    mess_nosoftlist_xml_file = version_dir / "mess-nosoftlist.xml"
+    
+    mess_ini_path = args.mess_ini or APP_CONFIG.get('mess_ini_path')
+    if not mess_ini_path or not os.path.exists(mess_ini_path):
+        print(f"[ERROR] mess.ini path is not configured or not found. Cannot run split.")
+        return
+
+    # --- NEW LOGIC FOR DETERMINING SOURCE XML ---
+    full_mame_xml_source_path = None
+    cleanup_temp_xml = False
+    
+    if args.input_xml:
+        if not os.path.exists(args.input_xml):
+            print(f"[ERROR] The specified --input-xml file does not exist: {args.input_xml}")
+            return
+        full_mame_xml_source_path = args.input_xml
+        print(f"[INFO] Using provided XML file as source: {full_mame_xml_source_path}")
+    
+    elif args.from_mame_exe:
+        print("[INFO] Generating a fresh 'mame.xml' from the configured MAME executable...")
+        # Define a temporary path for the generated file
+        temp_xml_path = DATA_DIR / "mame-temp.xml"
+        if run_mame_command(["-listxml"], temp_xml_path, use_cache=False):
+            full_mame_xml_source_path = temp_xml_path
+            cleanup_temp_xml = True # Mark this file for deletion after the process
+        else:
+            print("[ERROR] Failed to generate mame.xml from the MAME executable. Aborting split.")
+            return
+
+    if not full_mame_xml_source_path:
+        print("[ERROR] Could not determine the source for the full MAME XML. Aborting.")
+        return
+    # --- END NEW LOGIC ---
+
+    if not split_mame_xml_by_ini(mess_ini_path, full_mame_xml_source_path, mess_xml_output_file):
+        print("[ERROR] Phase 1 failed. Aborting splitting process.")
+        if cleanup_temp_xml and os.path.exists(full_mame_xml_source_path):
+            os.remove(full_mame_xml_source_path)
+        return
+
+    if not split_mess_xml_by_softwarelist(mess_xml_output_file, mess_softlist_xml_file, mess_nosoftlist_xml_file):
         print("[ERROR] Phase 2 failed. Aborting splitting process.")
+        if cleanup_temp_xml and os.path.exists(full_mame_xml_source_path):
+            os.remove(full_mame_xml_source_path)
         return
     
     print("\n=== Splitting process complete! ===")
-    print(f"Generated: '{mess_xml_output_file}' (All machines from MESS.ini)")
-    print(f"Generated: '{MESS_SOFTLIST_XML_FILE}' (Softlist-capable machines from MESS.ini)")
-    print(f"Generated: '{MESS_NOSOFTLIST_XML_FILE}' (Non-softlist machines from MESS.ini)")
+    print(f"All output files have been saved in: '{version_dir}'")
+    # ... (rest of the print statements) ...
+    
+    # Clean up the large temporary mame.xml if it was generated
+    if cleanup_temp_xml and os.path.exists(full_mame_xml_source_path):
+        os.remove(full_mame_xml_source_path)
+        print(f"\n[INFO] Cleaned up temporary file: '{full_mame_xml_source_path}'")
 
 def display_yaml_table(args, source_xml_root):
     """
@@ -1567,6 +1617,11 @@ def main():
     
     split_parser = subparsers.add_parser("split", help="Generate filtered MAME XMLs based on MESS.ini.")
     split_parser.add_argument("--mess-ini", help="Path to MESS.ini. Defaults to config.")
+
+    # Use a mutually exclusive group to ensure only one source is provided
+    source_group = split_parser.add_mutually_exclusive_group(required=True)
+    source_group.add_argument("--input-xml", help="Path to an existing full mame.xml to use as the source.")
+    source_group.add_argument("--from-mame-exe", action="store_true", help="Generate a fresh mame.xml from the mame.exe defined in your config.")
 
     table_parser = subparsers.add_parser("table", help="Display data from system_softlist.yml in a table format.", parents=[table_args_parser])
     table_parser.add_argument("--platform-key", help="Optional: Display only a specific platform by its key.")
