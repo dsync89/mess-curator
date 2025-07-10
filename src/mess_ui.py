@@ -92,7 +92,12 @@ class Worker(QObject):
 class MameRomManagerApp(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("MAME MESS Curator UI")
+
+        app_version = "dev"
+        if (app_version == "dev"):
+            self.setWindowTitle(f"MAME MESS Curator UI (Dev)")
+        else:
+            self.setWindowTitle(f"MAME MESS Curator UI v{app_version}")
         self.setGeometry(100, 100, 1200, 900)
         self.progress_timer = QTimer(self)
         self.progress_chars = ['|', '/', '─', '\\']
