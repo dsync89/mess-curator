@@ -9,8 +9,12 @@ import shutil # For file copying
 import zipfile # For creating dummy zips
 import csv # For CSV output
 from pathlib import Path
+import re
+import urllib.request
+import ssl
 
 BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR.parent / "data"
 
 # === Global Debug Flag ===
 DEBUG_MODE_ENABLED = False 
@@ -29,7 +33,8 @@ APP_CONFIG = {
     "out_romset_dir": "",
     "mess_ini_path": "",
     "system_softlist_yaml_file": "system_softlist.yml",
-    "mess_xml_file": "mess.xml"
+    "mess_version": "",
+    "mess_xml_file": ""
 }
 
 def _load_yaml_file(file_path):
@@ -101,6 +106,20 @@ def run_initial_setup_wizard():
             break
         print("[!] Invalid path. Please ensure the path points to 'mame.exe' and the file exists.")
 
+    # Auto-detect MAME version from path
+    detected_version = "".join(re.findall(r'\d', os.path.basename(os.path.dirname(temp_config["mame_executable"]))))
+    if detected_version:
+        print(f"\n[INFO] Auto-detected MAME version: {detected_version}")
+        temp_config["mess_version"] = detected_version
+    else:
+        while True:
+            prompt = "\n[NEW] Please enter your MAME version number (e.g., 278, 277):\n> "
+            version = input(prompt).strip()
+            if version.isdigit():
+                temp_config["mess_version"] = version
+                break
+            print("[!] Invalid input. Please enter only the version number.")        
+
     while True:
         prompt = "\n[2/5] Please enter the path to your MAME 'softlist' ROMs directory:\n      (This is where subfolders like 'nes', 'ekara_cart', etc., are located)\n> "
         path = input(prompt).strip().replace('"', '')
@@ -157,19 +176,14 @@ def run_initial_setup_wizard():
 def initialize_application():
     if not load_configuration():
         run_initial_setup_wizard()
+
+        # After wizard, we need to load the config again to populate APP_CONFIG
+        if not load_configuration():
+            print("[FATAL] Could not load configuration after setup. Exiting.")
+            sys.exit(1)
     
-    if not os.path.exists(APP_CONFIG['mess_xml_file']):
-        print(f"\n[INFO] The filtered machine list '{APP_CONFIG['mess_xml_file']}' was not found.")
-        print("       This file is highly recommended as it speeds up searches by focusing only on MESS systems.")
-        prompt = "       Would you like to generate it now? (This may take a moment) [Y/n]: "
-        generate = input(prompt).strip().lower()
-        if generate in ['', 'y', 'yes']:
-            print("\n[INFO] Running the 'split' process to generate required XML files...")
-            from argparse import Namespace
-            split_args = Namespace(mess_ini=APP_CONFIG['mess_ini_path'])
-            run_split_command(split_args)
-        else:
-            print("[WARNING] Skipping generation. Some commands may be slower or require specifying a source XML manually.")
+    # This function now handles the check, download, and sets the dynamic path
+    ensure_mess_xml_exists()
 
 MAME_ALL_MACHINES_XML_CACHE = BASE_DIR.parent / "mame.xml"
 MESS_XML_FILE = BASE_DIR.parent / "mess.xml"
@@ -1355,6 +1369,10 @@ def run_config_command(args):
     if args.set_system_softlist_yaml_file:
         APP_CONFIG["system_softlist_yaml_file"] = args.set_system_softlist_yaml_file
         config_updated = True
+      
+    if args.set_mess_version:
+        APP_CONFIG["mess_version"] = args.set_mess_version
+        config_updated = True
 
     if config_updated:
         if save_configuration():
@@ -1367,6 +1385,100 @@ def run_config_command(args):
         config_table = [[key, value] for key, value in APP_CONFIG.items()]
         print(tabulate(config_table, headers=["Key", "Value"], tablefmt="github"))
         print("=" * 60)
+
+def _download_reporthook(count, block_size, total_size):
+    """A simple reporthook for urllib to show download progress."""
+    percent = int(count * block_size * 100 / total_size)
+    sys.stdout.write(f"\r[INFO] Downloading... {percent}%")
+    sys.stdout.flush()
+
+def ensure_mess_xml_exists():
+    """
+    Checks if the MESS-specific XML exists for the configured version.
+    If not, it prompts the user to download and extract it.
+    """
+    if not APP_CONFIG.get("mess_version"):
+        print("[WARNING] MAME version is not set in the configuration.")
+        while True:
+            prompt = "          Please enter your MAME version number (e.g., 278, 277) to continue: "
+            version_input = input(prompt).strip()
+            if version_input.isdigit():
+                APP_CONFIG["mess_version"] = version_input
+                save_configuration() 
+                break
+            else:
+                print("[!] Invalid input. Please enter only the version number.")
+
+    version = APP_CONFIG["mess_version"]
+    version_folder_name = f"0.{version}"
+    version_dir = DATA_DIR / version_folder_name
+    mess_xml_path = version_dir / "mess.xml"
+    
+    APP_CONFIG["mess_xml_file"] = str(mess_xml_path)
+
+    if mess_xml_path.exists():
+        print(f"[INFO] Found MESS XML for version {version} at: '{mess_xml_path}'")
+        return True
+
+    print(f"[WARNING] MESS XML for version {version} not found.")
+    prompt = "          Would you like to download it from progetto-snaps.net? [Y/n]: "
+    if input(prompt).strip().lower() not in ['', 'y', 'yes']:
+        print("[INFO] Skipping download. Some features may not work correctly without the mess.xml file.")
+        return False # This is a "soft" failure, the program can continue.
+
+    # --- Download Logic ---
+    url = f"https://www.progettosnaps.net/download/?tipo=mess_xml&file=/mess/packs/xml/mess{version}.zip"
+    temp_zip_path = DATA_DIR / f"mess{version}_temp.zip"
+    
+    os.makedirs(DATA_DIR, exist_ok=True)
+
+    try:
+        print(f"[INFO] Attempting to download from: {url}")
+        
+        # --- REVISED, MORE COMPATIBLE SSL HANDLING ---
+        # Temporarily set the default context for this operation
+        # This is a widely used and compatible way to handle unverified SSL contexts
+        ssl._create_default_https_context = ssl._create_unverified_context
+        
+        urllib.request.urlretrieve(url, temp_zip_path, _download_reporthook)
+        
+        # Restore the original context function after the download is done
+        ssl._create_default_https_context = ssl.create_default_context
+        
+        sys.stdout.write("\n[INFO] Download complete.\n")
+    except Exception as e:
+        print(f"\n[ERROR] Failed to download file: {e}")
+        if os.path.exists(temp_zip_path):
+            os.remove(temp_zip_path)
+        # --- CRITICAL FIX: Exit if download fails ---
+        print("[FATAL] Cannot proceed without the MESS XML file. Please check your connection or download manually.")
+        sys.exit(1) # This is a "hard" failure. Stop the program.
+    # --- END REVISED SSL HANDLING ---
+    
+    # --- Extraction Logic ---
+    try:
+        print(f"[INFO] Extracting '{temp_zip_path}' to '{version_dir}'...")
+        os.makedirs(version_dir, exist_ok=True)
+        with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
+            xml_filename = next((name for name in zip_ref.namelist() if name.lower().endswith('.xml')), None)
+            if not xml_filename:
+                raise FileNotFoundError("No .xml file found inside the downloaded zip.")
+            
+            extracted_path = zip_ref.extract(xml_filename, path=version_dir)
+            full_extracted_path = Path(extracted_path)
+            mess_xml_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.move(str(full_extracted_path), str(mess_xml_path))
+            
+            print(f"[SUCCESS] MESS XML for version {version} is now available at '{mess_xml_path}'.")
+            return True
+    except Exception as e:
+        print(f"[ERROR] Failed to extract or move file: {e}")
+        # --- CRITICAL FIX: Exit if extraction fails ---
+        print("[FATAL] Cannot proceed without the MESS XML file.")
+        sys.exit(1) # This is also a "hard" failure.
+    finally:
+        if os.path.exists(temp_zip_path):
+            os.remove(temp_zip_path)   
 
 def main():
     global DEBUG_MODE_ENABLED 
@@ -1390,8 +1502,9 @@ def main():
     config_parser.add_argument("--set-softlist-rom-dir", help="Set the path to the softlist ROMs directory.")
     config_parser.add_argument("--set-output-rom-dir", help="Set the path for curated output ROMsets.")
     config_parser.add_argument("--set-mess-ini-path", help="Set the path to mess.ini.")
-    config_parser.add_argument("--set-system-softlist-yaml-file", help="Set the output YAML filename (e.g., my_platforms.yml).")
-
+    config_parser.add_argument("--set-system-softlist-yaml-file", help="Set the output YAML filename (e.g., my_platforms.yml).")  
+    config_parser.add_argument("--set-mess-version", help="Set the MAME version number (e.g., 278).")
+        
     sort_by_choices = ['system_name', 'system_desc', 'manufacturer', 'year', 'software_id', 'title', 'publisher', 'driver_status', 'emulation_status', 'sourcefile']
 
     table_args_parser = argparse.ArgumentParser(add_help=False)
