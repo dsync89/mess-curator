@@ -89,6 +89,38 @@ def load_configuration():
     print(f"[INFO] Configuration loaded from '{CONFIG_FILE}'.")
     return True
 
+      
+def get_mame_version_from_exe(mame_exe_path):
+    """
+    Runs the provided MAME executable with the -version flag and parses the output.
+    Returns the full version string (e.g., "0.278") or None if it fails.
+    """
+    try:
+        result = subprocess.run(
+            [mame_exe_path, "-version"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=10
+        )
+        if result.returncode != 0 or not result.stdout:
+            debug_print(f"MAME -version command failed or returned empty output. Return code: {result.returncode}")
+            return None
+
+        version_output = result.stdout.strip()
+        debug_print(f"MAME -version output: '{version_output}'")
+
+        # Example output: "0.278 (mame0278)"
+        # We want to extract "0.278"
+        match = re.search(r'^\d+\.\d+', version_output)
+        if match:
+            # Return the full matched version string
+            return match.group(0)
+        
+        return None
+    except Exception as e:
+        print(f"[ERROR] An unexpected error occurred while getting MAME version: {e}")
+        return None
+
+    
+
 def run_initial_setup_wizard():
     print("=" * 60)
     print(" MAME MESS Curator Tool - Initial Setup Wizard")
@@ -99,29 +131,32 @@ def run_initial_setup_wizard():
     temp_config = {}
 
     while True:
-        prompt = "\n[1/4] Please enter the full path to your MAME executable (e.g., C:\\MAME\\mame.exe):\n> "
+        prompt = "\n[1/5] Please enter the full path to your MAME executable (e.g., C:\\MAME\\mame.exe):\n> "
         path = input(prompt).strip().replace('"', '')
         if os.path.isfile(path) and path.lower().endswith("mame.exe"):
             temp_config["mame_executable"] = path
             break
         print("[!] Invalid path. Please ensure the path points to 'mame.exe' and the file exists.")
 
-    # Auto-detect MAME version from path
-    detected_version = "".join(re.findall(r'\d', os.path.basename(os.path.dirname(temp_config["mame_executable"]))))
+    print("\n[INFO] Attempting to auto-detect MAME version by running the executable...")
+    detected_version = get_mame_version_from_exe(temp_config["mame_executable"])
+    
     if detected_version:
-        print(f"\n[INFO] Auto-detected MAME version: {detected_version}")
+        print(f"\n[2/5] Auto-detected MAME version: {detected_version}")
         temp_config["mess_version"] = detected_version
     else:
+        print("[INFO] Could not auto-detect version from the executable.")
         while True:
-            prompt = "\n[NEW] Please enter your MAME version number (e.g., 278, 277):\n> "
+            prompt = "\n[2/5] Please enter your MAME version number (e.g., 0.278, 0.277):\n> "
             version = input(prompt).strip()
-            if version.isdigit():
+            # Simple validation: check if it contains a period and digits
+            if "." in version and all(c.isdigit() or c == '.' for c in version):
                 temp_config["mess_version"] = version
                 break
-            print("[!] Invalid input. Please enter only the version number.")        
+            print("[!] Invalid format. Please enter the full version number like '0.278'.")      
 
     while True:
-        prompt = "\n[2/4] Please enter the path to your MAME 'softlist' ROMs directory:\n      (This is where subfolders like 'nes', 'ekara_cart', etc., are located)\n> "
+        prompt = "\n[3/5] Please enter the path to your MAME 'softlist' ROMs directory:\n      (This is where subfolders like 'nes', 'ekara_cart', etc., are located)\n> "
         path = input(prompt).strip().replace('"', '')
         if os.path.isdir(path):
             temp_config["softlist_rom_sources_dir"] = path
@@ -129,7 +164,7 @@ def run_initial_setup_wizard():
         print("[!] Invalid path. Please ensure the directory exists.")
 
     while True:
-        prompt = "\n[3/4] Please enter the path for the curated output ROMsets:\n      (This directory will be created if it doesn't exist)\n> "
+        prompt = "\n[4/5] Please enter the path for the curated output ROMsets:\n      (This directory will be created if it doesn't exist)\n> "
         path = input(prompt).strip().replace('"', '')
         if path:
             temp_config["out_romset_dir"] = path
@@ -137,7 +172,7 @@ def run_initial_setup_wizard():
         print("[!] Path cannot be empty.")
 
     temp_config["system_softlist_yaml_file"] = "system_softlist.yml"
-    print(f"\n[4/4] The generated platform metadata will be saved as '{temp_config['system_softlist_yaml_file']}' in the current directory.")
+    print(f"\n[5/5] The generated platform metadata will be saved as '{temp_config['system_softlist_yaml_file']}' in the current directory.")
     
     temp_config["mess_xml_file"] = "mess.xml"
 
@@ -1042,7 +1077,7 @@ def run_split_command(args):
         return
 
     version = APP_CONFIG["mess_version"]
-    version_folder_name = f"0.{version}"
+    version_folder_name = version
     version_dir = DATA_DIR / version_folder_name
     os.makedirs(version_dir, exist_ok=True)
     
@@ -1383,38 +1418,50 @@ def ensure_mess_xml_exists():
     Checks if the MESS-specific XML exists for the configured version.
     If not, it prompts the user to download and extract it.
     """
-    if not APP_CONFIG.get("mess_version"):
+    full_version = APP_CONFIG.get("mess_version")
+    if not full_version:
         print("[WARNING] MAME version is not set in the configuration.")
         while True:
-            prompt = "          Please enter your MAME version number (e.g., 278, 277) to continue: "
+            prompt = "          Please enter your MAME version number (e.g., 0.278, 0.277) to continue: "
             version_input = input(prompt).strip()
-            if version_input.isdigit():
+            if "." in version_input and all(c.isdigit() or c == '.' for c in version_input):
                 APP_CONFIG["mess_version"] = version_input
+                full_version = version_input
                 save_configuration() 
                 break
             else:
-                print("[!] Invalid input. Please enter only the version number.")
+                print("[!] Invalid format. Please enter the full version number like '0.278'.")
 
-    version = APP_CONFIG["mess_version"]
-    version_folder_name = f"0.{version}"
-    version_dir = DATA_DIR / version_folder_name
+    # Example: "0.278" -> "278"
+    match = re.search(r'(\d+)$', full_version) # Find the number at the end of the string
+    version_num_only = match.group(1) if match else None
+    
+    if not version_num_only or len(version_num_only) != 3:
+        # Fallback for formats like "278" if user typed it without the "0."
+        version_num_only = "".join(re.findall(r'\d', full_version))
+
+    if not version_num_only or len(version_num_only) != 3:
+        print(f"[ERROR] Could not parse a 3-digit version number from '{full_version}' for the download URL.")
+        return False
+
+    version_dir = DATA_DIR / full_version
     mess_xml_path = version_dir / "mess.xml"
     
     APP_CONFIG["mess_xml_file"] = str(mess_xml_path)
 
     if mess_xml_path.exists():
-        print(f"[INFO] Found MESS XML for version {version} at: '{mess_xml_path}'")
+        print(f"[INFO] Found MESS XML for version {full_version} at: '{mess_xml_path}'")
         return True
 
-    print(f"[WARNING] MESS XML for version {version} not found.")
+    print(f"[WARNING] MESS XML for version {full_version} not found.")
     prompt = "          Would you like to download it from progetto-snaps.net? [Y/n]: "
     if input(prompt).strip().lower() not in ['', 'y', 'yes']:
         print("[INFO] Skipping download. Some features may not work correctly without the mess.xml file.")
         return False # This is a "soft" failure, the program can continue.
 
     # --- Download Logic ---
-    url = f"https://www.progettosnaps.net/download/?tipo=mess_xml&file=/mess/packs/xml/mess{version}.zip"
-    temp_zip_path = DATA_DIR / f"mess{version}_temp.zip"
+    url = f"https://www.progettosnaps.net/download/?tipo=mess_xml&file=/mess/packs/xml/mess{version_num_only}.zip"
+    temp_zip_path = DATA_DIR / f"mess{full_version}_temp.zip"
     
     os.makedirs(DATA_DIR, exist_ok=True)
 
@@ -1455,7 +1502,7 @@ def ensure_mess_xml_exists():
             mess_xml_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.move(str(full_extracted_path), str(mess_xml_path))
             
-            print(f"[SUCCESS] MESS XML for version {version} is now available at '{mess_xml_path}'.")
+            print(f"[SUCCESS] MESS XML for version {full_version} is now available at '{mess_xml_path}'.")
             return True
     except Exception as e:
         print(f"[ERROR] Failed to extract or move file: {e}")
