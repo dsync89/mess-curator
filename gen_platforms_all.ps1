@@ -542,8 +542,7 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput cgenie -autoboot_command \n\nCLOAD\n -autoboot_delay 1 -cass' `
     --output-format yaml `
-    --output-file system_softlist.yml `
-    --add-softlist-config 'cgenie_cass:cgenie -autoboot_command \n\nCLOAD\n -autoboot_delay 1 -cass' `
+    --add-softlist-config 'cgenie_cass:cgenie -autoboot_command \n\nCLOAD\n -autoboot_delay 1 -ram 32k -cass' `
     cgenie
 
 # ----------------------

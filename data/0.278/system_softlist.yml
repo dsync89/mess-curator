@@ -15812,7 +15812,7 @@ eaca-eg2000-colour-genie:
         cgenie_cass:
           _default_config:
             command_line_parameters: cgenie -autoboot_command \n\nCLOAD\n -autoboot_delay
-              1 -cass
+              1 -ram 32k -cass
 exidy-sorcerer:
   platform:
     name: Exidy Sorcerer
