@@ -12937,7 +12937,7 @@ spectravision-svi-318:
     default_emulator: true
     default_command_line_parameters: -keyboardprovider dinput svi318 -cart
   system:
-  - svi318:
+  - svi328:
       software_lists:
       - softlist_name: svi318_cart
         software_id:

@@ -1341,7 +1341,7 @@ python .\src\mess_curator.py search `
     --output-file system_softlist.yml `
     --add-softlist-config 'svi318_cart:svi318 -cart1' `
     --add-softlist-config 'svi318_cass:svi318 -autoboot_delay 3 -autoboot_command "CLOAD\n" -cass' `
-    svi318
+    svi328
 
 # ----------------------
 # Super Impulse TV Games
