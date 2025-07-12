@@ -73,7 +73,7 @@ python .\src\mess_curator.py search `
     --default-emu-cmd-params '-keyboardprovider dinput cpc464 -flop1' `
     --output-format yaml `
     --include-softlist "cpc_cass" `
-    --add-softlist-config 'cpc_cass:cpc464 -autoboot_delay 2 -autoboot_command LOAD\\\"\\\"\n -cass' `
+    --add-softlist-config 'cpc_cass:cpc464 -autoboot_delay 2 -autoboot_command RUN\\\"\n\n -cass' `
     cpc464
 
 # ----------------------
