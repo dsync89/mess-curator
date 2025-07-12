@@ -10,7 +10,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput aa4401 -flop' `
     --output-format yaml `
-    --output-file system_softlist2.yml `
     aa4401
 
 # ----------------------
@@ -25,7 +24,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput atom -autoboot_delay \"2\" -autoboot_command \"DOS\nCAT\n*RUN\"\" -flop1' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-softlist "atom_flop" `
     --add-software-config 'atom_flop:chuckie:atom -ab *DOS\n*CAT\n*RUN\"CCHUCK\"\n -autoboot_delay 1 -flop1' `
     --add-software-config 'atom_flop:egghead:atom -ab *DOS\n*CAT\n*RUN\"EHRUN\"\n -autoboot_delay 1 -flop1' `
@@ -55,7 +53,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput electron -skip_gameinfo -autoboot_delay \"2\" -autoboot_command \"*tape\nchain\"\"\"\"\"\"\n\" -cass' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "electron_rom" `
     --add-softlist-config 'bbc_cass:electron -skip_gameinfo -autoboot_delay "2" -autoboot_command "*TAPE\nCHAIN\"\"\"\"\"\"\n" -cass' `
     --add-softlist-config 'electron_cass:electron -skip_gameinfo -autoboot_delay "2" -autoboot_command "*TAPE\nCHAIN\"\"\"\"\"\"\n" -cass' `
@@ -92,7 +89,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput gx4000 -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'gx4000:gx4000 -cart' `
     gx4000
 
@@ -108,7 +104,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput astrocde -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'astrocde:astrocde -cart' `
     astrocde
 
@@ -124,7 +119,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "bambball bmboxing bmcfball bmsafari bmsoccer splasfgt ssfball ufombs"
 
 # ----------------------
@@ -139,7 +133,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput rx78 -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'rx78_cart:rx78 -cart' `
     --add-softlist-config 'rx78_cass:rx78 -cass1' `
     --add-software-config 'rx78_cass:graphmaths:rx78 -autoboot_delay 2 -autoboot_command MON\nL\nGRM\n -cart basic -cass1' `
@@ -158,7 +151,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "bbtime bcclimbr bcheetah bdoramon bfriskyt bgalaxn bgunf bpengo bultrman bzaxxon ggdman ktparman machiman paccon packmon pairmtch racetime tc7atc tkjmaru uboat zackman"
 
 # ----------------------
@@ -173,7 +165,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --fuzzy ban_ `
     --include-systems "anpantv dmbtjunc dmnslayg paccon ltv_naru ltv_tam maxheart mrangbat namcons1 namcons2 taitons1 taitons2"
 
@@ -190,7 +181,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput snotec -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'glcolor:snotec -cart' `
     --add-softlist-config 'snotec:snotec -cart' `
     snotec
@@ -207,7 +197,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput sv8000 -cart1" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'sv8000:sv8000 -cart1' `
     sv8000
 
@@ -223,7 +212,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "digimon digimonv2 digimonv3 tama tamaang tamag2 tamamot tamapix tamamot"
 
 # ----------------------
@@ -238,7 +226,6 @@ python .\src\mess_curator.py search `
 --default-emu `
 --default-emu-cmd-params '-keyboardprovider dinput bbcb -skip_gameinfo -flop1' `
 --output-format yaml `
---output-file system_softlist.yml `
 --exclude-softlist "bbc_rom bbc_hdd" `
 --add-softlist-config 'bbcb_flop:bbcb -skip_gameinfo -autoboot_delay "1" -autoboot_command \"*cat\n*exec !boot\n\" -flop1' `
 --add-softlist-config 'bbcb_flop_orig:bbcb -skip_gameinfo -autoboot_delay "1" -autoboot_command \"*cat\n*exec !boot\n\" -flop1' `
@@ -256,7 +243,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput gamate -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     gamate
 
 # ----------------------
@@ -271,7 +257,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput lynx128k -autoboot_delay \"2\" -autoboot_command \"XROM\n\n\nEXT DIR\n\n\n\n\n\n\n\nEXT LOAD \"\" -flop1' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'camplynx_cass:lynx128k -skip_gameinfo -autoboot_delay "1" -autoboot_command \"mload\"\"\"\"\"\"\n\" -cass' `
     --add-softlist-config 'camplynx_flop:lynx128k -skip_gameinfo -autoboot_delay "1" -autoboot_command \"*cat\n*exec !boot\n\" -flop1' `
     --add-software-config 'camplynx_cass:3dmoncrz:lynx128k -autoboot_delay 2 -autoboot_command \"MLOAD \\\"3D MONSTER\\\"\n\" -cass' `
@@ -381,7 +366,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput casloopy -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     casloopy
 
 # ----------------------
@@ -396,7 +380,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput pv1000 -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     pv1000
 
 # ----------------------
@@ -411,7 +394,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput pv2000 -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'pv2000:pv2000 -cart' `
     pv2000
 
@@ -427,7 +409,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput adam -skip_gameinfo -flop1' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "adam_cart coleco coleco_homebrew" `
     --add-softlist-config 'adam_cass:adam -skip_gameinfo -cass1' `
     --add-softlist-config 'adam_flop:adam -skip_gameinfo -flop1' `
@@ -445,7 +426,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "alnattck amaztron cdkong cgalaxn cmspacmn cpacman cpacmanr1 cqback cfrogger"
 
 # ----------------------
@@ -460,7 +440,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput vic10 -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'vic10:vic10 -cart' `
     vic10
 
@@ -476,7 +455,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput vic1001 -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "vic1001_cass vic1001_flop " `
     --add-softlist-config 'vic1001_cart:vic1001 -cart' `
     vic1001
@@ -493,7 +471,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "conyteni pdc100 conyfght conyping dorapdc pdc150t pdc200 pdc40t pdc50 tmntpdc vjpp2"
 
 # ----------------------
@@ -523,7 +500,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput dragon64 -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "dragon_flex dragon_flop dragon_os9" `
     --add-softlist-config 'coco_cart:dragon64 -skip_gameinfo -cart' `
     --add-softlist-config 'dragon_cart:dragon64 -skip_gameinfo -cart' `
@@ -557,7 +533,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput arcadia -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     arcadia
 
 # ----------------------
@@ -572,7 +547,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput advision -skip_gameinfo -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     advision
 
 # ----------------------
@@ -587,7 +561,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "blastit ebaskb2 ebball ebball2 ebball3 ebknight efootb4 egalaxn2 einvader einvader2 einvaderc epacman2 epacman2r esbattle esoccer estargte eturtles mmarvin raisedvl"
 
 # ----------------------
@@ -602,7 +575,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput gamepock -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     gamepock
 
 # ----------------------
@@ -617,7 +589,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "alienfev astrocmd edracula efball einspace galaxy2 galaxy2b"
 
 # ----------------------
@@ -632,7 +603,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput scv -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     scv
 
 # ----------------------
@@ -647,7 +617,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --fuzzy epo_
 
 # ----------------------
@@ -662,7 +631,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --fuzzy tvpc_
 
 # ----------------------
@@ -677,7 +645,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput exl100 -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'exl100:exl100 -cart' `
     exl100
 
@@ -693,7 +660,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput sorcerer2 -autoboot_command \"LOG\n\" -autoboot_delay 3 -cass1' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'sorcerer_cart:sorcerer2 -cart' `
     --add-softlist-config 'sorcerer_cass:sorcerer2 -autoboot_delay 3 -autoboot_command CLOAD\n -cart basicpac -cass1' `
     --add-software-config 'sorcerer_cass:adv1:sorcerer2 -autoboot_delay 4 -autoboot_command BYE\nLOG\n -cart basicpac -cass1' `
@@ -778,7 +744,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput supracan -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     supracan
 
 # ----------------------
@@ -793,7 +758,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "fxmcr165 gckong gdefender gdigdug ghalien ginv ginv1000 ginv2000 gjackpot gpoker gscobra gjungler"
 
 # ----------------------
@@ -808,7 +772,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput gp32" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     gp32
 
 # ----------------------
@@ -823,7 +786,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput gmaster -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     gmaster
 
 # ----------------------
@@ -838,7 +800,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "beambox dreamlif dsgnwrld gigapets parcade has_wamg dreamlss pballpup swclone"
 
 # ----------------------
@@ -853,7 +814,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput vc4000 -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     vc4000
 
 # ----------------------
@@ -868,7 +828,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput telestry -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     telestry
 
 # ----------------------
@@ -884,7 +843,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --fuzzy jak `
     --exclude-systems "jak_pf jak_prft jak_s500 jak_smwm jak_ths jak_tink jak_totm jak_umdf jakks_gamekey_rom_i2c_24lc04 jakks_gamekey_rom_i2c_base jakks_gamekey_rom_plain jakks_gamekey_slot"
 
@@ -901,7 +859,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "jak_pf jak_prft jak_s500 jak_smwm jak_ths jak_tink jak_totm jak_umdf"
 
 # ----------------------
@@ -916,7 +873,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "anpanbd anpanm15 anpanm19 anpanmdx apmj2009"
 
 # ----------------------
@@ -931,7 +887,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput vii -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     vii
 
 # ----------------------
@@ -946,7 +901,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput pasogo -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     pasogo
 
 # ----------------------
@@ -961,7 +915,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "kbilly kblades kbottom9 kbucky kchqflag kcontra kdribble kgarfld kgradius kloneran knascar knfl kskatedie kst25 ktmnt ktmnt2 ktmnt3 ktmntbb ktopgun ktopgun2"
 
 # ----------------------
@@ -976,7 +929,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "lexiart lexifit lexitvsprt lx_aven lx_frozen lx_jg7420 lx_jg7425 lxairjet lxspidaj lexizeus lx_jg7410 lx_jg7415 lexiseal"
 
 # ----------------------
@@ -991,7 +943,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput alice90 -skip_gameinfo -autoboot_command "cload\n" -cass' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'alice32:alice90 -skip_gameinfo -autoboot_delay 2 -autoboot_command "cload\n" -cass' `
     --add-softlist-config 'alice90:alice90 -skip_gameinfo -autoboot_delay 2 -autoboot_command "cload\n" -cass' `
     alice90
@@ -1009,7 +960,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "autorace brainbaf funjacks funrlgl funtag gravity horocomp horseran lafootb mbaseb mbaskb mbaskb2 mcompgin mdallas mdndclab mfootb mfootb2 mhockey mhockeya misatk msoccer msoccer2 msthawk mwcbaseb mwcfootb"
 
 # ----------------------
@@ -1024,7 +974,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput hyprscan -cdrom' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "hyperscan_card" `
     hyprscan
 
@@ -1040,7 +989,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput intvecs -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     intvecs
     
 # ----------------------
@@ -1055,7 +1003,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput mtx512 -skip_gameinfo -autoboot_command "load\"\"\"\"\"\"\n" -autoboot_delay 3 -cass' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-softlist "mtx_cass" `
     --add-softlist-config 'mtx_cass:mtx512 -skip_gameinfo -autoboot_command "load\"\"\"\"\"\"\n" -autoboot_delay 3 -cass' `
     mtx512
@@ -1072,7 +1019,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "arcmania bigtrak bship bshipb bshipg comp4 lightfgt mbdtower plus1 simon simonf ssimon"
 
 # ----------------------
@@ -1087,7 +1033,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput myvision -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     myvision
 
 # ----------------------
@@ -1102,7 +1047,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     famibox
 
 # ----------------------
@@ -1117,7 +1061,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --fuzzy gnw_
 
 # ----------------------
@@ -1132,7 +1075,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "supergb supergb2"
 
 # ----------------------
@@ -1147,7 +1089,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "bankshot cnsector lostreas merlin mmerlin pbmastm pbqbert splitsec stopthief stopthiefp talkingbb talkingfb wildfire"
 
 
@@ -1163,7 +1104,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput vg5k -skip_gameinfo -autoboot_command "cload\n" -autoboot_delay 3 -cass' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     vg5k
 
 # ----------------------
@@ -1178,7 +1118,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput videopac -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     videopac
 
 # ----------------------
@@ -1193,7 +1132,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "pvmil pvmil8 pvmilfin pvwwcas"
 
 # ----------------------
@@ -1208,7 +1146,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --fuzzy rad_
 
 # ----------------------
@@ -1223,7 +1160,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput studio2 -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     studio2
 
 # ----------------------
@@ -1238,7 +1174,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput samcoupe -autoboot_delay 2 -skip_gameinfo -autoboot_command \"\nBOOT\n\" -flop1' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "samcoupe_cass" `
     --add-softlist-config 'samcoupe_flop:samcoupe -autoboot_delay 2 -skip_gameinfo -autoboot_command "\nBOOT\n" -flop1' `
     samcoupe
@@ -1255,7 +1190,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput beena -cart1" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     beena
 
 # ----------------------
@@ -1270,7 +1204,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput sc3000 -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "sg1000" `
     --add-softlist-config 'sc3000_cart:sc3000 -cart' `
     --add-softlist-config 'sc3000_cass:sc3000 -cart basic3e -autoboot_delay 6 -autoboot_command "LOAD\nRUN"' `
@@ -1288,7 +1221,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "ddmmeg12 ddmsup drumsups gssytts guitarss guitarssa guitarst senapren senbbs sencosmo senmil senpmate senspeed senspid senstriv sentx6p sentx6pd senwfit totspies sentx6puk mysprtch mysprtcp mysptqvc"
 
 # ----------------------
@@ -1303,7 +1235,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput mz2500 -flop1' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "mz2000_flop" `
     --add-softlist-config 'mz2500_flop:mz2500 -flop1' `
     mz2500
@@ -1320,7 +1251,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput m5 -cart1" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'm5_cart:m5 -cart1' `
     --add-softlist-config 'm5_cass:m5 -autoboot_delay 3 -autoboot_command "CHAIN\n" -cart1 basici -cass' `
     m5
@@ -1337,7 +1267,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput svi318 -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'svi318_cart:svi318 -cart1' `
     --add-softlist-config 'svi318_cass:svi318 -autoboot_delay 3 -autoboot_command "CLOAD\n" -cass' `
     svi328
@@ -1354,7 +1283,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "mapacman siddr tagalaga taspinv taturtf"
 
 # ----------------------
@@ -1369,7 +1297,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput ekaraa -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     ekaraa
 
 # ----------------------
@@ -1384,7 +1311,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput jpopira -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     jpopira
 
 # ----------------------
@@ -1400,7 +1326,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput popira -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     popira
 
 # ----------------------
@@ -1416,7 +1341,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --fuzzy tak_ `
     --include-systems "duelmast gungunad gungunrv jarajal pocketmp pocketmr prail prailpls rizstals tmy_rkmj tomthr tomyegg tcarnavi tmy_thom tom_dpgm tom_jump tom_tvho tomcpin tomplc tomshoot ttv_swj tomycar"
     
@@ -1432,7 +1356,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput vis -cdrom' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     vis
 
 # ----------------------
@@ -1447,7 +1370,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput trs80 -cass' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-softlist "trs80_cass" `
     --add-software-config 'trs80_cass:adv03:trs80m4 -autoboot_delay 2 -autoboot_command "L\n\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"SYSTEM\nMISSIO\n" -cass' `
     --add-software-config 'trs80_cass:adv10:trs80m4 -autoboot_delay 2 -autoboot_command "L\n\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"SYSTEM\nSAVAGE\n" -cass' `
@@ -1514,7 +1436,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput coco3h -cart1" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'coco_cart:coco3h -cart' `
     --add-softlist-config 'coco_flop:coco3h -flop1' `
     --add-software-config 'coco_flop:dkong:coco3h -autoboot_delay 2 -autoboot_command RUN\\\"donkey\\\"\n -flop1' `
@@ -1536,7 +1457,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput oric1 -autoboot_delay 4 -autoboot_command cload\\\"\\\"\n -cass' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     oric1
 
 # ----------------------
@@ -1551,7 +1471,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput pegasus -rom1" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'pegasus_cart:pegasus -rom1' `
     pegasus
 
@@ -1567,7 +1486,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "copycat copycata ditto dxfootb fingbowl hccbaskb rockpin rzbatfor rzindy500 rztoshden subwars t7in1ss taddams taltbeast tapollo13 tbatfor tbatman tbatmana tbtoads tbttf tddragon tddragon2 tddragon3 tdennis tdummies tflash tgaiden tgaiden3 tgargnf tgaunt tgoldeye tgoldnaxe thalone thalone2 thook tinday tjdredd tjpark tkarnov tkazaam tkkongq tlluke2 tmchammer tmegaman3 tmigmax tmkombat tnmarebc topaliens tpitfight trobhood trobocop2 trobocop3 trockteer tsddragon tsf2010 tsfight2 tshadow tsharr2 tsimquest tsjam tskelwarr tsonic tsonic2 tspidman tstrider tsuperman tswampt ttransf2 tvindictr twworld txmen txmenpx"
 
 # ----------------------
@@ -1582,7 +1500,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput gamecom -cart1" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     gamecom
 
 # ----------------------
@@ -1597,7 +1514,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput gameking -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "gameking3" `
     gameking
 
@@ -1613,7 +1529,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput gamekin3 -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "gameking" `
     gamekin3
 
@@ -1629,7 +1544,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput evio -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     evio
 
 # ----------------------
@@ -1644,7 +1558,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "alnchase bombman kingman phpball tbreakup tcaveman tccombat tmbaskb tmpacman tmscramb tmtennis tmtron tmvolleyb"
 
 # ----------------------
@@ -1659,7 +1572,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput tutor -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'tutor:tutor -cart' `
     tutor
 
@@ -1675,7 +1587,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "tigarden trclchick trdivadv trsgkeep trshutvoy trspacadv trspacmis trspider trsrescue trthuball"
 
 # ----------------------
@@ -1690,7 +1601,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "zone100 zone60 zon32bit rockstar react zone40 zonemini"
 
 # ----------------------
@@ -1705,7 +1615,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput uzebox -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     uzebox
 
 # ----------------------
@@ -1720,7 +1629,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput vector06 -flop1' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "vector06_cart" `
     --add-softlist-config 'vector06_flop:vector06 -flop1' `
     vector06
@@ -1737,7 +1645,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput vidbrain -cart1" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --add-softlist-config 'vidbrain:vidbrain -cart1' `
     vidbrain
 
@@ -1753,7 +1660,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput tvc64p -cart1" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "tvc_flop" `
     --add-softlist-config 'tvc_cart:tvc64p -cart1' `
     --add-softlist-config 'tvc_cass:tvc64p -autoboot_delay 10 -autoboot_command \nLOAD\n -cass1' `
@@ -1771,7 +1677,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput crvision -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     crvision
 
 # ----------------------
@@ -1786,7 +1691,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput glcolor -cart1" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "snotec" `
     --add-softlist-config 'glcolor:glcolor -cart1' `
     glcolor
@@ -1803,7 +1707,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput socrates -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     socrates
 
 # ----------------------
@@ -1818,7 +1721,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-systems "doraglob doraglobf doraglobg doraphon doraphonf hippofr kidizmb kidizmp vtechtvsgr vtechtvssp"
 
 # ----------------------
@@ -1833,7 +1735,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput vsmile -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "vsmilem_cart" `
     vsmile
 
@@ -1849,7 +1750,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput vsmileb -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     vsmileb
 
 # ----------------------
@@ -1864,7 +1764,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput vsmilem -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --exclude-softlist "vsmile_cart" `
     vsmilem
 
@@ -1880,5 +1779,4 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput svision -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     svision
