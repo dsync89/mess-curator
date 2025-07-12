@@ -72,7 +72,6 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params '-keyboardprovider dinput cpc464 -flop1' `
     --output-format yaml `
-    --output-file system_softlist.yml `
     --include-softlist "cpc_cass" `
     --add-softlist-config 'cpc_cass:cpc464 -autoboot_delay 2 -autoboot_command LOAD\\\"\\\"\n -cass' `
     cpc464
@@ -91,6 +90,21 @@ python .\src\mess_curator.py search `
     --output-format yaml `
     --add-softlist-config 'gx4000:gx4000 -cart' `
     gx4000
+
+# ----------------------
+# Atari XEGS
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key atari-xegs `
+    --platform-name-full "Atari XEGS" `
+    --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
+    --media-type cart `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput xegs -cart" `
+    --output-format yaml `
+    --exclude-softlist "a800 a800_cass a800_flop" `
+    xegs
 
 # ----------------------
 # Bally Astrocade
@@ -485,8 +499,38 @@ python .\src\mess_curator.py search `
     --default-emu `
     --default-emu-cmd-params "-keyboardprovider dinput megaduck -cart" `
     --output-format yaml `
-    --output-file system_softlist.yml `
     megaduck
+
+# ----------------------
+# Dick Smith Super-80
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key dick-smith-super-80 `
+    --platform-name-full "Dick Smith Super-80" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cart `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput super80 -cass" `
+    --output-format yaml `
+    --add-softlist-config 'super80_cass:super80 -skip_gameinfo -cass' `
+    super80
+
+# ----------------------
+# Dick Smith Super-80 (VDUEB)
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key dick-smith-super-80-vdueb `
+    --platform-name-full "Dick Smith Super-80 (VDUEB)" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cart `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput super80v -cass" `
+    --output-format yaml `
+    --add-softlist-config 'super80_cass:super80v -skip_gameinfo -cass' `
+    --add-softlist-config 'super80_flop:super80v -skip_gameinfo -flop' `
+    super80v
 
 # ----------------------
 # Dragon
@@ -1475,6 +1519,24 @@ python .\src\mess_curator.py search `
     pegasus
 
 # ----------------------
+# Thomson MO6
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key thomson-mo6 `
+    --platform-name-full "Thomson MO6" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cart `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput mo6 -rom1" `
+    --output-format yaml `
+    --exclude-softlist "mo5_flop mo5_qd mo6_flop" `
+    --add-softlist-config 'mo5_cart:mo6 -cart' `
+    --add-softlist-config 'mo5_cass:mo6 -cass' `
+    --add-softlist-config 'mo6_cass:mo6 -cass' `
+    mo6
+
+# ----------------------
 # Tiger Electronics Handhelds (LCD)
 # ----------------------
 python .\src\mess_curator.py search `
@@ -1664,6 +1726,21 @@ python .\src\mess_curator.py search `
     --add-softlist-config 'tvc_cart:tvc64p -cart1' `
     --add-softlist-config 'tvc_cass:tvc64p -autoboot_delay 10 -autoboot_command \nLOAD\n -cass1' `
     tvc64p
+
+# ----------------------
+# Video Technology Laser 700
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key video-technology-laser-700 `
+    --platform-name-full "Video Technology Laser 700" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cassette `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput laser700 -cass" `
+    --output-format yaml `
+    --add-softlist-config 'vtech2_cass:laser700 -autoboot_delay 10 -cass' `
+    laser700
 
 # ----------------------
 # VTech Creativision
