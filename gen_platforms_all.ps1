@@ -1034,6 +1034,21 @@ python .\src\mess_curator.py search `
     --default-emu-cmd-params "-keyboardprovider dinput intvecs -cart" `
     --output-format yaml `
     intvecs
+
+# ----------------------
+# Mattel Juicebox
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key mattel-juicebox `
+    --platform-name-full "Mattel Juicebox" `
+    --platform-category "Handhelds" "MESS (Handhelds LCD)" "Video Player" `
+    --media-type cart `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput" `
+    --output-format yaml `
+    --add-softlist-config 'juicebox:juicebox -skip_gameinfo -memc' `
+    juicebox
     
 # ----------------------
 # Memotech MTX
@@ -1122,6 +1137,22 @@ python .\src\mess_curator.py search `
     --include-systems "supergb supergb2"
 
 # ----------------------
+# Orion 128 + Z80 Card II (MS7007)
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key orion-128 `
+    --platform-name-full "Orion 128" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cass `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput" `
+    --output-format yaml `
+    --exclude-softlist "orion_cart orion_flop" `
+    --add-softlist-config 'orion_cass:orionzms -cart romdisk -cass' `
+    orionzms
+
+# ----------------------
 # Parker Brothers Handhelds (LCD)
 # ----------------------
 python .\src\mess_curator.py search `
@@ -1191,6 +1222,21 @@ python .\src\mess_curator.py search `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --fuzzy rad_
+
+# ----------------------
+# Radio-86RK
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key radio-86rk `
+    --platform-name-full "Radio-86RK" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cass `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput" `
+    --output-format yaml `
+    --add-softlist-config 'radio86_cass:radio86 -cass' `
+    radio86    
 
 # ----------------------
 # RCA Studio II
@@ -1595,6 +1641,22 @@ python .\src\mess_curator.py search `
     gamekin3
 
 # ----------------------
+# Timex Sinclair TS-2068
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key timex-sinclair-ts-2068 `
+    --platform-name-full "Timex Sinclair TS-2068" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cart `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput" `
+    --output-format yaml `
+    --exclude-softlist "timex_dock spectrum_cass" `
+    --add-softlist-config 'timex_cass:ts2068 -cass' `
+    ts2068
+
+# ----------------------
 # Tomy evio
 # ----------------------
 python .\src\mess_curator.py search `
@@ -1741,6 +1803,21 @@ python .\src\mess_curator.py search `
     --output-format yaml `
     --add-softlist-config 'vtech2_cass:laser700 -autoboot_delay 10 -cass' `
     laser700
+
+# ----------------------
+# Voja Antonic Galaksija
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key voja-antonic-galaksija `
+    --platform-name-full "Voja Antonic Galaksija" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cassette `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput galaxy -cass" `
+    --output-format yaml `
+    --add-softlist-config 'galaxy:galaxy -autoboot_delay 2 -autoboot_command OLD\nRUN\n -cass' `
+    galaxy
 
 # ----------------------
 # VTech Creativision

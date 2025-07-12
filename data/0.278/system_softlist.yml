@@ -25011,3 +25011,486 @@ thomson-mo6:
         mo6_cass:
           _default_config:
             command_line_parameters: mo6 -cass
+voja-antonic-galaksija:
+  platform:
+    name: Voja Antonic Galaksija
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cassette
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput galaxy -cass
+  system:
+  - galaxy:
+      software_lists:
+      - softlist_name: galaxy
+        software_id:
+        - asteroid
+        - biljar
+        - biorita2
+        - bioritam
+        - bladeall
+        - bombard
+        - charfire
+        - comets
+        - dijamant
+        - dijamanta
+        - egemond
+        - evolucia
+        - f1
+        - fire
+        - four
+        - galakrat
+        - hardware
+        - hhorace
+        - highres
+        - igradisk
+        - jumpjack
+        - lightcy2
+        - lightcyc
+        - lightshw
+        - mastrmn2
+        - mastrmnd
+        - maze
+        - memorija
+        - mminer
+        - monitor
+        - nightpil
+        - oscil
+        - pacmanp
+        - pamtilic
+        - particle
+        - poker
+        - pozivniz
+        - raindrop
+        - scater
+        - scruiser
+        - scruisera
+        - sintesaj
+        - slalom2
+        - snake
+        - snakedv
+        - spiridon
+        - squash
+        - squasha
+        - stars
+        - strgovac
+        - supersah
+        - svetleci
+        - tenis
+        - tenis3
+        - tetris
+        - tetrisa
+        - tetrisp
+        - wall
+        - wonder
+        - wonder2
+        - zamak
+        - zid
+        - ziul
+        - zvezdice
+        - zvjezdan
+      software_configs:
+        galaxy:
+          _default_config:
+            command_line_parameters: galaxy -autoboot_delay 2 -autoboot_command OLD\nRUN\n
+              -cass
+mattel-juicebox:
+  platform:
+    name: Mattel Juicebox
+  platform_category:
+  - Handhelds
+  - MESS (Handhelds LCD)
+  - Video Player
+  media_type: cart
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput
+  system:
+  - juicebox:
+      software_lists:
+      - softlist_name: juicebox
+        software_id:
+        - jbm_2709
+        - jbm_6226
+        - jbm_6228
+        - jbm_6230a
+        - jbm_6232
+        - knd1
+        - megasv1
+        - plmv1
+        - sbcv1
+        - tmnt1
+        - tmnte36
+        - winxe103
+        - winxv1
+        - yugie175
+        - yugie176
+        - yugiv1
+      software_configs:
+        juicebox:
+          _default_config:
+            command_line_parameters: juicebox -skip_gameinfo -memc
+orion-128:
+  platform:
+    name: Orion 128
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cass
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput
+  system:
+  - orionzms:
+      software_lists:
+      - softlist_name: orion_cass
+        software_id:
+        - '21'
+        - adventr
+        - airfght
+        - almaz
+        - almaz2
+        - almazh
+        - bomber
+        - boulder
+        - buran
+        - cave
+        - chess
+        - chess2
+        - chess3
+        - chess4
+        - copter
+        - digger
+        - dinamit
+        - dolt
+        - downear
+        - durant
+        - faeton
+        - fisher
+        - gran
+        - handicr
+        - jetset
+        - klad
+        - kort
+        - krest1
+        - krest2
+        - krot
+        - kznva
+        - ladder
+        - land
+        - land2
+        - land3
+        - land5
+        - lklend
+        - loderun
+        - magie
+        - manner
+        - mars
+        - mminer
+        - mole
+        - moonfox
+        - nardy
+        - otello
+        - pacman
+        - pauk
+        - pingvin
+        - piton
+        - poker
+        - pool
+        - races
+        - rally
+        - ranger
+        - reversi
+        - ricos
+        - saboter
+        - scdl
+        - shar
+        - shashki
+        - sokoban
+        - speaker
+        - spking
+        - starwar
+        - striker
+        - synt
+        - tennis
+        - tetris
+        - tetris2
+        - tetris3
+        - thrusta
+        - tutan
+        - udav
+        - us079
+        - valley
+        - vavilon
+        - vitamin
+        - war
+        - xonix
+        - zoo
+        - zoo2
+      software_configs:
+        orion_cass:
+          _default_config:
+            command_line_parameters: orionzms -cart romdisk -cass
+radio-86rk:
+  platform:
+    name: Radio-86RK
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cass
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput
+  system:
+  - radio86:
+      software_lists:
+      - softlist_name: radio86_cass
+        software_id:
+        - asmed
+        - assmmic
+        - basic80
+        - basicmus
+        - basicok
+        - basicpc
+        - basicpr
+        - basicrk
+        - basicser
+        - basmic
+        - basmikr
+        - bomber
+        - bsmold
+        - bspsf
+        - bssvvi
+        - c
+        - cherv
+        - chess
+        - chess2
+        - circus
+        - constmag
+        - cpm
+        - debug
+        - diverse
+        - dssmcpm
+        - dumped
+        - eddssm
+        - eddssm2
+        - edmasm
+        - edsort
+        - estakan
+        - forth
+        - fulledit
+        - gfire
+        - glass1
+        - glass2
+        - hexedit1
+        - hexedit2
+        - kalah
+        - klad
+        - krestno
+        - krestnoa
+        - krok
+        - labyrint
+        - lest
+        - lestn1
+        - life
+        - linkrk
+        - lorunner
+        - maze
+        - morse16
+        - music
+        - muzsyst
+        - muzukred
+        - otello
+        - pacman
+        - pacman1
+        - pacmana
+        - paket
+        - paket2
+        - pascal
+        - pingpong
+        - piton
+        - pitona
+        - progr1
+        - progr2
+        - progr3
+        - pusher
+        - pvo
+        - redasm
+        - rendzu
+        - reversi2
+        - rikoshet
+        - sdemise
+        - skachki
+        - skvotch
+        - slams
+        - sos1
+        - sos2
+        - spcomp
+        - spgames
+        - spiton
+        - stranger
+        - svvi
+        - tapper
+        - tennis
+        - tennisa
+        - tetr2
+        - tetris1
+        - tetris4
+        - tochki
+        - udaw
+        - utka
+        - volcano
+        - wel
+        - xonix
+        - xonix1
+        - xonixs
+        - xonixzm
+        - zagib
+        - zmei
+        - zstatio
+      software_configs:
+        radio86_cass:
+          _default_config:
+            command_line_parameters: radio86 -cass
+timex-sinclair-ts-2068:
+  platform:
+    name: Timex Sinclair TS-2068
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cart
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput
+  system:
+  - ts2068:
+      software_lists:
+      - softlist_name: timex_cass
+        software_id:
+        - 4kracere
+        - aczgener
+        - aercocp68
+        - aercopd12
+        - androids
+        - aritmeti
+        - artworx
+        - astrobla
+        - autoanaly
+        - b64demo2048
+        - b64demo2068
+        - blam
+        - blindall
+        - bpfeb88
+        - britinva
+        - budgeter
+        - capitali
+        - checkboo
+        - chess
+        - circuitb
+        - colorpri
+        - colortil
+        - copy
+        - cozinhei
+        - crazybug
+        - crossfir
+        - cyberzon
+        - demokeyb
+        - demonstc
+        - desktopp
+        - disassem
+        - dragmast
+        - financia
+        - flightsi
+        - formula
+        - frogger
+        - fungolf
+        - guardian
+        - guerraes
+        - gulpman
+        - heroi
+        - homeimpr
+        - horacski
+        - horaspid
+        - horaspidp
+        - hotzd143
+        - hotzd184
+        - hotzd195
+        - hungrhrc
+        - intrs232
+        - invasore
+        - jazzofir
+        - jrccata3
+        - keyword1
+        - keyword5
+        - language
+        - mathwiz1
+        - mathwiz2
+        - mineswee
+        - motocicl
+        - mscript
+        - mscriptr
+        - multidra
+        - musicola
+        - omnical2
+        - orcament
+        - penetrat
+        - pershofi
+        - perspoma
+        - prof2068
+        - propinba
+        - quadrach
+        - relocata
+        - smarttr1
+        - speechsy
+        - spellin1
+        - spellin2
+        - sroulett
+        - statcapi
+        - stockmar
+        - suprhzd251
+        - tapecorr
+        - tasword2
+        - tc2048dm
+        - tc2048hc
+        - tc2048hrc
+        - techdraw
+        - theworx
+        - timachin
+        - timegate
+        - timetch1
+        - toolkit
+        - tradertr
+        - travtrsh
+        - ts2068dm
+        - upload2k
+        - vu3d
+        - vucalc
+        - vufile
+        - wareast
+        - windowp32
+        - windowp64
+        - wordcros
+        - wordply1
+        - wordply2
+        - zealdisa
+        - zeusasse
+      software_configs:
+        timex_cass:
+          _default_config:
+            command_line_parameters: ts2068 -cass
