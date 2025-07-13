@@ -92,6 +92,21 @@ python .\src\mess_curator.py search `
     gx4000
 
 # ----------------------
+# Apogee BK-01
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key apogee-bk-01 `
+    --platform-name-full "Apogee BK-01" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cart `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput" `
+    --output-format yaml `
+    --add-softlist-config 'apogee:apogee -cass' `
+    apogee
+
+# ----------------------
 # Atari XEGS
 # ----------------------
 python .\src\mess_curator.py search `
@@ -502,6 +517,21 @@ python .\src\mess_curator.py search `
     megaduck
 
 # ----------------------
+# DAI Personal Computer
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key dai-personal-computer `
+    --platform-name-full "DAI Personal Computer" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cart `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput" `
+    --output-format yaml `
+    --add-softlist-config 'dai_cass:dai -cass' `
+    dai
+
+# ----------------------
 # Dick Smith Super-80
 # ----------------------
 python .\src\mess_curator.py search `
@@ -551,6 +581,21 @@ python .\src\mess_curator.py search `
     dragon64
 
 # ----------------------
+# DREAM 6800
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key dream-6800 `
+    --platform-name-full "DREAM 6800" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cart `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput dragon64 -cart" `
+    --output-format yaml `
+    --add-softlist-config 'chip8_quik:d6800 -quik' `
+    d6800
+
+# ----------------------
 # EACA EG2000 Colour Genie
 # ----------------------
 python .\src\mess_curator.py search `
@@ -564,6 +609,21 @@ python .\src\mess_curator.py search `
     --output-format yaml `
     --add-softlist-config 'cgenie_cass:cgenie -autoboot_command \n\nCLOAD\n -autoboot_delay 1 -ram 32k -cass' `
     cgenie
+
+# ----------------------
+# Elektronika BK-0010
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key elektronika-bk-0010 `
+    --platform-name-full "Elektronika BK-0010" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cartridge `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params '-keyboardprovider dinput' `
+    --output-format yaml `
+    --add-softlist-config 'bk0010:bk001001 -cass' `
+    bk001001
 
 # ----------------------
 # Emerson Arcadia 2001
@@ -676,6 +736,21 @@ python .\src\mess_curator.py search `
     --default-emu-cmd-params "-keyboardprovider dinput" `
     --output-format yaml `
     --fuzzy tvpc_
+
+# ----------------------
+# ETI-660 Learners Microcomputer
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key eti-660-learners-microcomputer `
+    --platform-name-full "ETI-660 Learners Microcomputer" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cart `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput" `
+    --output-format yaml `
+    --add-softlist-config 'eti660:eti660 -quik' `
+    eti660
 
 # ----------------------
 # Exelvision EXL 100
@@ -934,6 +1009,22 @@ python .\src\mess_curator.py search `
     vii
 
 # ----------------------
+# Jupiter Ace
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key juniper-ace `
+    --platform-name-full "Jupiter Ace" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cassette `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params '-keyboardprovider dinput' `
+    --output-format yaml `
+    --add-softlist-config 'jupace_cass:jupace -ram 48k -cass' `
+    --add-softlist-config 'jupace_snap:jupace -ram 48k -dump' `
+    jupace
+
+# ----------------------
 # Koei PasoGo
 # ----------------------
 python .\src\mess_curator.py search `
@@ -991,6 +1082,21 @@ python .\src\mess_curator.py search `
     --add-softlist-config 'alice90:alice90 -skip_gameinfo -autoboot_delay 2 -autoboot_command "cload\n" -cass' `
     alice90
 
+# ----------------------
+# Mattel Aquarius
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key mattel-aquarius `
+    --platform-name-full "Mattel Aquarius" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cartridge `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params '-keyboardprovider dinput' `
+    --output-format yaml `
+    --exclude-softlist "aquarius_cass" `
+    --add-softlist-config 'aquarius_cart:aquarius -cart1' `
+    aquarius
 
 # ----------------------
 # Mattel Electronics Handhelds (LCD)
@@ -1166,6 +1272,21 @@ python .\src\mess_curator.py search `
     --output-format yaml `
     --include-systems "bankshot cnsector lostreas merlin mmerlin pbmastm pbqbert splitsec stopthief stopthiefp talkingbb talkingfb wildfire"
 
+# ----------------------
+# Philips CD-i
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key philips-cdi `
+    --platform-name-full "Philips CD-i" `
+    --platform-category "Consoles" "MESS (Consoles)" "MESS (System w/ Softlist)" `
+    --media-type cass `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params "-keyboardprovider dinput" `
+    --output-format yaml `
+    --exclude-softlist "photo_cd" `
+    --add-softlist-config 'cdi:cdimono1 -cdrom' `
+    cdimono1
 
 # ----------------------
 # Philips VG 5000
@@ -1548,6 +1669,22 @@ python .\src\mess_curator.py search `
     --default-emu-cmd-params '-keyboardprovider dinput oric1 -autoboot_delay 4 -autoboot_command cload\\\"\\\"\n -cass' `
     --output-format yaml `
     oric1
+
+# ----------------------
+# Tatung Einstein TC-01
+# ----------------------
+python .\src\mess_curator.py search `
+    --platform-key tatung-einstein-tc-01 `
+    --platform-name-full "Tatung Einstein TC-01" `
+    --platform-category "Computers" "MESS (Computers)" "MESS (System w/ Softlist)" `
+    --media-type cartridge `
+    --emu-name "MAME (MESS)" `
+    --default-emu `
+    --default-emu-cmd-params '-keyboardprovider dinput' `
+    --output-format yaml `
+    --exclude-softlist "einstein_rom" `
+    --add-softlist-config 'einstein:einst256 -flop1' `
+    einst256
 
 # ----------------------
 # Technosys Aamber Pegasus

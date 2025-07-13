@@ -25494,3 +25494,1255 @@ timex-sinclair-ts-2068:
         timex_cass:
           _default_config:
             command_line_parameters: ts2068 -cass
+philips-cdi:
+  platform:
+    name: Philips CD-i
+  platform_category:
+  - Consoles
+  - MESS (Consoles)
+  - MESS (System w/ Softlist)
+  media_type: cass
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput
+  system:
+  - cdimono1:
+      software_lists:
+      - softlist_name: cdi
+        software_id:
+        - 3degree
+        - achild
+        - achildo
+        - actcollg
+        - adiasce1
+        - adiasce2
+        - adiascm1
+        - adiascm2
+        - aidsawar
+        - alice
+        - aliced
+        - alicef
+        - aliengat
+        - aliengatu
+        - aliengatu1
+        - allesovr
+        - allesovro
+        - amstrdam
+        - angedemn
+        - annewill
+        - annewillu
+        - apprentc
+        - arcadecl
+        - archeon
+        - aroundho
+        - artczars
+        - asterix
+        - asterixd
+        - asterixf
+        - asterixg
+        - asterixi
+        - asterixs
+        - astronom
+        - audiovid
+        - axisall
+        - backgamm
+        - bandeann
+        - barriors
+        - beauty
+        - beautyg
+        - berenst
+        - berenstd
+        - berenstf
+        - berenstg
+        - bertelsg
+        - bertelsgd
+        - bestdraw
+        - breastsa
+        - brerrabb
+        - bryanada
+        - bship
+        - burncycl
+        - burncycld
+        - burncyclg
+        - burncycli
+        - burncycls
+        - burncycm
+        - camel
+        - camnsntg
+        - camnsntgcc
+        - cartoonj
+        - cartoonja
+        - cartoonjg
+        - cboxingu
+        - cboxingua
+        - cdi450tu
+        - cdi470tu
+        - cdifullm
+        - cdiimgew
+        - cdimaus
+        - cdiworld
+        - cdshoot
+        - cdshootu
+        - cgambl
+        - children
+        - cisterci
+        - classicj
+        - cmt
+        - cmta
+        - comprend
+        - compton
+        - comptonu
+        - connect4
+        - coololdj
+        - coxford
+        - crayonf
+        - crayonfu
+        - creatcar
+        - creatcara
+        - cruised
+        - cybrcity
+        - darkcstl
+        - davegrus
+        - dayrace
+        - dayraceu
+        - defcrown
+        - dimos
+        - discplac
+        - dlair2
+        - domino
+        - domststp
+        - doorswin
+        - downhome
+        - doyourem
+        - dsfne
+        - dutch17
+        - dutch17u
+        - earth
+        - earthc
+        - earthcd
+        - earthcf
+        - earthcg
+        - earthcu
+        - effacer
+        - eindhov
+        - emperor
+        - encyclop
+        - enkhuize
+        - essentia
+        - europrty
+        - explspac
+        - explwrld
+        - ezplay
+        - facekitc
+        - famillep
+        - familyg1
+        - familyg2
+        - fishtv
+        - flashb
+        - flintjet
+        - flintjetu
+        - flowers
+        - frenchim
+        - frenchimd
+        - frenchimf
+        - frogfeas
+        - fullswin
+        - funfair
+        - gardenin
+        - gateshea
+        - gettinga
+        - gettinga2
+        - girlclub
+        - glfmyway
+        - gnomes
+        - golden1
+        - golden2
+        - goldoldj
+        - goldoldja
+        - golftips
+        - golgo13
+        - gose
+        - goyagrab
+        - granprix
+        - greatbg
+        - hauntedh
+        - help
+        - hetstaat
+        - hieperde
+        - hierog
+        - histarte
+        - hitkara1
+        - hitkara2
+        - hitkara3
+        - hitkara5
+        - hollands
+        - hotmario
+        - hotmariop
+        - hotmariou
+        - howphoto
+        - inca
+        - incaa
+        - incab
+        - incac
+        - interper
+        - jazzgian
+        - jazzgianf
+        - jeopardy
+        - jigsaw
+        - jinvente
+        - jokers
+        - jokersjr
+        - karaoke1
+        - karaoke2
+        - karaoke3
+        - karaoke4
+        - karaoke5
+        - karaokec
+        - kether
+        - ketherd
+        - ketherg
+        - kethergo
+        - kethero
+        - ketheroa
+        - ketheru
+        - kindenst
+        - kiss
+        - kultur
+        - kunstscd
+        - kunstscg
+        - kursbuch
+        - lange1
+        - lange2
+        - langf1
+        - langf2
+        - langf3
+        - langg1
+        - langg2
+        - langg3
+        - langs1
+        - lasrlord
+        - lasrlorda
+        - lastboun
+        - lemmings
+        - lilmonst
+        - lilmonstu
+        - lingo
+        - linkfoe
+        - linkfoed
+        - linkfoef
+        - linkfoeg
+        - linkfoeu
+        - lordrsun
+        - lovingg
+        - luckluke
+        - maest600
+        - magicera
+        - malschu1
+        - malstift
+        - marcpolo
+        - marcpolof
+        - maxmagic
+        - maxmagica
+        - maxmagicu
+        - megamaze
+        - megamazeu
+        - memorywo
+        - merlinap
+        - merlinapo
+        - methlang
+        - mgoosehp
+        - mgoosehpa
+        - mgooserc
+        - mgooserca
+        - micromac
+        - micromacd
+        - mondrian
+        - morlov
+        - moses
+        - myst
+        - mystmidw
+        - mystmidwj
+        - mystmidwu
+        - namethat
+        - nfl100gt
+        - nfl100gtu
+        - nfl9495
+        - nfltriv
+        - niederla
+        - noahark
+        - noaharku
+        - noahsark
+        - numberfa
+        - odyssey
+        - operaimg
+        - origami
+        - othello
+        - pacpanic
+        - paintsc
+        - paintsc2
+        - palmsprg
+        - palmsprgf
+        - palmsprgg
+        - palmsprgi
+        - palmsprgu
+        - paranasalcdi
+        - parktour
+        - pathways
+        - paws
+        - pcd1904
+        - pecosbil
+        - pegasus
+        - philipsh
+        - photocdd
+        - photocddo
+        - pinball
+        - pinballa
+        - pleasure
+        - plunder
+        - powerhit
+        - powerhitu
+        - powerhitua
+        - privclas
+        - privclsg
+        - privjazz
+        - privrckg
+        - privrock
+        - privrocku
+        - quelestd
+        - renflor
+        - renflora
+        - renflord
+        - renflorf
+        - renflorg
+        - renflori
+        - renflors
+        - renflorscc
+        - rengal
+        - rengala
+        - rhino
+        - rhinoa
+        - rhinog
+        - rhythm
+        - rhythma
+        - riches
+        - ridlmaze
+        - rockmet
+        - routesto
+        - rulesglf
+        - sailing
+        - salvaten
+        - sampfa94
+        - sampsu94
+        - sampwi94
+        - sandyadv
+        - sandyadvd
+        - sandyadvda
+        - sandyadvf
+        - sandyadvg
+        - santamic
+        - sargon
+        - sargona
+        - scarryab
+        - scarryad
+        - scarryag
+        - scarrybe
+        - scarrybu
+        - scarrybua
+        - scarrybub
+        - scarrywg
+        - schonste
+        - scotland
+        - scotlandf
+        - scotlang
+        - secretm
+        - secretmd
+        - secretmg
+        - sesamel
+        - sesamen
+        - sesamena
+        - shaolin
+        - sharaku
+        - sharkale
+        - shipwrck
+        - shorelin
+        - sinnaneun2
+        - smithson
+        - smww
+        - solarsys
+        - soundtrp
+        - spacesaf
+        - spokrliv
+        - sportfrk
+        - stamps
+        - stickyb
+        - stickybu
+        - stickymu
+        - stickyp
+        - stickyr
+        - stickyrs
+        - storymc
+        - storymcg
+        - storyms
+        - storymsg
+        - striker
+        - strikeru
+        - strippok
+        - supertst
+        - surfcity
+        - surfcityu
+        - tangram
+        - tellmeu1
+        - tellmey2
+        - tennisop
+        - tennisop2
+        - tennisopg
+        - tennisopg2
+        - tennisopi2
+        - tennisops
+        - tennisopu
+        - tetris
+        - texttile
+        - timbaerb
+        - timbaerf
+        - timbaerh
+        - timbaerk
+        - timbeara
+        - timbearm
+        - timbeeri
+        - timbeerz
+        - timemach
+        - timteda
+        - timtedc
+        - tlastro
+        - tlphoto
+        - tlphotoa
+        - tlphotod
+        - tlphotof
+        - tlphotog
+        - tlphotoi
+        - tommaxmf
+        - tommaxmfa
+        - tommaxmg
+        - tresilej
+        - tri
+        - tria
+        - ulichinguwa
+        - ulijayeongwa
+        - uptownbl
+        - usatlas
+        - usatlasa
+        - usineaux
+        - valdisc
+        - valpuebl
+        - vangogh
+        - vangogha
+        - vangoghb
+        - vangoghd
+        - vangoghf
+        - vangoghg
+        - vangoghs
+        - vegasgrl
+        - venice
+        - venicei
+        - verhalen
+        - verhalmv
+        - videogp
+        - videospd
+        - videospdu
+        - vinsfran
+        - vliegend
+        - voyeur
+        - voyeurf
+        - voyeurg
+        - voyeuru
+        - voyeurua
+        - wackyglf
+        - wackyglfu
+        - wasistda
+        - webi
+        - whackbub
+        - whycdi
+        - wimbledn
+        - windchin
+        - winefran
+        - wordplay
+        - worldbel
+        - worldimp
+        - worldimpu
+        - yearn2le
+        - youcando
+        - zeldaadv
+        - zeldgam
+        - zeldgamd
+        - zeldgamf
+        - zeldgamg
+        - zeldgamu
+        - zenith
+        - zombie
+        - zombied
+        - zombief
+        - zombieg
+        - zombieu
+        - zooeenvo
+      software_configs:
+        cdi:
+          _default_config:
+            command_line_parameters: cdimono1 -cdrom
+apogee-bk-01:
+  platform:
+    name: Apogee BK-01
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cart
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput
+  system:
+  - apogee:
+      software_lists:
+      - softlist_name: apogee
+        software_id:
+        - badroad
+        - basgraph
+        - basmicr
+        - basmsx
+        - basrk
+        - battlesh
+        - bdashall
+        - bdashfrm
+        - bdashsmr
+        - bldrdash
+        - bombard
+        - box
+        - buckrog
+        - chess
+        - chudov
+        - cirk
+        - crocet
+        - crossfir
+        - descent
+        - digger
+        - dumpred
+        - engl
+        - football
+        - foxhunt
+        - froggi15
+        - gonki
+        - gorodki
+        - graphred
+        - klad
+        - kolobok
+        - kommutat
+        - landmine
+        - lestn
+        - lestnica
+        - life
+        - life1
+        - liqsky
+        - loderun
+        - lrunner
+        - marafon
+        - mars
+        - marsa
+        - marsh2
+        - mesh
+        - mirage
+        - mus1
+        - mus2
+        - mus3
+        - mus4
+        - mus5
+        - mus6
+        - mus7
+        - musicbox
+        - nesushka
+        - nim
+        - pacman
+        - pacman2
+        - panika
+        - pentis
+        - pif
+        - pingpong
+        - planeta
+        - pogonia
+        - poisk
+        - proverka
+        - pvo87
+        - ralli
+        - ralslal
+        - recorder
+        - redasm
+        - reddssm
+        - redflwr
+        - rein
+        - rikoshet
+        - rise
+        - saboteur
+        - sad
+        - shahty
+        - shashki
+        - shmel
+        - shturm
+        - skachki
+        - skaloed
+        - slams
+        - snake
+        - sos
+        - spbattle
+        - spinsect
+        - spysdem
+        - stakan
+        - stelbi
+        - stena
+        - stonefld
+        - tarelki
+        - tennis
+        - tetris
+        - torpatt
+        - trasina
+        - tulpan
+        - udav
+        - utka
+        - wood
+        - xonixzm
+        - xtro
+      software_configs:
+        apogee:
+          _default_config:
+            command_line_parameters: apogee -cass
+mattel-aquarius:
+  platform:
+    name: Mattel Aquarius
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cartridge
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput
+  system:
+  - aquarius:
+      software_lists:
+      - softlist_name: aquarius_cart
+        software_id:
+        - addtot
+        - aqcart
+        - aqworm
+        - arabiced
+        - astrsmah
+        - biorhtms
+        - blbasic
+        - blbasic10
+        - blbasic11
+        - blbasic20
+        - blbird
+        - bombc
+        - bombc4
+        - bombc8
+        - btime
+        - c1541os
+        - chess
+        - demo
+        - ebasic
+        - fileform
+        - finform
+        - logo
+        - melchase
+        - minidiag
+        - modem
+        - nstalker
+        - qdisk
+        - qdisk101
+        - shark
+        - snafu
+        - speller
+        - tron
+        - utopia
+        - word
+        - zeroin
+      software_configs:
+        aquarius_cart:
+          _default_config:
+            command_line_parameters: aquarius -cart1
+elektronika-bk-0010:
+  platform:
+    name: Elektronika BK-0010
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cartridge
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput
+  system:
+  - bk001001:
+      software_lists:
+      - softlist_name: bk0010
+        software_id:
+        - aljur
+        - antix
+        - apple
+        - arkano
+        - arkanoid
+        - asprekl
+        - ass
+        - ass2
+        - astrdrom
+        - baby
+        - bally
+        - bapple
+        - barb
+        - barbar
+        - barman
+        - batiskaf
+        - bigchess
+        - bil
+        - billiard
+        - biowar
+        - bkdemo
+        - bkpack
+        - blcout
+        - blockout
+        - bolde2
+        - bolder2
+        - bolder3
+        - bomb4
+        - breach
+        - break
+        - breaking
+        - brhouse
+        - bubbler
+        - bubler
+        - cache
+        - cave
+        - cavedoc
+        - caveman
+        - caveres
+        - chaser
+        - checkers
+        - chess07
+        - chess1
+        - chess2
+        - chess3
+        - chess4
+        - circler
+        - columns
+        - columns2
+        - comic
+        - cosmic
+        - cosmicb
+        - courier
+        - covox
+        - crack
+        - dama
+        - demsl
+        - demsl1
+        - demsl2
+        - demsl3
+        - desan
+        - desandoc
+        - desant
+        - diamond
+        - digger
+        - divers3
+        - dragon
+        - flier
+        - font
+        - hobbit
+        - hobbitovl
+        - horror
+        - horrors
+        - house1
+        - house2
+        - indjon
+        - jetman
+        - joebla
+        - john
+        - johnny
+        - jokey
+        - jones
+        - jones1
+        - jones2
+        - jones3
+        - jungle
+        - karado
+        - karate
+        - klad
+        - kurier
+        - ladder
+        - ladderovl
+        - lrunner
+        - lrunnergms
+        - othello
+        - otl9
+        - p10k
+        - pacman
+        - perevoro
+        - popo
+        - race
+        - raceovl
+        - rever1
+        - rever2
+        - rotate
+        - rtype
+        - rtype1
+        - rtype2
+        - sokoban
+        - stalker
+        - tetr3
+        - tetris
+        - tetro
+        - xonix1
+        - xonix5
+        - zoom
+      software_configs:
+        bk0010:
+          _default_config:
+            command_line_parameters: bk001001 -cass
+dream-6800:
+  platform:
+    name: DREAM 6800
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cart
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput dragon64 -cart
+  system:
+  - d6800:
+      software_lists:
+      - softlist_name: chip8_quik
+        software_id:
+        - addition
+        - airplane
+        - animal
+        - astro
+        - astrof
+        - bio
+        - bowling
+        - breakout
+        - brick
+        - brix
+        - cave
+        - craps
+        - deflect
+        - dreaminv
+        - fifteen
+        - figures
+        - filter
+        - guess
+        - hidden
+        - hiddenf
+        - hilo
+        - kaleid
+        - kaleid2
+        - landing
+        - life
+        - llander
+        - mdg
+        - merlin
+        - missile
+        - mmind
+        - nim
+        - paddles
+        - pong
+        - pong1
+        - ponga
+        - ps
+        - puzzle
+        - reversi
+        - rocket
+        - rocketl
+        - rroul
+        - rushhour2
+        - sflight
+        - sinter
+        - slide
+        - snafu
+        - soccer
+        - squash
+        - sshoot
+        - sstars
+        - submarine
+        - syzygy
+        - tank
+        - tapeworm
+        - tetris
+        - tictactoef
+        - timebomb
+        - tron
+        - ufo
+        - vbrix
+        - vers
+        - wipeoff
+        - xmirror
+        - xrayf
+      software_configs:
+        chip8_quik:
+          _default_config:
+            command_line_parameters: d6800 -quik
+dai-personal-computer:
+  platform:
+    name: DAI Personal Computer
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cart
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput
+  system:
+  - dai:
+      software_lists:
+      - softlist_name: dai_cass
+        software_id:
+        - acrobat
+        - biorythm
+        - dessin
+        - dgraph
+        - lewiscar
+        - morpion
+        - nautilus
+        - premier
+        - random
+      software_configs:
+        dai_cass:
+          _default_config:
+            command_line_parameters: dai -cass
+tatung-einstein-tc-01:
+  platform:
+    name: Tatung Einstein TC-01
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cartridge
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput
+  system:
+  - einst256:
+      software_lists:
+      - softlist_name: einstein
+        software_id:
+        - 100mkara
+        - 256games
+        - 4game
+        - 6in1
+        - agrovatr
+        - alice
+        - artuan
+        - assembly
+        - basic
+        - bbcbasic
+        - boardelo
+        - castle
+        - cchamber
+        - cchambera
+        - chuckie
+        - cluedo
+        - conanbox
+        - cpm
+        - cracker
+        - diamond
+        - disc
+        - discodan
+        - druid
+        - eazidraw
+        - eincomp
+        - eindisk1
+        - eindisk2
+        - eindisk3
+        - elite
+        - fantasia
+        - fathom
+        - fsim
+        - fukung
+        - gamecmp1
+        - gamecomp
+        - gronks
+        - helimath
+        - highway
+        - hitchikr
+        - hustler
+        - jetsetw
+        - kumautil
+        - lazyj
+        - lesflics
+        - lostfix
+        - lottery
+        - manicmin
+        - manikpan
+        - mathmag
+        - mathsq
+        - maxima
+        - merlin8
+        - microplx
+        - minedick
+        - monopoly
+        - mouseart
+        - musicomp
+        - mworkshp
+        - mworkshpa
+        - nightmar
+        - ohmummy
+        - pakman
+        - panzer
+        - peteutil
+        - progkit
+        - punchy
+        - qoko2
+        - quantum
+        - riverbnd
+        - rocket
+        - roverbal
+        - schess
+        - scrabble
+        - screenpl
+        - sforth
+        - skinubbl
+        - snooker
+        - southbel
+        - spactrap
+        - specemu
+        - specops
+        - spelbuld
+        - spellbrk
+        - spreadsh
+        - starq
+        - startrek
+        - starx
+        - steamv22
+        - stepper
+        - super6b
+        - super6t
+        - super6ta
+        - supstore
+        - suspend
+        - swordfeu
+        - sys80
+        - system5
+        - tasprint
+        - tasword
+        - theatre
+        - timetrap
+        - tmathcyf
+        - toadofru
+        - tombkarn
+        - tycoon
+        - wishbrin
+        - wordproc
+        - wreck
+        - xanagram
+        - xmaster
+        - xtaldos
+        - zen
+        - zork1
+        - zork2
+        - zork3
+      software_configs:
+        einstein:
+          _default_config:
+            command_line_parameters: einst256 -flop1
+eti-660-learners-microcomputer:
+  platform:
+    name: ETI-660 Learners Microcomputer
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cart
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput
+  system:
+  - eti660:
+      software_lists:
+      - softlist_name: eti660_quik
+        software_id:
+        - maze
+        - musicm
+        - pong
+        - spaceinv
+        - wipeout
+juniper-ace:
+  platform:
+    name: Jupiter Ace
+  platform_category:
+  - Computers
+  - MESS (Computers)
+  - MESS (System w/ Softlist)
+  media_type: cassette
+  enable_custom_command_line_param_per_software_id: false
+  emulator:
+    name: MAME (MESS)
+    default_emulator: true
+    default_command_line_parameters: -keyboardprovider dinput
+  system:
+  - jupace:
+      software_lists:
+      - softlist_name: jupace_cass
+        software_id:
+        - 3dmaze
+        - 5compact
+        - acecase
+        - aceinvad
+        - acemines
+        - acestar
+        - acevader
+        - acevocab
+        - adventa
+        - aliendef
+        - amazmaze
+        - amce11
+        - amce12
+        - amce13
+        - amce15
+        - amce16
+        - amce17
+        - amce19
+        - amce20
+        - amce21
+        - amce23
+        - amce24
+        - amce25
+        - amce26
+        - amce8
+        - amisound
+        - asmdasm
+        - astrian
+        - aswarm
+        - aticraid
+        - avoider
+        - blackisl
+        - bomber
+        - breakout
+        - calendar
+        - callisto
+        - cavern
+        - cenipede
+        - chase
+        - chess
+        - cygnus
+        - database
+        - demotape
+        - divn
+        - dodge
+        - dotman
+        - ducksht
+        - factoria
+        - firebird
+        - fonted
+        - fonted1
+        - fpdict
+        - frogger
+        - frogger1
+        - fungle
+        - gametap1
+        - gametap3
+        - gfxexerc
+        - gobbgook
+        - grandprx
+        - graphics
+        - graphicsa
+        - grexfrog
+        - guessing
+        - hanoi
+        - hdrmon
+        - invader1
+        - invaders
+        - jumpman
+        - kkong
+        - life
+        - lifev2
+        - lifev3
+        - lightrac
+        - llander
+        - loader
+        - m_champs
+        - m_dessin
+        - m_fish
+        - m_greedy
+        - m_missle
+        - m_moo
+        - m_overta
+        - m_puzzle
+        - m_snake
+        - m_titan
+        - m_valkyr
+        - memstars
+        - meteor
+        - meteors
+        - metracer
+        - micromaz
+        - minefld
+        - monitor
+        - monitora
+        - moonbugg
+        - morsecod
+        - multikey
+        - music
+        - othello
+        - owler
+        - quickdrp
+        - quickdrw
+        - robohnch
+        - robohunt
+        - sacemap
+        - sailhorn
+        - sambombs
+        - sbattle
+        - schess2
+        - scramblr
+        - security
+        - sinewave
+        - sokoace
+        - spreadsh
+        - startrek
+        - sudoku
+        - surround
+        - tankbatl
+        - teach
+        - tetris
+        - triplep
+        - turbo
+        - utils
+        - words
+        - wrd
+        - zapem
+        - zombies
+        - zxprint
+      - softlist_name: jupace_snap
+        software_id:
+        - briques
+        - milliped
+        - mines
+        - pacman
+        - valkyr
+      software_configs:
+        jupace_cass:
+          _default_config:
+            command_line_parameters: jupace -ram 48k -cass
