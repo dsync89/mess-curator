@@ -1573,7 +1573,8 @@ def main():
     search_parser.add_argument("--filter-machine-description", nargs='+', help="Filter machines where the description contains one or more of these terms.")
     search_parser.add_argument("--filter-machine-sourcefile", help="Filter machines by the driver source file (e.g., 'xavix.cpp').")
     search_parser.add_argument("--filter-software-description", help="Filter software by a term in its ID or description.")
-    
+    search_parser.add_argument("--filter-softlist", nargs='+', help="Filter machines that support one or more of these specific software lists.")
+
     # --- Universal Arguments ---
     search_parser.add_argument("--input-xml", help=f"Path to source XML for machine definitions. Defaults to 'mess.xml' or '{MAME_ALL_MACHINES_XML_CACHE}'.")
     search_parser.add_argument("--limit", type=int, help="Limit the number of systems processed.")
@@ -1730,6 +1731,29 @@ def main():
                         filtered_set.add(machine_name)
             systems_pool = filtered_set
             print(f"[INFO] After --filter-machine-sourcefile: {initial_count} -> {len(systems_pool)} systems.")
+
+        if args.filter_softlist:
+            initial_count = len(systems_pool)
+            filtered_set = set()
+            softlists_to_find = set(args.filter_softlist) # Use a set for efficient lookups
+
+            print(f"[INFO] Filtering systems to find support for softlist(s): {', '.join(softlists_to_find)}")
+
+            for machine_element in source_xml_root.findall("machine"):
+                machine_name = machine_element.get("name")
+                if machine_name in systems_pool:  # Only check machines already in our pool
+                    # Get all softlist names supported by this machine
+                    supported_softlists = {
+                        sl.get("name") for sl in machine_element.findall("softwarelist")
+                    }
+                    
+                    # Check if there is any intersection between the softlists we're looking for
+                    # and the softlists this machine supports.
+                    if not softlists_to_find.isdisjoint(supported_softlists):
+                        filtered_set.add(machine_name)
+            
+            systems_pool = filtered_set
+            print(f"[INFO] After --filter-softlist: {initial_count} -> {len(systems_pool)} systems.")
 
         # 3. Apply manual includes and excludes
         if hasattr(args, 'include_systems') and args.include_systems:
