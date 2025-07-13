@@ -315,8 +315,8 @@ def get_all_mame_systems_by_prefix_from_root(prefix, xml_root):
 
 def get_machine_details_and_filters_from_root(system_name, source_xml_root): 
     filters = {}
-    machine_metadata = {"description": "N/A", "manufacturer": "N/A", "year": "N/A", "status": "N/A", "emulation": "N/A", "sourcefile": "N/A"}
-    
+    machine_metadata = {"description": "N/A", "manufacturer": "N/A", "year": "N/A", "status": "N/A", "emulation": "N/A", "sourcefile": "N/A", "cloneof": "N/A"}
+
     debug_print(f"Extracting details for '{system_name}' from provided XML root.")
     
     try:
@@ -325,6 +325,7 @@ def get_machine_details_and_filters_from_root(system_name, source_xml_root):
             debug_print(f"Machine '{system_name}' not found in the provided XML root.")
             return filters, machine_metadata
 
+        machine_metadata["cloneof"] = machine_element.get("cloneof", "N/A")
         machine_metadata["description"] = machine_element.findtext("description", "N/A").strip()
         machine_metadata["manufacturer"] = machine_element.findtext("manufacturer", "N/A").strip()
         machine_metadata["year"] = machine_element.findtext("year", "N/A").strip()
@@ -857,7 +858,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
         if output_format == "table" or output_format == "csv":
             table_display_data = []
             
-            headers = ["System"]
+            headers = ["System", "Clone Of"]
             if show_extra_info:
                 headers.extend(["Description", "Manufacturer", "Year"])
             headers.extend(["Softlist", "Software ID", "Title"])
@@ -872,6 +873,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                 
                 if system_data_info:
                     machine_metadata = system_data_info['machine_metadata']
+                    cloneof = machine_metadata.get('cloneof', 'N/A')
                     driver_status = machine_metadata['status']
                     emulation_status = machine_metadata['emulation']
                     machine_description = machine_metadata['description']
@@ -880,7 +882,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                     source_file = machine_metadata['sourcefile']
 
                     if show_systems_only:
-                        row = [sys_name]
+                        row = [sys_name, cloneof]
                         if show_extra_info:
                             row.extend([machine_description, machine_manufacturer, machine_year])
                         row.extend(["N/A", "N/A", machine_description])
@@ -892,7 +894,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                         table_display_data.append(row)
                     elif system_data_info['software_entries']:
                         for softlist_name, _, swid, desc, publisher in system_data_info['software_entries']:
-                            row = [sys_name] 
+                            row = [sys_name, cloneof] 
                             if show_extra_info:
                                 row.extend([machine_description, machine_manufacturer, machine_year])
                             row.extend([softlist_name, swid, desc])
@@ -903,7 +905,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
                                 row.append(source_file)
                             table_display_data.append(row)
                     else:
-                        row = [sys_name]
+                        row = [sys_name, cloneof]
                         if show_extra_info:
                             row.extend([machine_description, machine_manufacturer, machine_year])
                         row.extend(["N/A", "N/A", machine_description])
@@ -916,7 +918,7 @@ def perform_mame_search_and_output(systems_to_process, search_term, output_forma
             
             if sort_by and table_display_data:
                 key_to_header = {
-                    'system_name': 'System', 'system_desc': 'Description', 'manufacturer': 'Manufacturer', 'year': 'Year',
+                    'system_name': 'System', 'cloneof': 'Clone Of', 'system_desc': 'Description', 'manufacturer': 'Manufacturer', 'year': 'Year',
                     'softlist': 'Softlist', 'software_id': 'Software ID', 'title': 'Title',
                     'publisher': 'Publisher', 'driver_status': 'Driver Status', 'emulation_status': 'Emulation Status',
                     'sourcefile': 'Source File'
@@ -1165,7 +1167,7 @@ def display_yaml_table(args, source_xml_root):
 
     table_display_data = []
     
-    headers = ["System"]
+    headers = ["System", "Clone Of"]
     if args.show_extra_info:
         headers.extend(["Description", "Manufacturer", "Year"])
     headers.extend(["Softlist", "Software ID", "Title"])
@@ -1188,10 +1190,11 @@ def display_yaml_table(args, source_xml_root):
             if isinstance(system_entry, dict):
                 system_name = next(iter(system_entry))
 
-            machine_metadata = {"description": "N/A", "manufacturer": "N/A", "status": "N/A", "emulation": "N/A", "sourcefile": "N/A"}
+            machine_metadata = {"description": "N/A", "manufacturer": "N/A", "status": "N/A", "emulation": "N/A", "sourcefile": "N/A", "cloneof": "N/A"}
             if source_xml_root:
                 _, machine_metadata = get_machine_details_and_filters_from_root(system_name, source_xml_root)
-            
+
+            cloneof = machine_metadata.get('cloneof', 'N/A')
             driver_status = machine_metadata['status']
             emulation_status = machine_metadata['emulation']
             machine_description = machine_metadata['description']
@@ -1200,7 +1203,7 @@ def display_yaml_table(args, source_xml_root):
             source_file = machine_metadata['sourcefile']
 
             if args.show_systems_only:
-                row = [system_name]
+                row = [system_name, cloneof]
                 if args.show_extra_info:
                     row.extend([machine_description, machine_manufacturer, machine_year])
                 row.extend(["N/A", "N/A", machine_description])
@@ -1218,7 +1221,7 @@ def display_yaml_table(args, source_xml_root):
                     if software_ids:
                         for swid in software_ids:
                             publisher = "N/A (YAML Source)" 
-                            row = [system_name]
+                            row = [system_name, cloneof]
                             if args.show_extra_info:
                                 row.extend([machine_description, machine_manufacturer, machine_year])
                             row.extend([softlist_name, swid, "N/A (YAML Source)"])
@@ -1229,7 +1232,7 @@ def display_yaml_table(args, source_xml_root):
                                 row.append(source_file)
                             table_display_data.append(row)
                     else:
-                        row = [system_name]
+                        row = [system_name, cloneof]
                         if args.show_extra_info:
                             row.extend([machine_description, machine_manufacturer, machine_year])
                         row.extend([softlist_name, "N/A", "N/A (No IDs)", "N/A"])
@@ -1240,7 +1243,7 @@ def display_yaml_table(args, source_xml_root):
                             row.append(source_file)
                         table_display_data.append(row)
             else:
-                row = [system_name]
+                row = [system_name, cloneof]
                 if args.show_extra_info:
                     row.extend([machine_description, machine_manufacturer, machine_year])
                 row.extend(["N/A", "N/A", machine_description])
@@ -1253,7 +1256,7 @@ def display_yaml_table(args, source_xml_root):
 
     if args.sort_by and table_display_data:
         key_to_header = {
-            'system_name': 'System', 'system_desc': 'Description', 'manufacturer': 'Manufacturer', 'year': 'Year',
+            'system_name': 'System', 'cloneof': 'Clone Of', 'system_desc': 'Description', 'manufacturer': 'Manufacturer', 'year': 'Year',
             'softlist': 'Softlist', 'software_id': 'Software ID', 'title': 'Title',
             'publisher': 'Publisher', 'driver_status': 'Driver Status', 'emulation_status': 'Emulation Status',
             'sourcefile': 'Source File'
